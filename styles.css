@@ -1,0 +1,65 @@
+* { box-sizing: border-box; }
+header {
+  background-color: #f1c517;
+  color: #000000;
+  padding: 20px;
+  text-align: center;
+  display:flex; 
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #023f25;;
+  color:  #f1c517;
+}
+
+
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+main {
+  padding: 20px;
+  text-align: center;
+}
+nav li {
+  text-align: center;
+}
+
+
+
+/* Lema: centrado y en dos lineas */
+.tagline {
+  flex: 1;
+  margin: 0;
+  align-self: center;
+  text-align: center;
+  line-height: 1.4;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+
+
+/* Logo GLOBO: monoespaciado y cada letra de un color */
+.logo {
+  font-family: "Verdana", Consolas, monospace;
+  font-size: 48px;
+  font-weight: bold;
+  letter-spacing: 6px;
+  margin: 0;
+}
+
+.logo .l1 { color: #023f25; }
+.logo .l2 { color: #023f25; }
+.logo .l3 { color: #023f25; }
+.logo .l4 { color: #023f25; }
+.logo .l5 { color: #023f25; }
+

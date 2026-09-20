@@ -35,6 +35,26 @@ nav li {
   text-align: center;
 }
 
+.category-grid {
+  list-style: none;
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.category-grid li {
+  padding: 20px;
+  background-color: #f1c517;
+  color: #023f25;
+  border: 3px solid #023f25;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
 
 
 /* Lema: centrado y en dos lineas */

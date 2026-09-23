@@ -1,38 +1,113 @@
 * { box-sizing: border-box; }
 header {
-  background-color: #f1c517;
+  background-color: #eec32c;
   color: #000000;
   padding: 20px;
   text-align: center;
-  display:flex; 
+  display:flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #023f25;;
-  color:  #f1c517;
+  background-color: #13916f;
+  color:  #eec32c;
 }
 
-
-
-nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  max-width: 400px;
-  margin: 0 auto;
+/* Menu a la izquierda y contenido a la derecha */
+.layout {
+  display: flex;
+  align-items: flex-start;
 }
 
 main {
+  flex: 1;
   padding: 20px;
   text-align: center;
 }
-nav li {
+
+/* Columna del menu */
+.sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  background-color: #eec32c;
+  padding: 0 14px 20px;
+  position: sticky;
+  top: 0;
+  align-self: stretch;
+}
+
+.sidebar-logo {
+  display: block;
+  width: 60px;
+  height: auto;
+  margin: 0 auto 12px;
+}
+
+.sidebar-title {
+  margin: 0 0 16px;
+  color: #13916f;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
   text-align: center;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Cajitas clicables del menu */
+.sidebar li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background-color: #13916f;
+  color: #eec32c;
+  border: 3px solid #13916f;
+  border-radius: 12px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.sidebar li a .nav-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.sidebar li a:hover,
+.sidebar li a:focus {
+  background-color: #ffffff;
+  color: #13916f;
+  transform: translateX(4px);
+}
+
+.sidebar li a:active {
+  transform: translateX(0);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* En pantallas pequenas el menu vuelve arriba */
+@media (max-width: 700px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    position: static;
+  }
 }
 
 .category-grid {
@@ -47,9 +122,9 @@ nav li {
 
 .category-grid li {
   padding: 20px;
-  background-color: #f1c517;
-  color: #023f25;
-  border: 3px solid #023f25;
+  background-color: #eec32c;
+  color: #13916f;
+  border: 3px solid #13916f;
   border-radius: 8px;
   font-size: 1.2rem;
   font-weight: bold;
@@ -57,14 +132,29 @@ nav li {
 
 
 
-/* Lema: centrado y en dos lineas */
+/* Titulo y lema, uno al lado del otro */
+.hero-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Lema: al lado del titulo */
 .tagline {
-  flex: 1;
   margin: 0;
-  align-self: center;
-  text-align: center;
+  text-align: left;
   line-height: 1.4;
   font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+
+
+/* Imagen al lado del texto GLOBO */
+.logo-img {
+  height: 60px;
+  width: auto;
+  margin-right: 10px;
 }
 
 
@@ -77,9 +167,9 @@ nav li {
   margin: 0;
 }
 
-.logo .l1 { color: #023f25; }
-.logo .l2 { color: #023f25; }
-.logo .l3 { color: #023f25; }
-.logo .l4 { color: #023f25; }
-.logo .l5 { color: #023f25; }
+.logo .l1 { color: #13916f; }
+.logo .l2 { color: #13916f; }
+.logo .l3 { color: #13916f; }
+.logo .l4 { color: #13916f; }
+.logo .l5 { color: #13916f; }
 

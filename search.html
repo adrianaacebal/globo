@@ -32,7 +32,7 @@
             <ul>
                 <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
                 <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
-                <li><a href="contact.html"><span class="nav-icon">✉️</span>Contact us</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
                 <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
                 <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
             </ul>
@@ -59,31 +59,7 @@
         </p>
      </section>
 
-     <section>
-        <h2>Restaurants on the map</h2>
-        <ul class="category-grid">
-            <li><a href="burgers.html">Burger King</a></li>
-            <li><a href="sushi.html">Sushi</a></li>
-            <li><a href="pizza.html">Pizza</a></li>
-            <li><a href="vegan.html">Vegan</a></li>
-        </ul>
-     </section>
 
-    <aside>
-        <h2>Delivery area</h2>
-        <p>We deliver to every address inside the map.</p>
-    </aside>
-
-    </main>
-
-    </div>
-
-
-    <footer>
-    <p>Made by: Maria Cuadrado and Adriana Acebal</p>
-    <p>&copy; 2026 GLOBO. All rights reserved.</p>
-    <a href="contact.html">Contact us</a>
-</footer>
 
 <!-- Leaflet: la libreria que hace funcionar el mapa -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -102,7 +78,7 @@
     var info = document.getElementById('map-info');
 
     // Lista de reserva: si OpenStreetMap no contesta, al menos se ven estos
-    
+
     var backup = [
         { name: 'Mercado de San Miguel', cuisine: 'tapas', lat: 40.4155, lon: -3.7090 },
         { name: 'Sobrino de Botin', cuisine: 'spanish', lat: 40.4141, lon: -3.7085 },

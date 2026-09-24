@@ -7,6 +7,8 @@
     <meta charset="UTF-8">
     <title> GLOBO - Search for restaurants </title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Estilos de Leaflet, la libreria que dibuja el mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 
 
@@ -31,7 +33,8 @@
                 <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
                 <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
                 <li><a href="contact.html"><span class="nav-icon">✉️</span>Contact us</a></li>
-                <
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
             </ul>
         </nav>
 
@@ -43,18 +46,15 @@
             <p>Find the <span>best restaurants</span> near you on the map.</p>
         </div>
 
-        <!-- Mapa de OpenStreetMap. Se puede mover y hacer zoom -->
+        <!-- Mapa de Madrid con una chincheta en cada restaurante. Se puede mover y hacer zoom -->
         <div class="map-frame">
-            <iframe
-                src="https://www.openstreetmap.org/export/embed.html?bbox=-3.7200%2C40.4100%2C-3.6870%2C40.4270&amp;layer=mapnik&amp;marker=40.4185%2C-3.7035"
-                title="Map of restaurants in the centre of Madrid"
-                width="600"
-                height="450"
-                loading="lazy"></iframe>
+            <div id="map"></div>
         </div>
 
+        <p id="map-info">Loading the restaurants...</p>
+
         <p>
-            <a href="https://www.openstreetmap.org/?mlat=40.4185&amp;mlon=-3.7035#map=15/40.4185/-3.7035"
+            <a href="https://www.google.com/maps/search/restaurants+in+Madrid/@40.4185,-3.7035,14z"
                target="_blank">Open the map in a bigger window</a>
         </p>
      </section>
@@ -84,6 +84,93 @@
     <p>&copy; 2026 GLOBO. All rights reserved.</p>
     <a href="contact.html">Contact us</a>
 </footer>
+
+<!-- Leaflet: la libreria que hace funcionar el mapa -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Mapa centrado en el centro de Madrid (Puerta del Sol)
+    var map = L.map('map').setView([40.4168, -3.7038], 15);
+
+    // Los dibujos del mapa (calles, plazas...) los pone OpenStreetMap
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    // Capa donde van las chinchetas de los restaurantes
+    var restaurants = L.layerGroup().addTo(map);
+    var info = document.getElementById('map-info');
+
+    // Lista de reserva: si OpenStreetMap no contesta, al menos se ven estos
+    
+    var backup = [
+        { name: 'Mercado de San Miguel', cuisine: 'tapas', lat: 40.4155, lon: -3.7090 },
+        { name: 'Sobrino de Botin', cuisine: 'spanish', lat: 40.4141, lon: -3.7085 },
+        { name: 'Casa Lucio', cuisine: 'spanish', lat: 40.4119, lon: -3.7100 },
+        { name: 'Chocolateria San Gines', cuisine: 'dessert', lat: 40.4165, lon: -3.7068 },
+        { name: 'Restaurante La Bola', cuisine: 'spanish', lat: 40.4196, lon: -3.7113 },
+        { name: 'Goiko', cuisine: 'burger', lat: 40.4245, lon: -3.7013 },
+        { name: 'Grosso Napoletano', cuisine: 'pizza', lat: 40.4256, lon: -3.7099 },
+        { name: 'Vega', cuisine: 'vegan', lat: 40.4223, lon: -3.7053 }
+    ];
+
+    // Hace el cartelito que sale al pinchar una chincheta
+    function makePopup(tags) {
+        var box = document.createElement('div');
+        var name = document.createElement('strong');
+        name.textContent = tags.name || 'Restaurant';
+        box.appendChild(name);
+        if (tags.cuisine) {
+            box.appendChild(document.createElement('br'));
+            box.appendChild(document.createTextNode(tags.cuisine.replace(/;/g, ', ')));
+        }
+        return box;
+    }
+
+    // Pide a OpenStreetMap los restaurantes que hay en el trozo de mapa que se ve
+    function loadRestaurants() {
+        var b = map.getBounds();
+        var area = b.getSouth() + ',' + b.getWest() + ',' + b.getNorth() + ',' + b.getEast();
+        var query = '[out:json][timeout:25];node["amenity"="restaurant"](' + area + ');out 120;';
+
+        info.textContent = 'Loading the restaurants...';
+
+        fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: query })
+            .then(function (answer) { return answer.json(); })
+            .then(function (data) {
+                if (!data.elements || data.elements.length === 0) {
+                    throw new Error('empty');
+                }
+                restaurants.clearLayers();
+                data.elements.forEach(function (place) {
+                    L.marker([place.lat, place.lon])
+                        .bindPopup(makePopup(place.tags || {}))
+                        .addTo(restaurants);
+                });
+                info.textContent = data.elements.length +
+                    ' restaurants in this area. Move the map to see more.';
+            })
+            .catch(function () {
+                // Si falla, se pintan los restaurantes de la lista de reserva
+                restaurants.clearLayers();
+                backup.forEach(function (place) {
+                    L.marker([place.lat, place.lon])
+                        .bindPopup(makePopup(place))
+                        .addTo(restaurants);
+                });
+                info.textContent = 'Showing some of our restaurants in the centre of Madrid.';
+            });
+    }
+
+    // Se cargan al abrir la pagina y cada vez que se mueve el mapa.
+    // Espera medio segundo a que pares de mover, para no pedirlo mil veces seguidas.
+    var timer;
+    loadRestaurants();
+    map.on('moveend', function () {
+        clearTimeout(timer);
+        timer = setTimeout(loadRestaurants, 500);
+    });
+</script>
 
 </body>
 </html>

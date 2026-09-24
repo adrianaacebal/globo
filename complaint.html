@@ -7,20 +7,46 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-</head>
 <body>
-     <!-- Google docs  -->
+    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="images/image.png" alt="Globo logo">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+ <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="contact.html"><span class="nav-icon">✉️</span>Contact us</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+     <section>
+        <!-- Google docs  -->
         <div class="doc-frame">
             <iframe
                 src= 'https://docs.google.com/forms/d/e/1FAIpQLSf_pyBTA1BE7zOcCbMFWcc24ijC7OxjG9K8jjG177S9CyzxWQ/viewform?usp=publish-editor'
                 title="Contact form"
-                width="600"
                 height="450"
                 loading="lazy"></iframe>
         </div>
-
-       
      </section>
+    </main>
+
+    </div>
 </body>
 </html>
 

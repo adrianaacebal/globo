@@ -27,8 +27,16 @@ body {
 
 main {
   flex: 1;
+  min-width: 0;
   padding: 20px;
   text-align: flex-start;
+}
+
+/* Nada dentro del contenido puede ser mas ancho que su hueco:
+   asi no aparece barra horizontal ni el verde al lado del header */
+main img,
+main iframe {
+  max-width: 100%;
 }
 
 /* Columna del menu */
@@ -197,7 +205,8 @@ main {
 }
 
 /* El mapa ocupa todo el ancho de su caja */
-.map-frame iframe {
+.map-frame iframe,
+.map-frame #map {
   display: block;
   width: 100%;
   height: 450px;
@@ -206,9 +215,33 @@ main {
 
 /* En pantallas pequenas el mapa es mas bajito */
 @media (max-width: 700px) {
-  .map-frame iframe {
+  .map-frame iframe,
+  .map-frame #map {
     height: 300px;
   }
+}
+
+/* Texto que cuenta cuantos restaurantes hay en el mapa */
+#map-info {
+  text-align: center;
+}
+
+/* Caja del formulario de Google */
+.doc-frame {
+  max-width: 700px;
+  margin: 20px auto;
+  border: 3px solid #eec32c;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+/* El formulario ocupa todo el ancho de su caja, nunca mas */
+.doc-frame iframe {
+  display: block;
+  width: 100%;
+  height: 450px;
+  border: 0;
 }
 
 /* Titulo y lema, uno al lado del otro */

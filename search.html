@@ -1,11 +1,89 @@
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title> GLOBO - Search for restaurants </title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
+
 <body>
-    <h1>Login</h1>
-    <p>Please log in to your account.</p>
+    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="images/image.png" alt="Globo logo">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="contact.html"><span class="nav-icon">✉️</span>Contact us</a></li>
+                <
+            </ul>
+        </nav>
+
+    <main>
+
+     <section>
+        <div class="hero-head">
+            <h1>Search for restaurants</h1>
+            <p>Find the <span>best restaurants</span> near you on the map.</p>
+        </div>
+
+        <!-- Mapa de OpenStreetMap. Se puede mover y hacer zoom -->
+        <div class="map-frame">
+            <iframe
+                src="https://www.openstreetmap.org/export/embed.html?bbox=-3.7200%2C40.4100%2C-3.6870%2C40.4270&amp;layer=mapnik&amp;marker=40.4185%2C-3.7035"
+                title="Map of restaurants in the centre of Madrid"
+                width="600"
+                height="450"
+                loading="lazy"></iframe>
+        </div>
+
+        <p>
+            <a href="https://www.openstreetmap.org/?mlat=40.4185&amp;mlon=-3.7035#map=15/40.4185/-3.7035"
+               target="_blank">Open the map in a bigger window</a>
+        </p>
+     </section>
+
+     <section>
+        <h2>Restaurants on the map</h2>
+        <ul class="category-grid">
+            <li><a href="burgers.html">Burger King</a></li>
+            <li><a href="sushi.html">Sushi</a></li>
+            <li><a href="pizza.html">Pizza</a></li>
+            <li><a href="vegan.html">Vegan</a></li>
+        </ul>
+     </section>
+
+    <aside>
+        <h2>Delivery area</h2>
+        <p>We deliver to every address inside the map.</p>
+    </aside>
+
+    </main>
+
+    </div>
+
+
+    <footer>
+    <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+    <p>&copy; 2026 GLOBO. All rights reserved.</p>
+    <a href="contact.html">Contact us</a>
+</footer>
+
 </body>
 </html>

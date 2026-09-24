@@ -40,6 +40,48 @@ main {
   align-self: stretch;
 }
 
+/* El checkbox solo guarda el estado, no se ve */
+.menu-toggle {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Boton para abrir y cerrar el menu */
+.menu-btn {
+  margin-left: 20px;
+  padding: 10px 16px;
+  background-color: #13916f;
+  color: #eec32c;
+  border: 3px solid #13916f;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+.menu-btn:hover {
+  background-color: #ffffff;
+  color: #13916f;
+}
+
+/* Marco amarillo cuando se llega al boton con el teclado (tabulador) */
+.menu-toggle:focus-visible + header .menu-btn {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Texto que cambia segun este abierto o cerrado */
+.menu-btn::after { content: " Hide menu"; }
+.menu-toggle:not(:checked) + header .menu-btn::after { content: " Show menu"; }
+
+/* Si el checkbox no esta marcado, el menu se esconde */
+.menu-toggle:not(:checked) ~ .layout .sidebar {
+  display: none;
+}
+
 .sidebar-logo {
   display: block;
   width: 60px;

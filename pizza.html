@@ -1,11 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Pizza Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> GLOBO - Burger King Menu </title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <h1>Pizza Menu</h1>
-    <p>Menu coming soon</p>
+    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="images/image.png" alt="Globo logo">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+     <section>
+        <h1> Pizza Pronto Menu</h1>
+        <p>Take a look at the whole menu. When you know what you want,
+           go to <a class="menu-link" href="order.html">Order online</a>.</p>
+
+        <!-- Menu de Burger King en grande -->
+        <div class="doc-frame menu-frame">
+            <iframe
+                src= 'https://glovoapp.com/es/es/madrid/stores/pizzapronto-madrid?gad_source=1&gad_campaignid=22857925111&gbraid=0AAAAADMzK6U9BH-VSA3gBGavrCriNG1Yz&gclid=Cj0KCQjw5vLVBhCiARIsAD56SFJf3d1RTHp_aCJp7QnFy4sNQl-WzMb_IxnTwu3e4VeIbPVDqbGc74YaAkGgEALw_wcB'
+                title="Pizza Pronto Menu"
+                loading="lazy">Loading…</iframe>
+        </div>
+
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="order.html">Order now</a>
+            <a class="btn btn-secondary" href="index.html">Back to home</a>
+        </div>
+     </section>
+    </main>
+
+    </div>
+
+    <footer>
+    <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+    <p>&copy; 2026 GLOBO. All rights reserved.</p>
+    <a href="contact.html">Contact us</a>
+</footer>
+
 </body>
 </html>

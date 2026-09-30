@@ -1,13 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title> GLOBO - Order online </title>
+    <link rel="stylesheet" href="styles.css">
+</head>
 
-       
+<body>
+    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="images/image.png" alt="Globo logo">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+ <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+     <section>
+        <h1>Order online</h1>
+        <p>Choose your restaurant, pick your dishes and tell us where to deliver.
+           As soon as you send the form, your order reaches our team.</p>
+
+        <ol class="order-steps">
+            <li>Choose a restaurant</li>
+            <li>Write the dishes and how many you want.</li>
+            <li>Add your name, phone and address.</li>
+            <li>Press <strong>Submit</strong>. You will see a confirmation message.</li>
+        </ol>
+
+        <!-- Formulario de pedidos de Google Forms.
+             Cambia el src por el enlace de vuestro formulario de pedidos
+             (Enviar > icono < > > copiar el src, termina en ?embedded=true) -->
+        <div class="doc-frame order-frame">
+            <iframe
+                src="https://docs.google.com/forms/d/e/1FAIpQLSdwrIt8M1OqSwlFt6zqbpm33FgQOj1e0srYp5I8FEtLfxFP9g/viewform?embedded=true"
+                title="Order form"
+                loading="lazy">Loading…</iframe>
+        </div>
      </section>
+    </main>
+
+    </div>
 </body>
 </html>
-
-
-

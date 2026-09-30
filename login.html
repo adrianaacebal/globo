@@ -1,11 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title> GLOBO - Login </title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <h1>Login</h1>
-    <p>Please log in to your account.</p>
+    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="images/image.png" alt="Globo logo">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+ <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+     <section>
+        <h1>Login</h1>
+
+        <!-- Formulario de login. Se ve cuando no hay nadie conectado -->
+        <form id="login-form" class="login-box">
+            <label for="login-name">Name</label>
+            <input type="text" id="login-name" name="name" required>
+
+            <label for="login-email">Email</label>
+            <input type="text" id="login-email" name="email" autocomplete="email" required>
+
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" name="password"
+                   autocomplete="current-password" required>
+
+            <button type="submit">Log in</button>
+            <p class="login-note">Don't have an account? Just fill in the form and one is created.</p>
+        </form>
+
+        <!-- Mensaje de bienvenida. Se ve cuando alguien ya ha entrado -->
+        <div id="login-welcome" class="login-box" hidden>
+            <p>Welcome, <strong id="login-user"></strong>! 🎉</p>
+            <p>You are logged in. You can now <a href="order.html">order online</a>.</p>
+            <button type="button" id="logout-btn">Log out</button>
+        </div>
+     </section>
+    </main>
+
+    </div>
+
+<script>
+    // Login de prueba: no hay servidor, asi que el nombre se guarda
+    // en el navegador (localStorage) y no se comprueba la contrasena.
+    var form = document.getElementById("login-form");
+    var welcome = document.getElementById("login-welcome");
+    var userText = document.getElementById("login-user");
+
+    // Ensena el formulario o la bienvenida segun si hay alguien conectado
+    function showState() {
+        var user = localStorage.getItem("globoUser");
+        if (user) {
+            userText.textContent = user;
+            form.hidden = true;
+            welcome.hidden = false;
+        } else {
+            form.hidden = false;
+            welcome.hidden = true;
+        }
+    }
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var name = document.getElementById("login-name").value.trim();
+        localStorage.setItem("globoUser", name);
+        form.reset();
+        showState();
+    });
+
+    document.getElementById("logout-btn").addEventListener("click", function () {
+        localStorage.removeItem("globoUser");
+        showState();
+    });
+
+    showState();
+</script>
 </body>
 </html>

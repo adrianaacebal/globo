@@ -285,3 +285,72 @@ main iframe {
 .logo .l4 { color: #13916f; }
 .logo .l5 { color: #13916f; }
 
+
+
+/* Pasos para hacer un pedido */
+.order-steps {
+  max-width: 700px;
+  margin: 20px auto;
+  line-height: 1.6;
+}
+
+/* El formulario de pedidos es mas largo que el de quejas */
+.order-frame iframe {
+  height: 1100px;
+}
+
+@media (max-width: 700px) {
+  .order-frame iframe {
+    height: 1300px;
+  }
+}
+
+/* Caja del login */
+.login-box {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 24px;
+  background-color: #eec32c;
+  color: #13916f;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-box[hidden] { display: none; }
+
+.login-box label {
+  font-weight: bold;
+}
+
+.login-box input {
+  padding: 10px;
+  border: 3px solid #13916f;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.login-box button {
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #13916f;
+  color: #eec32c;
+  border: 3px solid #13916f;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-box button:hover {
+  background-color: #ffffff;
+  color: #13916f;
+}
+
+.login-box a { color: #13916f; }
+
+.login-note {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+}

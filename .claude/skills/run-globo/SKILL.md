@@ -1,97 +1,73 @@
 ---
 name: run-globo
-description: Run, serve, screenshot, smoke-test or check the GLOBO static restaurant website (index/login/search/menu pages). Use when asked to run globo, start or preview the site, take a screenshot of a page (desktop or mobile), test the login form or sidebar menu, or find broken links.
+description: Run, start, serve, screenshot, smoke-test, or drive the GLOBO static restaurant website (index/login/order/search/menu pages). Use when asked to open the site, check a page renders, take a screenshot (desktop or mobile), test the login flow or the search map, or confirm an HTML/CSS change works in a real browser.
 ---
 
-# run-globo
+GLOBO is a static HTML/CSS site with no build step. A future agent drives it with
+`.claude/skills/run-globo/driver.py`. The driver serves the repo over HTTP on a
+random local port and runs headless Microsoft Edge through Playwright for Python.
+There's no server to start or stop.
 
-GLOBO is a plain static site (HTML + `styles.css` + one inline `<script>` in
-`login.html`). There's no build step and no package.json at the repo root. You drive it with
-`.claude/skills/run-globo/driver.mjs`. The driver serves the repo from a
-built-in Node HTTP server on a random port and controls the **system Chrome/Edge**
-through `playwright-core`, so you don't need to download a browser.
+All paths below are relative to the repo root (`globo/`). Verified on Windows 11
+with Git Bash, Python 3.14 and Edge 154.
 
-All paths below are relative to the repo root (`globo/`).
-
-## Prerequisites (one time)
-
-Node 18+ (verified on 24) and an installed Chrome or Edge. The driver checks the
-standard Windows/Linux/macOS install paths. You can override that with `CHROME_PATH=...`.
+## Prerequisites
 
 ```bash
-cd .claude/skills/run-globo && npm install && cd ../../..
+python -m pip install --user playwright
 ```
 
-This installs only `playwright-core`. `node_modules/` and `shots/` are gitignored.
+You don't need `playwright install`. The driver uses `channel="msedge"`, which is
+the Edge that already comes with Windows. If Edge is missing, it falls back to
+Playwright's bundled Chromium. That fallback is untested and needs
+`python -m playwright install chromium`.
 
 ## Run (agent path)
 
 ```bash
-node .claude/skills/run-globo/driver.mjs smoke              # everything; exit 1 on local problems
-node .claude/skills/run-globo/driver.mjs shot index.html    # one full-page screenshot
-node .claude/skills/run-globo/driver.mjs shot index.html mobile   # 390x844 phone emulation
-node .claude/skills/run-globo/driver.mjs login Maria        # login -> reload -> logout flow, prints JSON
-node .claude/skills/run-globo/driver.mjs serve 8123         # plain server for curl / manual browsing
+python .claude/skills/run-globo/driver.py smoke
 ```
 
-Screenshots land in `.claude/skills/run-globo/shots/` (`<page>.png`,
-`login-welcome.png`, `index-menu-closed.png`, `<page>_html-mobile.png`). **Open
-them with Read and look at them.**
+`smoke` does the following and takes about 30–60 s:
+1. Loads all 10 pages. For each it prints the title and the first `<h1>`, takes a screenshot, and gathers local links for a dead-link check.
+2. Clicks ☰ and checks that the sidebar hides. This is a CSS-only checkbox hack.
+3. Logs in on `login.html` (name/email/password), checks `Welcome, Smoke Tester!`, reloads to confirm the login persisted in localStorage, then logs out.
+4. Waits for the Leaflet map on `search.html` to load its markers and reports how many.
 
-`smoke` does the following on every `*.html` in the repo root:
-- Prints the page title.
-- Lists **broken local links** (hrefs to files that don't exist).
-- Lists **stray `#...` text**, meaning `#` "comments" that render as visible text, because HTML has no `#` comments.
-- Lists **local** HTTP 4xx and JS errors.
-- Saves a full-page screenshot.
+Exit codes: 0 means no local errors. 1 means a JS `pageerror` or a console error from a local file. Broken links and third-party errors print `WARN` and don't change the exit code.
 
-After the pages, it clicks the ☰ label and checks that the sidebar hides. Then it runs the login flow.
-Only broken links, local errors, or a failed login make it exit 1. Stray text is a warning.
+Screenshot a single page, e.g. after a CSS change:
 
-To check a server that's already running with `serve`:
 ```bash
-curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8123/            # 200
-curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8123/contact.html # 404 (missing page)
+python .claude/skills/run-globo/driver.py shot index.html --mobile        # 390x844
+python .claude/skills/run-globo/driver.py shot order.html --wait 6000     # let the iframe paint
+python .claude/skills/run-globo/driver.py shot search.html --full         # full-page
 ```
+
+Screenshots go to `.claude/skills/run-globo/shots/<page>[-mobile].png`, which is gitignored. The smoke run also writes `menu-closed.png`, `login-welcome.png` and `search-map.png`. Open the PNGs and look at them. A page can pass smoke and still show a blank iframe.
+
+For a new flow, `import driver` and reuse `driver.serve()` and `driver.launch(p)`. See `smoke()` for the pattern.
 
 ## Run (human path)
 
-Double-click `index.html`, or run `serve` and open http://127.0.0.1:8000/. There's
-nothing to build.
+Double-click `index.html`, or run `python -m http.server 8000` and open
+http://localhost:8000. Stop it with Ctrl-C.
+
+## Test
+
+No test suite exists. `driver.py smoke` is the test.
 
 ## Gotchas
 
-- **The smoke test currently fails on purpose.** `contact.html` is linked from
-  the footer of 5 pages (index, burgers, pizza, sushi, vegan) but doesn't exist. It also
-  flags `login.html` and `prueba.html` for stray `#para que...` / `#menu toggle...`
-  text that renders at the top of the page.
-- **Menu pages iframe third-party sites** (burgerking.es, glovoapp.com,
-  stoglobo.es, docs.google.com). Those sites refuse framing (CSP
-  `frame-ancestors`) or return 403, and they vary from run to run. The driver
-  prints them as `(external, ignored: ...)` and never fails on them. Don't expect
-  the menu iframes to show content in screenshots. The Google Maps iframe on
-  `search.html` loads, but its tiles stay grey in headless screenshots.
-- **Titles are copy-pasted.** pizza/sushi/vegan are all titled "GLOBO - Burger
-  King Menu", and complaint.html is titled "Search for restaurants". `smoke`
-  prints titles so you can spot this.
-- **`index.html` has no `<meta name="viewport">`.** `shot index.html mobile`
-  renders at 980px CSS width, not 390px. That's the page's fault, not the
-  driver's: real phones do the same. Pages that have the meta (search, login)
-  render at true phone width.
-- **The sidebar is a pure-CSS checkbox hack** (`#menu-toggle` + `label.menu-btn`).
-  It's `checked` = open on load. Click the label, not the hidden input. The button
-  text changes between "Hide menu" and "Show menu".
-- **Login is fake.** It stores the name in `localStorage.globoUser` and never checks the
-  password. Each driver command uses a fresh browser context, so state doesn't
-  leak between runs.
-- **Use HTTP, not `file://`.** The driver always serves over HTTP so that localStorage
-  and 404 detection behave the same way as on a real host.
-- **Chrome console 404s don't name the URL** ("Failed to load resource...").
-  The driver drops those messages and logs the actual failing response URL instead.
+- **Smoke screenshots of iframe pages are blank.** All the iframes use `loading="lazy"` and load third-party sites, and smoke captures right at `load`. Use `shot <page> --wait 6000`. Burger King needs about 8 s.
+- **pizza.html can never show its menu.** glovoapp.com sends `X-Frame-Options: SAMEORIGIN` and `frame-ancestors 'self'`. It's not a timing problem.
+- **sushi.html's iframe is sometimes blank.** stoglobo.es sometimes returns 403 inside the frame (seen once in three runs). It shows up as `WARN external`.
+- **The search map's result depends on a public API.** The page POSTs to `overpass-api.de`. When that works you get about 120 markers ("120 restaurants in this area"). When it 504s, which happened in 2 of 4 runs, the page uses its hard-coded list and shows 8 markers ("Showing some of our restaurants…"). Either is a pass. Leaflet and the map tiles also come from unpkg/OSM, so the map needs internet.
+- **Login is localStorage only** (key `globoUser`, password never checked). Each driver run uses a fresh browser context, so no logged-in state carries over between runs.
+- **Copy-pasted `<title>`s:** sushi/pizza/vegan are all titled "GLOBO - Burger King Menu", and complaint.html is titled "Search for restaurants". The smoke output shows this.
+- **`/favicon.ico` 404:** the site has no favicon. The driver ignores that request.
 
 ## Troubleshooting
 
-- `Error: No Chrome/Edge found; set CHROME_PATH`: no browser at the standard
-  paths. Run `CHROME_PATH="/path/to/chrome" node .claude/skills/run-globo/driver.mjs smoke`.
-- `Cannot find package 'playwright-core'`: you skipped `npm install` in the
-  skill directory.
+- **`UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f354'`**: the Windows console defaults to cp1252 and page headings contain emoji. The driver already reconfigures stdout to UTF-8. Do the same in any script that prints page text.
+- **`ModuleNotFoundError: No module named 'playwright'`**: run the pip line under Prerequisites.

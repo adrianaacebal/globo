@@ -222,7 +222,8 @@ main iframe {
 }
 
 /* Texto que cuenta cuantos restaurantes hay en el mapa */
-#map-info {
+#map-info,
+.map-link {
   text-align: center;
 }
 

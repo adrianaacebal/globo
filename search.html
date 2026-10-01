@@ -13,7 +13,6 @@
 
 
 <body>
-    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
 
     <header>
@@ -41,24 +40,23 @@
     <main>
 
      <section>
-        <div class="hero-head">
+        <div class="head">
             <h1>Search for restaurants</h1>
             <p>Find the <span>best restaurants</span> near you on the map.</p>
         </div>
 
-        <!-- Mapa de Google Maps buscando restaurantes cerca de la Puerta del Sol (Madrid) -->
         <div class="map-frame">
             <iframe
-                src="https://maps.google.com/maps?q=restaurantes&ll=40.4168,-3.7038&z=16&output=embed"
+                src="https://www.google.com/maps/d/edit?mid=1vvtNmKEOjAvRJi3hE8i_VUNIZCVOBMg&usp=sharing"
                 loading="lazy"
                 allowfullscreen
-                referrerpolicy="no-referrer-when-downgrade"
                 title="Map of restaurants in Madrid">
             </iframe>
+
         </div>
 
         <p class="map-link">
-            <a href="https://www.google.com/maps/search/restaurantes/@40.4168,-3.7038,15z"
+            <a href="https://www.google.com/maps/d/edit?mid=1vvtNmKEOjAvRJi3hE8i_VUNIZCVOBMg&usp=sharing"
                target="_blank">Open the map in a bigger window</a>
         </p>
      </section>

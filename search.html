@@ -6,13 +6,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> GLOBO - Search for restaurants </title>
+    <title>GLOBO - Search for restaurants</title>
     <link rel="stylesheet" href="styles.css">
-
+    <!-- Estilos de Leaflet, la libreria que dibuja el mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 
 
 <body>
+    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
 
     <header>
@@ -40,28 +42,174 @@
     <main>
 
      <section>
-        <div class="head">
+        <div class="hero-head">
             <h1>Search for restaurants</h1>
-            <p>Find the <span>best restaurants</span> near you on the map.</p>
+            <p class="tagline">Find the <span>best restaurants</span><br>near you on the map.</p>
         </div>
 
+        <!-- Buscador: filtra la lista y las chinchetas del mapa -->
+        <form class="search-box" role="search" onsubmit="return false;">
+            <label for="search-input">Restaurant or area</label>
+            <div class="search-row">
+                <input type="search" id="search-input" placeholder="e.g. Burger King, Gran Vía..." autocomplete="off">
+                <button type="button" id="near-me">📍 Near me</button>
+            </div>
+        </form>
+
+        <!-- Mapa de Madrid con una chincheta en cada restaurante. Se puede mover y hacer zoom -->
         <div class="map-frame">
-            <iframe
-                src="https://www.google.com/maps/d/edit?mid=1vvtNmKEOjAvRJi3hE8i_VUNIZCVOBMg&usp=sharing"
-                loading="lazy"
-                allowfullscreen
-                title="Map of restaurants in Madrid">
-            </iframe>
+            <div id="map"></div>
         </div>
+
+        <p id="map-info">Loading the restaurants...</p>
+
+        <!-- Lista de restaurantes: al pinchar uno, el mapa va hasta el -->
+        <ul id="results" class="results-list"></ul>
 
         <p class="map-link">
-            <a href="https://www.google.com/maps/d/edit?mid=1vvtNmKEOjAvRJi3hE8i_VUNIZCVOBMg&usp=sharing"
-               target="_blank">Open the map in a bigger window</a>
+            <a class="menu-link" href="https://www.google.com/maps/d/viewer?mid=1vvtNmKEOjAvRJi3hE8i_VUNIZCVOBMg"
+               target="_blank">Open the map in Google Maps</a>
         </p>
      </section>
 
     </main>
     </div>
+
+    <footer>
+        <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+        <p>&copy; 2026 GLOBO. All rights reserved.</p>
+        <a href="contact.html">Contact us</a>
+    </footer>
+
+
+<!-- Leaflet: la libreria que hace funcionar el mapa -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Nuestros restaurantes (los mismos que el mapa "GLOBO RESTAURANTS" de Google My Maps)
+    var places = [
+        { name: 'Burger King Chamartín', area: 'Chamartín', type: 'burger', lat: 40.4721547, lon: -3.6827027 },
+        { name: 'Burger King Tetuán', area: 'Tetuán', type: 'burger', lat: 40.4606115, lon: -3.69986 },
+        { name: 'Burger King Cuatro Caminos', area: 'Tetuán', type: 'burger', lat: 40.4582009, lon: -3.7009311 },
+        { name: "McDonald's Gran Vía", area: 'Centro', type: 'fast', lat: 40.4217486, lon: -3.7082893 },
+        { name: "McDonald's Princesa", area: 'Moncloa', type: 'fast', lat: 40.4250027, lon: -3.7126422 },
+        { name: "McDonald's Chamberí", area: 'Chamberí', type: 'fast', lat: 40.4323068, lon: -3.7055092 },
+        { name: "McDonald's Atocha", area: 'Retiro', type: 'fast', lat: 40.4096453, lon: -3.6927171 },
+        { name: "McDonald's Montecarmelo", area: 'Fuencarral', type: 'fast', lat: 40.5014306, lon: -3.6971944 }
+    ];
+
+    // Icono y carta de cada tipo de restaurante
+    var kinds = {
+        burger: { icon: '🍔', menu: 'burgers.html' },
+        fast:   { icon: '🍟', menu: 'order.html' }
+    };
+
+    // Mapa centrado en Madrid
+    var map = L.map('map').setView([40.45, -3.70], 12);
+
+    // Los dibujos del mapa (calles, plazas...) los pone OpenStreetMap
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    var input = document.getElementById('search-input');
+    var info = document.getElementById('map-info');
+    var list = document.getElementById('results');
+    var layer = L.featureGroup().addTo(map);
+
+    // Quita tildes y mayusculas para que "tetuan" encuentre "Tetuán"
+    function clean(text) {
+        return text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    }
+
+    // Hace el cartelito que sale al pinchar una chincheta
+    function makePopup(place) {
+        var box = document.createElement('div');
+        var name = document.createElement('strong');
+        name.textContent = place.name;
+        box.appendChild(name);
+        box.appendChild(document.createElement('br'));
+        box.appendChild(document.createTextNode(place.area));
+        box.appendChild(document.createElement('br'));
+        var link = document.createElement('a');
+        link.href = kinds[place.type].menu;
+        link.textContent = 'View menu';
+        box.appendChild(link);
+        return box;
+    }
+
+    // Crea una chincheta con emoji para cada restaurante
+    places.forEach(function (place) {
+        place.marker = L.marker([place.lat, place.lon], {
+            title: place.name,
+            icon: L.divIcon({
+                className: 'globo-pin',
+                html: kinds[place.type].icon,
+                iconSize: [36, 36],
+                iconAnchor: [18, 18],
+                popupAnchor: [0, -18]
+            })
+        }).bindPopup(makePopup(place));
+    });
+
+    // Pinta solo los restaurantes que coinciden con lo escrito
+    function showResults() {
+        var text = clean(input.value.trim());
+        var found = places.filter(function (place) {
+            return clean(place.name + ' ' + place.area).indexOf(text) !== -1;
+        });
+
+        layer.clearLayers();
+        list.innerHTML = '';
+
+        found.forEach(function (place) {
+            place.marker.addTo(layer);
+
+            var item = document.createElement('li');
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.innerHTML = '<span class="cat-icon"></span><strong></strong><small></small>';
+            button.querySelector('.cat-icon').textContent = kinds[place.type].icon;
+            button.querySelector('strong').textContent = place.name;
+            button.querySelector('small').textContent = place.area;
+            button.addEventListener('click', function () {
+                map.setView([place.lat, place.lon], 16);
+                place.marker.openPopup();
+                document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+            item.appendChild(button);
+            list.appendChild(item);
+        });
+
+        if (found.length === 0) {
+            info.textContent = 'No restaurants found. Try another name or area.';
+        } else {
+            info.textContent = found.length + (found.length === 1 ? ' restaurant' : ' restaurants') + ' found.';
+            map.fitBounds(layer.getBounds(), { padding: [40, 40], maxZoom: 16 });
+        }
+    }
+
+    input.addEventListener('input', showResults);
+    showResults();
+
+    // Boton "Near me": centra el mapa donde esta el usuario
+    document.getElementById('near-me').addEventListener('click', function () {
+        if (!navigator.geolocation) {
+            info.textContent = 'Your browser cannot share your location.';
+            return;
+        }
+        info.textContent = 'Looking for your location...';
+        navigator.geolocation.getCurrentPosition(function (pos) {
+            var here = [pos.coords.latitude, pos.coords.longitude];
+            L.circleMarker(here, { radius: 9, color: '#0d5f49', fillColor: '#eec32c', fillOpacity: 1 })
+                .addTo(map).bindPopup('You are here').openPopup();
+            map.setView(here, 14);
+            info.textContent = 'This is you. Restaurants near you are on the map.';
+        }, function () {
+            info.textContent = 'We could not get your location.';
+        });
+    });
+</script>
 
 </body>
 </html>

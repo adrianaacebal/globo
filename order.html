@@ -1,8 +1,11 @@
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title> GLOBO - Order online </title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -21,7 +24,7 @@
 
     </header>
 
- <div class="layout">
+    <div class="layout">
         <nav class="sidebar">
             <p class="sidebar-title">Menu</p>
             <ul>
@@ -33,31 +36,123 @@
             </ul>
         </nav>
 
-    <main>
-     <section>
-        <h1>Order online</h1>
-        <p>Choose your restaurant, pick your dishes and tell us where to deliver.
-           As soon as you send the form, your order reaches our team.</p>
+    <main class="home">
+        <!-- Portada del pedido: texto a la izquierda y foto a la derecha -->
+        <section class="hero order-hero">
+            <div class="order-hero-text">
+                <p class="hero-badge">🚚 Delivery to your door</p>
+                <h1>Hungry? We bring it to you.</h1>
+                <p class="hero-text">Choose your restaurant, pick your dishes and tell us where to deliver.
+                   As soon as you send the form, <span>your order reaches our team</span>.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="#order-form">Start my order</a>
+                    <a class="btn btn-secondary" href="search.html">Find a restaurant</a>
+                </div>
+                <ul class="order-perks">
+                    <li>⏱️ 30–40 min</li>
+                    <li>🛵 Free delivery</li>
+                    <li>💳 Pay at the door</li>
+                </ul>
+            </div>
+            <div class="order-hero-photo">
+                <img src="images/burger.jpg" alt="Burger ready to be delivered">
+                <p class="order-hero-rating">⭐ 4.8 <span>from 2,000+ orders</span></p>
+            </div>
+        </section>
 
-        <ol class="order-steps">
-            <li>Choose a restaurant</li>
-            <li>Write the dishes and how many you want.</li>
-            <li>Add your name, phone and address.</li>
-            <li>Press <strong>Submit</strong>. You will see a confirmation message.</li>
-        </ol>
+        <!-- Tipos de comida -->
+        <section>
+            <h2 class="section-title">What do you fancy today?</h2>
+            <ul class="home-categories">
+                <li><a href="burgers.html"><span class="cat-icon">🍔</span>Burgers</a></li>
+                <li><a href="sushi.html"><span class="cat-icon">🍣</span>Sushi</a></li>
+                <li><a href="pizza.html"><span class="cat-icon">🍕</span>Pizza</a></li>
+                <li><a href="vegan.html"><span class="cat-icon">🥗</span>Vegan</a></li>
+            </ul>
+        </section>
 
-        <!-- Formulario de pedidos de Google Forms.
+        <!-- Pasos para hacer un pedido -->
+        <section>
+            <h2 class="section-title">How it works</h2>
+            <ol class="order-steps">
+                <li><span class="cat-icon">🍽️</span><strong>Choose a restaurant</strong>Burgers, sushi, pizza or vegan.</li>
+                <li><span class="cat-icon">📝</span><strong>Write your dishes</strong>Say what you want and how many.</li>
+                <li><span class="cat-icon">📍</span><strong>Add your details</strong>Your name, phone and address.</li>
+                <li><span class="cat-icon">✅</span><strong>Press Submit</strong>You will see a confirmation message.</li>
+            </ol>
+        </section>
+
+        <!-- Formulario de pedidos de Google Forms con la info de entrega al lado.
              Cambia el src por el enlace de vuestro formulario de pedidos
              (Enviar > icono < > > copiar el src, termina en ?embedded=true) -->
-        <div class="doc-frame order-frame">
-            <iframe
-                src="https://docs.google.com/forms/d/e/1FAIpQLSdwrIt8M1OqSwlFt6zqbpm33FgQOj1e0srYp5I8FEtLfxFP9g/viewform?embedded=true"
-                title="Order form"
-                loading="lazy">Loading…</iframe>
-        </div>
-     </section>
+        <section id="order-form">
+            <h2 class="section-title">Your order</h2>
+            <div class="order-layout">
+                <div class="order-card">
+                    <div class="order-card-head">
+                        <p>📝 Order form</p>
+                        <span>🔒 Secure · 2 min</span>
+                    </div>
+                    <div class="doc-frame order-frame">
+                        <iframe
+                            src="https://docs.google.com/forms/d/e/1FAIpQLSdwrIt8M1OqSwlFt6zqbpm33FgQOj1e0srYp5I8FEtLfxFP9g/viewform?embedded=true"
+                            title="Order form"
+                            loading="lazy">Loading…</iframe>
+                    </div>
+                </div>
+
+                <!-- Resumen de la entrega -->
+                <aside class="order-summary">
+                    <h3>Delivery info</h3>
+                    <ul>
+                        <li><span>⏱️ Delivery time</span><strong>30–40 min</strong></li>
+                        <li><span>🛵 Delivery fee</span><strong>Free</strong></li>
+                        <li><span>🧾 Minimum order</span><strong>10 €</strong></li>
+                        <li><span>💳 Payment</span><strong>Cash or card</strong></li>
+                        <li><span>🕒 Open</span><strong>12:00 – 23:30</strong></li>
+                    </ul>
+                    <p class="order-promo">🎁 First order? Write <strong>GLOBO10</strong> in the notes for 10% off.</p>
+                </aside>
+            </div>
+        </section>
+
+        <!-- Preguntas frecuentes -->
+        <section>
+            <h2 class="section-title">Frequently asked questions</h2>
+            <div class="order-faq">
+                <details>
+                    <summary>How do I know my order arrived?</summary>
+                    <p>After pressing Submit you will see a confirmation message, and our team will call you to confirm.</p>
+                </details>
+                <details>
+                    <summary>Can I order from two restaurants at once?</summary>
+                    <p>Yes, just write both restaurants and their dishes in the form. They may arrive at different times.</p>
+                </details>
+                <details>
+                    <summary>Can I change or cancel my order?</summary>
+                    <p>Contact us in the first 5 minutes and we will change or cancel it for free.</p>
+                </details>
+            </div>
+        </section>
+
+        <!-- Ayuda si algo sale mal -->
+        <aside class="offer">
+            <h2>Something went wrong with your order?</h2>
+            <p>Tell us and we will fix it as soon as possible.</p>
+            <div class="hero-actions order-help">
+                <a class="btn btn-secondary" href="complaint.html">Report a problem</a>
+                <a class="btn btn-secondary" href="contact.html">Contact us</a>
+            </div>
+        </aside>
     </main>
 
     </div>
+
+    <footer>
+    <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+    <p>&copy; 2026 GLOBO. All rights reserved.</p>
+    <a href="contact.html">Contact us</a>
+</footer>
+
 </body>
 </html>

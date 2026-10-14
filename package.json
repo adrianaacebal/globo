@@ -1,23 +1,18 @@
 {
   "name": "globo",
   "version": "1.0.0",
+<<<<<<< HEAD
   "description": "Tasks API skeleton (Express)",
   "main": "src/server.js",
   "scripts": {
     "start": "node --watch src/server.js"
+=======
+  "private": true,
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+>>>>>>> 9eda3b9fbd17ea6cb1a28d6bf045855c73526414
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/adrianaacebal/globo.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/adrianaacebal/globo/issues"
-  },
-  "homepage": "https://github.com/adrianaacebal/globo#readme",
   "dependencies": {
     "express": "^5.2.1"
   }

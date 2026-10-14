@@ -1,3 +1,13 @@
+<<<<<<< HEAD
+// Thin router: only maps paths to controller functions.
+const express = require("express");
+const { listTasks, createTask } = require("../controllers/tasksController");
+
+const router = express.Router();
+
+router.get("/", listTasks);
+router.post("/", createTask);
+=======
 const express = require("express");
 
 const router = express.Router();
@@ -39,5 +49,6 @@ router.delete("/:id", (req, res) => {
   tasks.splice(index, 1);
   res.status(204).end();
 });
+>>>>>>> 9eda3b9fbd17ea6cb1a28d6bf045855c73526414
 
 module.exports = router;

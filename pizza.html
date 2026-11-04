@@ -6,12 +6,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> GLOBO - Pizza Pronto Menu </title>
+    <title> GLOBO - Burger King Menu </title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Tematica propia de la pagina de burgers -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+    <link rel="stylesheet" href="theme-burger.css">
 </head>
 
-<body>
-    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
+<body class="theme-burger">
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
 
     <header>
@@ -38,34 +41,41 @@
 
     <main>
      <section>
-        <h1> Pizza Pronto Menu</h1>
-        <p>Take a look at the whole menu. When you know what you want,
-           go to <a class="menu-link" href="order.html">Order online</a>.</p>
-
-        <!-- Menu de Burger King en grande -->
-        <div class="doc-frame menu-frame">
-            <iframe
-                src= 'https://glovoapp.com/es/es/madrid/stores/pizzapronto-madrid?gad_source=1&gad_campaignid=22857925111&gbraid=0AAAAADMzK6U9BH-VSA3gBGavrCriNG1Yz&gclid=Cj0KCQjw5vLVBhCiARIsAD56SFJf3d1RTHp_aCJp7QnFy4sNQl-WzMb_IxnTwu3e4VeIbPVDqbGc74YaAkGgEALw_wcB'
-                title="Pizza Pronto Menu"
-                loading="lazy"></iframe>
-        </div>
-
-        <div class="hero-actions">
-            <a class="btn btn-primary" href="order.html">Order now</a>
-            <a class="btn btn-secondary" href="index.html">Back to home</a>
-        </div>
+        <h1> Welcome to Telepizza x Globo </h1>
+        <h3>Take a look at the whole menu. When you know what you want,
+           go to <a class="menu-link" href="order.html">Order online</a>.</h3>
+        <h3>Refresh your thirst with our selection of beverages.</h3>
      </section>
-     <!-- Platos mas pedidos -->
+
      <section>
-        <h2 class="section-title">Most ordered dishes</h2>
-        <p>These are the dishes our users order most often from Pizza Pronto:</p>
-        <ul>
-            <li>Margherita pizza</li>
-            <li>Four cheese pizza</li>
-            <li>Pepperoni pizza</li>
-            <li>Garlic bread with mozzarella</li>
+        <h2 class="section-title"> PIZZAS  </h2>
+
+        <!-- Menu propio de GLOBO: se pide al servidor (GET /menu) -->
+        <ul id="bk-menu" class="bk-menu">
+            <li><img src="images/hawaiana.jpg" alt="Hawaiian Pizza" width="180" height="180"><span class="dish-name">Hawaiian Pizza</span><span class="dish-price">8.50 €</span></li>
+            <li><img src="images/peperoni.jpg" alt="Pepperoni Pizza" width="180" height="180"><span class="dish-name">Pepperoni Pizza</span><span class="dish-price">9.00 €</span></li>
+            <li><img src="images/veggie.jpg" alt="Veggie Pizza" width="180" height="180"><span class="dish-name">Veggie Pizza</span><span class="dish-price">7.50 €</span></li>
+            <li><img src="images/margarita.jpg" alt="Margherita Pizza" width="180" height="180"><span class="dish-name">Margherita Pizza</span><span class="dish-price">7.00 €</span></li>
+            <li><img src="images/cheese.jpg" alt="Cheese Pizza" width="180" height="180"><span class="dish-name">Cheese Pizza</span><span class="dish-price">7.00 €</span></li>
+            <li><img src="images/chicken_pizza.jpg" alt="Chicken Pizza" width="180" height="180"><span class="dish-name">Chicken Pizza</span><span class="dish-price">9.50 €</span></li>
+            <li><img src="images/meat_lover_pizza.jpg" alt="Meat Lovers Pizza" width="180" height="180"><span class="dish-name">Meat Lovers Pizza</span><span class="dish-price">10.00 €</span></li>
+            <li><img src="images/tuna_pizza.jpg" alt="Tuna Pizza" width="180" height="180"><span class="dish-name">Tuna Pizza</span><span class="dish-price">9.00 €</span></li>
         </ul>
+      
+   
      </section>
+     <section>
+        <h2 class="section-title"> DRINKS </h2>
+        <ul id="bk-menu" class="bk-menu">
+            <li><img src="images/water.jpg" alt="Water" width="180" height="180"><span class="dish-name">Water</span><span class="dish-price">1.50 €</span></li>
+            <li><img src="images/coca_cola.jpg" alt="Soda" width="180" height="180"><span class="dish-name">Soda</span><span class="dish-price">2.00 €</span></li>
+            <li><img src="images/beer.jpg" alt="Beer" width="180" height="180"><span class="dish-name">Beer</span><span class="dish-price">3.00 €</span></li>
+        </ul>
+       
+            </li>
+        </ul>
+
+
     </main>
 
     </div>
@@ -76,6 +86,50 @@
         <p><a href="index.html">Back to homepage</a> · <a href="contact.html">Contact us</a> ·
            <a href="https://www.instagram.com/" title="Opens Instagram, an external website">Follow us on Instagram</a></p>
     </footer>
+
+    <script>
+    // Pide el menu de Burger King al servidor y lo pinta.
+    // Si el servidor no esta arrancado, se queda el menu escrito en el HTML.
+    (async function () {
+        var list = document.getElementById("bk-menu");
+        try {
+            var response = await fetch("/menu?restaurant=burgerking");
+            if (!response.ok) return;
+            var menu = await response.json();
+            // Guarda las imagenes del HTML para reutilizarlas por nombre de plato
+            var images = {};
+            list.querySelectorAll("li").forEach(function (li) {
+                var img = li.querySelector("img");
+                var dishName = li.querySelector(".dish-name");
+                if (img && dishName) images[dishName.textContent] = img.getAttribute("src");
+            });
+            list.innerHTML = "";
+            menu.forEach(function (dish) {
+                var li = document.createElement("li");
+                var src = dish.image || images[dish.name];
+                if (src) {
+                    var img = document.createElement("img");
+                    img.src = src;
+                    img.alt = dish.name;
+                    img.width = 180;
+                    img.height = 180;
+                    li.appendChild(img);
+                }
+                var name = document.createElement("span");
+                var price = document.createElement("span");
+                name.className = "dish-name";
+                price.className = "dish-price";
+                name.textContent = dish.name;
+                price.textContent = dish.price.toFixed(2) + " €";
+                li.appendChild(name);
+                li.appendChild(price);
+                list.appendChild(li);
+            });
+        } catch (err) {
+            // Sin servidor: se queda el menu local
+        }
+    })();
+    </script>
 
 </body>
 </html>

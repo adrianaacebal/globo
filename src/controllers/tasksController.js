@@ -97,7 +97,6 @@ module.exports.listDishes = listDishes;
 module.exports.listRestaurants = listRestaurants;
 module.exports.listUsers = listUsers;
 
-// Datos comunes a todos los locales de una marca
 const brands = {
   burgerking: {
     name: 'burgerking',
@@ -106,36 +105,109 @@ const brands = {
       { name: 'Whopper', price: 6.5 },
       { name: 'Patatas', price: 2.5 }
     ]
+
   },
   mcdonalds: {
     name: "mcdonalds",
     contact: { phone: '900 000 002', email: 'info@mcdonalds.es' },
     menu: [
       { name: 'Big Mac', price: 6.2 },
-      { name: 'McNuggets', price: 5 }
+      { name: 'McNuggets', price: 5 },
+      { name: 'Patatas', price: 2.5 },
+      { name: 'McFlurry', price: 3.5 },
+      { name: 'McWrap', price: 4.5 }
     ]
   }
 };
 
-module.exports = brands;
+module.exports.brands = brands;
 
-function login(req, res) {
-  const { name, email, order, restaurants , area } = req.body;
-  const user = users.find((u) => u.restaurant === restaurants && u.area === area);
-  if (user && user.password !== password) {
-    return res.status(401).json({ error: "Incorrect password" });
-  }
-
-  if (user) {
-    return res.json({ name: user.name });
-  }
-  const newUser = { id: users.length + 1, name, email, password };
-  users.push(newUser);
-  res.status(201).json({ name: newUser.name });
+// Normaliza texto para comparar: minusculas, sin tildes, sin espacios ni apostrofes
+// ("McDonald's" -> "mcdonalds", "Chamberí" -> "chamberi")
+function normalize(text) {
+  return String(text || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]/g, "");
 }
 
-module.exports.login = login;
+// POST /order — comprueba que el restaurante tiene local en esa ubicacion
+function createOrder(req, res) {
+  const { name, email, type, restaurant, location } = req.body;
 
+  if (!restaurant || !location) {
+    return res.status(400).json({ error: "Restaurant and location are required" });
+  }
 
+  const brandLocals = restaurants.filter((r) => {
+    const brand = r.name.split(" ")[0];
+    return normalize(brand) === normalize(restaurant) || normalize(r.name) === normalize(restaurant);
+  });
 
+  if (brandLocals.length === 0) {
+    return res.status(404).json({ error: "Restaurant not found" });
+  }
 
+  const local = brandLocals.find((r) => normalize(r.area) === normalize(location));
+
+  if (!local) {
+    const allowed = [...new Set(brandLocals.map((r) => r.area))];
+    return res.status(400).json({
+      error: `The location ${location} does not exist for ${restaurant}. Available locations: ${allowed.join(", ")}`,
+    });
+  }
+
+  res.status(201).json({ message: "Order created", order: { name, email, type, restaurant: local.name, area: local.area } });
+}
+
+module.exports.createOrder = createOrder;
+
+// POST /order/total
+// Recibe { restaurant, items: [{ dish, quantity }, ...] } y devuelve { total }
+function calculateTotal(req, res) {
+  // req.body ya es un objeto gracias a express.json()
+  const { restaurant, items } = req.body;
+
+  // "McDonald's Atocha" -> "mcdonalds"
+  const brandKey = Object.keys(brands).find((key) => normalize(restaurant).startsWith(key));
+  if (!brandKey) {
+    return res.status(404).json({ error: "Restaurant not found" });
+  }
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: "Choose at least one dish" });
+  }
+
+  let total = 0;
+  for (const { dish, quantity } of items) {
+    const menuItem = brands[brandKey].menu.find((d) => d.name === dish);
+    if (!menuItem) {
+      return res.status(404).json({ error: `Dish not found: ${dish}` });
+    }
+
+    const qty = Number(quantity);
+    if (!Number.isInteger(qty) || qty < 1) {
+      return res.status(400).json({ error: "Quantity must be 1 or more" });
+    }
+
+    total += menuItem.price * qty;
+  }
+
+  // res.json: objeto -> texto JSON en la respuesta
+  res.json({ total: total });
+}
+
+module.exports.calculateTotal = calculateTotal;
+
+// GET /menu?restaurant=McDonald's -> [{ name, price }, ...] (el menu completo de la marca)
+function getMenu(req, res) {
+  const { restaurant } = req.query;
+  const brandKey = Object.keys(brands).find((key) => normalize(restaurant).startsWith(key));
+  if (!brandKey) {
+    return res.status(404).json({ error: "Restaurant not found" });
+  }
+  res.json(brands[brandKey].menu);
+}
+
+module.exports.getMenu = getMenu;

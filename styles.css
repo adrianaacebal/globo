@@ -358,6 +358,29 @@ main iframe {
   justify-content: center;
 }
 
+/* Menu propio de Burger King (lista de platos con precio) */
+.bk-menu {
+  list-style: none;
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 0;
+}
+
+.bk-menu li {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border-left: 5px solid #eec32c;
+  font-weight: bold;
+}
+
+.bk-menu + .hero-actions {
+  justify-content: center;
+}
+
 .menu-link {
   color: #eec32c;
   font-weight: bold;
@@ -491,6 +514,43 @@ main iframe {
 }
 
 .login-error[hidden] { display: none; }
+
+/* ===================== UBICACION (order) ===================== */
+.complaint-box input[hidden],
+.location-choice[hidden],
+.location-status[hidden] { display: none; }
+
+.location-choice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.location-choice p {
+  margin: 0;
+  width: 100%;
+}
+
+.location-choice button {
+  margin-top: 0;
+  flex: 1 1 180px;
+}
+
+.location-status {
+  margin: 0;
+  font-weight: bold;
+}
+
+.order-eta {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  font-weight: bold;
+}
+
+.order-eta:empty { display: none; }
 
 /* ===================== HOME ===================== */
 

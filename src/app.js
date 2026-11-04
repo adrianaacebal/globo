@@ -3,7 +3,7 @@ const express = require("express");
 const logger = require("./middleware/logger");
 const path = require("path");
 const tasksRouter = require("./routes/tasks");
-const { login } = require("./controllers/tasksController");
+const { login, createOrder, calculateTotal, getMenu } = require("./controllers/tasksController");
 
 const app = express();
 
@@ -26,6 +26,12 @@ app.get("/echo/:msg", (req, res) => {
 app.use("/tasks", tasksRouter);
 
 app.post("/login", login);
+
+app.post("/order", createOrder);
+
+app.post("/order/total", calculateTotal);
+
+app.get("/menu", getMenu);
 
 app.get("/boom", (req, res) => {
   throw new Error("Boom! Deliberate error");

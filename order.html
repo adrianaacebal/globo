@@ -56,21 +56,58 @@
             </select>
 
             <label for="restaurant-name">Name of the restaurant</label>
-            <input type="text" id="restaurant-name" name="restaurant" required>
-            
+            <select id="restaurant-name" name="restaurant" required>
+                <option value="">Select a restaurant</option>
+                <option value="Burger King">Burger King</option>
+                <option value="McDonald's">McDonald's</option>
+            </select>
+
             <label for="restaurant-location">Location of the restaurant</label>
             <input type="text" id="restaurant-location" name="location" required>
 
-            <label for ="current-location">Current location</label>
-            <input type="text" id="current-location" name="location" required>
+            <label for="current-location">Current location</label>
+            <!-- Se pregunta si quiere compartir la ubicacion. Si dice que no, la escribe -->
+            <div id="location-choice" class="location-choice">
+                <p>Do you want to share your location?</p>
+                <button type="button" id="use-location-btn">📍 Yes, use my location</button>
+                <button type="button" id="type-location-btn">No, I'll write it</button>
+            </div>
+            <p id="location-status" class="location-status" hidden></p>
+            <input type="text" id="current-location" name="currentLocation"
+                   placeholder="e.g. Salamanca, Chamberí, Retiro..." hidden>
 
-            <button type="submit">Send order</button>
+            <p id="order-error" class="login-error" role="alert" hidden></p>
+
+            <button type="submit">Next Page</button>
         </form>
 
-        <!-- Mensaje de exito. Se ve cuando se ha enviado el pedido -->
+       
         <div id="order-success" class="complaint-box" hidden>
-            <p>Your order has been sent successfully! 🎉</p>
-            <button type="button" id="new-order-btn">Make another order</button>
+            <!-- Menu del restaurante. Se ve despues de enviar el pedido -->
+            <div id="restaurant-menu" hidden></div>
+            <!-- Tiempo estimado segun la distancia. Se rellena desde showEta() -->
+            <p id="order-eta" class="order-eta"></p>
+            <p><strong>Food Order</strong> — choose how many of each dish</p>
+            <!-- Una fila por plato, con su cantidad. Se rellena desde showMenu() -->
+            <div id="dish-list"></div>
+
+            <!-- Precio total. Lo calcula el servidor (POST /order/total) -->
+            <p>Total: <output id="order-total">0.00 €</output></p>
+
+            <p id="dish-error" class="login-error" role="alert" hidden></p>
+
+            <button type="button" id="place-order-btn">Order</button>
+
+            <!-- Al pulsar "Order" se pregunta como se paga -->
+            <div id="payment-choice" class="location-choice" hidden>
+                <p id="payment-question">How will you pay the delivery driver?</p>
+                <button type="button" id="pay-cash-btn">💶 Cash</button>
+                <button type="button" id="pay-card-btn">💳 Card</button>
+            </div>
+
+            <!-- Confirmacion final del pedido -->
+            <p id="order-confirmation" class="order-eta" hidden></p>
+            <button type="button" id="new-order-btn" hidden>Make another order</button>
         </div>
      </section>
     </main>
@@ -85,23 +122,368 @@
     </footer>
 
 <script>
-    // No hay servidor: al enviar, se oculta el formulario y se ensena
-    // el mensaje de exito en vez de recargar la pagina.
     var orderForm = document.getElementById("order-form");
     var success = document.getElementById("order-success");
 
-    orderForm.addEventListener("submit", function (event) {
+    var orderError = document.getElementById("order-error");
+    var menuBox = document.getElementById("restaurant-menu");
+    var dishList = document.getElementById("dish-list");
+    var totalBox = document.getElementById("order-total");
+    var chosenRestaurant = "";   // se guarda porque el formulario se resetea
+
+    // Mismos datos que en el servidor, para que la pagina funcione
+    // aunque el servidor no este arrancado.
+    var restaurants = [
+        { name: "burgerking", area: "Chamartín" },
+        { name: "burgerking", area: "Tetuán" },
+        { name: "mcdonalds", area: "Centro" },
+        { name: "mcdonalds", area: "Moncloa" },
+        { name: "mcdonalds", area: "Chamberí" },
+        { name: "mcdonalds Atocha", area: "Retiro" },
+        { name: "mcdonalds Montecarmelo", area: "Fuencarral" }
+    ];
+    var menus = {
+        burgerking: [{ name: "Whopper", price: 6.5 }, { name: "Patatas", price: 2.5 }],
+        mcdonalds: [
+            { name: "Big Mac", price: 6.2 },
+            { name: "McNuggets", price: 5 },
+            { name: "Patatas", price: 2.5 },
+            { name: "McFlurry", price: 3.5 },
+            { name: "McWrap", price: 4.5 }
+        ]
+    };
+    var currentMenu = [];   // menu que se esta ensenando ahora (del servidor o local)
+
+    // ---------- Ubicacion y tiempo estimado ----------
+    // Coordenadas aproximadas (centro de cada distrito de Madrid).
+    // No hace falta que sean exactas, solo para estimar el tiempo.
+    var areaCoords = {
+        centro: [40.4168, -3.7038], chamartin: [40.4589, -3.6773], tetuan: [40.4600, -3.6990],
+        moncloa: [40.4350, -3.7190], chamberi: [40.4340, -3.7030], retiro: [40.4110, -3.6760],
+        fuencarral: [40.4980, -3.7090], montecarmelo: [40.5050, -3.6970], salamanca: [40.4300, -3.6770],
+        arganzuela: [40.3980, -3.6990], latina: [40.4030, -3.7360], carabanchel: [40.3830, -3.7280],
+        usera: [40.3870, -3.7060], puentedevallecas: [40.3900, -3.6650], vallecas: [40.3900, -3.6650],
+        moratalaz: [40.4070, -3.6440], ciudadlineal: [40.4440, -3.6510], hortaleza: [40.4720, -3.6410],
+        villaverde: [40.3460, -3.7090], vicalvaro: [40.4040, -3.6080], sanblas: [40.4290, -3.6150],
+        barajas: [40.4700, -3.5800], atocha: [40.4070, -3.6910], sol: [40.4169, -3.7035]
+    };
+    var userCoords = null;   // [lat, lon] si el usuario comparte su ubicacion
+
+    var currentInput = document.getElementById("current-location");
+    var locationChoice = document.getElementById("location-choice");
+    var locationStatus = document.getElementById("location-status");
+
+    function setStatus(text) {
+        locationStatus.textContent = text;
+        locationStatus.hidden = false;
+    }
+
+    // Ensena la casilla para escribir la ubicacion a mano
+    function askToWrite(message) {
+        userCoords = null;
+        locationChoice.hidden = true;
+        setStatus(message);
+        currentInput.hidden = false;
+        currentInput.focus();
+    }
+
+    document.getElementById("use-location-btn").addEventListener("click", function () {
+        if (!navigator.geolocation) {
+            askToWrite("Your browser can't share your location. Please write it:");
+            return;
+        }
+        setStatus("Getting your location...");
+        navigator.geolocation.getCurrentPosition(
+            function (pos) {
+                userCoords = [pos.coords.latitude, pos.coords.longitude];
+                locationChoice.hidden = true;
+                currentInput.hidden = true;
+                setStatus("✅ Location shared");
+            },
+            function () {
+                // Ha dicho que no (o ha fallado): que la escriba
+                askToWrite("Location not shared. Please write where you are:");
+            },
+            { timeout: 10000 }
+        );
+    });
+
+    document.getElementById("type-location-btn").addEventListener("click", function () {
+        askToWrite("Write where you are:");
+    });
+
+    // Busca las coordenadas de un texto ("Chamberí", "calle de Retiro"...)
+    function coordsOf(text) {
+        var key = normalize(text);
+        if (areaCoords[key]) return areaCoords[key];
+        for (var area in areaCoords) {
+            if (key.indexOf(area) !== -1) return areaCoords[area];
+        }
+        return null;
+    }
+
+    // Distancia en km entre dos puntos (formula de Haversine)
+    function distanceKm(a, b) {
+        var R = 6371, toRad = Math.PI / 180;
+        var dLat = (b[0] - a[0]) * toRad, dLon = (b[1] - a[1]) * toRad;
+        var h = Math.sin(dLat / 2) ** 2 +
+                Math.cos(a[0] * toRad) * Math.cos(b[0] * toRad) * Math.sin(dLon / 2) ** 2;
+        return 2 * R * Math.asin(Math.sqrt(h));
+    }
+
+    // Texto con el tiempo estimado. Delivery: 15 min de cocina + moto a ~20 km/h.
+    // Pick up: lo que tardas tu en llegar andando (~5 km/h).
+    function estimateEta(restaurantArea, type, from) {
+        var to = coordsOf(restaurantArea);
+        if (!from || !to) {
+            return type === "pickup"
+                ? "We couldn't find your location. Your order will be ready in about 15 min."
+                : "We couldn't find your location. Estimated delivery time: about 30–45 min.";
+        }
+        var km = distanceKm(from, to) * 1.3;   // las calles no van en linea recta
+        if (type === "pickup") {
+            var walk = Math.max(5, Math.round(km / 5 * 60 / 5) * 5);
+            return "🚶 The restaurant is about " + km.toFixed(1) + " km away (~" + walk +
+                " min walking). Your order will be ready in about 15 min.";
+        }
+        var mins = 15 + km / 20 * 60;
+        var low = Math.round(mins / 5) * 5;
+        return "🛵 Estimated delivery time: " + low + "–" + (low + 10) + " min (" + km.toFixed(1) + " km away)";
+    }
+
+    // "McDonald's" -> "mcdonalds", "Chamberí" -> "chamberi"
+    function normalize(text) {
+        return String(text || "").toLowerCase().normalize("NFD")
+            .replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+    }
+
+    // Devuelve la marca ("burgerking" / "mcdonalds") o null si no existe
+    function findBrand(restaurant) {
+        var key = normalize(restaurant);
+        for (var brand in menus) {
+            if (key.indexOf(brand) === 0) return brand;
+        }
+        return null;
+    }
+
+    function showError(message) {
+        orderError.textContent = message;
+        orderError.hidden = false;
+    }
+
+    // Ensena el menu del restaurante (se llama despues de enviar el pedido)
+    async function showMenu(restaurant) {
+        var brand = findBrand(restaurant);
+        if (!brand) {
+            menuBox.hidden = true;
+            return;
+        }
+
+        // Se pide el menu completo al servidor (GET /menu).
+        // Si no esta arrancado, se usa la copia local.
+        currentMenu = menus[brand];
+        try {
+            var response = await fetch("/menu?restaurant=" + encodeURIComponent(restaurant));
+            if (response.ok) currentMenu = await response.json();
+        } catch (err) {
+            // Sin servidor: se queda el menu local
+        }
+
+        var html = "<p><strong>Menu</strong></p><ul>";
+        currentMenu.forEach(function (dish) {
+            html += "<li>" + dish.name + " — " + dish.price.toFixed(2) + " €</li>";
+        });
+        menuBox.innerHTML = html + "</ul>";
+        menuBox.hidden = false;
+
+        // Una fila por plato: nombre, precio y casilla de cantidad (empieza en 0)
+        dishList.innerHTML = "";
+        currentMenu.forEach(function (dish, i) {
+            var label = document.createElement("label");
+            label.htmlFor = "qty-" + i;
+            label.textContent = dish.name + " — " + dish.price.toFixed(2) + " €";
+
+            var input = document.createElement("input");
+            input.type = "number";
+            input.id = "qty-" + i;
+            input.min = "0";
+            input.value = "0";
+            input.dataset.dish = dish.name;   // para saber de que plato es
+
+            dishList.appendChild(label);
+            dishList.appendChild(input);
+        });
+    }
+
+    // Comprueba que el restaurante tiene local en esa ubicacion.
+    // Devuelve el mensaje de error, o null si todo esta bien.
+    function checkLocation(data) {
+        var brand = findBrand(data.restaurant);
+        if (!brand) return "The restaurant " + data.restaurant + " does not exist.";
+
+        var locals = restaurants.filter(function (r) { return findBrand(r.name) === brand; });
+        var ok = locals.some(function (r) { return normalize(r.area) === normalize(data.location); });
+        if (!ok) {
+            var areas = locals.map(function (r) { return r.area; });
+            return "The location " + data.location + " does not exist for " + data.restaurant +
+                ". Available locations: " + areas.join(", ");
+        }
+        return null;
+    }
+
+    orderForm.addEventListener("submit", async function (event) {
         event.preventDefault();
+        orderError.hidden = true;
+
+        var data = Object.fromEntries(new FormData(orderForm));
+
+        var error = checkLocation(data);
+        if (!error && !userCoords && !String(data.currentLocation || "").trim()) {
+            error = "Please share your location or write it.";
+        }
+        if (error) {
+            showError(error);
+            return;
+        }
+
+        // Si el servidor esta arrancado se le envia el pedido.
+        // Si no lo esta, el pedido ya se ha comprobado aqui y se da por enviado.
+        try {
+            var response = await fetch("/order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            if (!response.ok) {
+                var result = await response.json();
+                showError(result.error);
+                return;
+            }
+        } catch (err) {
+            // Sin servidor: no se ensena ningun error
+        }
+
+        chosenRestaurant = data.restaurant;
+        chosenType = data.type;
+        var from = userCoords || coordsOf(data.currentLocation);
+        document.getElementById("order-eta").textContent = estimateEta(data.location, data.type, from);
+        await showMenu(data.restaurant);
+        totalBox.textContent = "0.00 €";
+        resetCheckout();
         orderForm.reset();
         orderForm.hidden = true;
         success.hidden = false;
     });
 
-    // Volver a ensenar el formulario para hacer otro pedido
-    document.getElementById("new-order-btn").addEventListener("click", function () {
-        success.hidden = true;
-        orderForm.hidden = false;
+    // ---------- Boton "Order" y forma de pago ----------
+    var chosenType = "";   // delivery / pickup (se guarda porque el formulario se resetea)
+    var placeOrderBtn = document.getElementById("place-order-btn");
+    var paymentChoice = document.getElementById("payment-choice");
+    var dishError = document.getElementById("dish-error");
+    var confirmation = document.getElementById("order-confirmation");
+    var newOrderBtn = document.getElementById("new-order-btn");
+
+    // Deja la parte de abajo como al principio (boton "Order" visible)
+    function resetCheckout() {
+        placeOrderBtn.hidden = false;
+        paymentChoice.hidden = true;
+        dishError.hidden = true;
+        confirmation.hidden = true;
+        newOrderBtn.hidden = true;
+        dishList.querySelectorAll("input").forEach(function (input) { input.disabled = false; });
+    }
+
+    // Al pulsar "Order": se comprueba que hay algun plato y se pregunta como pagar
+    placeOrderBtn.addEventListener("click", function () {
+        var anyDish = Array.from(dishList.querySelectorAll("input")).some(function (input) {
+            return Number(input.value) > 0;
+        });
+        if (!anyDish) {
+            dishError.textContent = "Please choose at least one dish.";
+            dishError.hidden = false;
+            return;
+        }
+        dishError.hidden = true;
+        document.getElementById("payment-question").textContent = chosenType === "pickup"
+            ? "How will you pay at the restaurant?"
+            : "How will you pay the delivery driver?";
+        placeOrderBtn.hidden = true;
+        paymentChoice.hidden = false;
     });
+
+    function confirmOrder(method) {
+        paymentChoice.hidden = true;
+        dishList.querySelectorAll("input").forEach(function (input) { input.disabled = true; });
+        var who = chosenType === "pickup" ? "at the restaurant" : "to the delivery driver";
+        confirmation.textContent = "✅ Order placed! Total: " + totalBox.textContent +
+            ". You will pay " + who + (method === "cash" ? " in cash." : " by card.");
+        confirmation.hidden = false;
+        newOrderBtn.hidden = false;
+    }
+
+    document.getElementById("pay-cash-btn").addEventListener("click", function () { confirmOrder("cash"); });
+    document.getElementById("pay-card-btn").addEventListener("click", function () { confirmOrder("card"); });
+
+    // Volver a ensenar el formulario para hacer otro pedido
+    newOrderBtn.addEventListener("click", function () {
+        success.hidden = true;
+        menuBox.hidden = true;
+        orderForm.hidden = false;
+        // Se vuelve a preguntar por la ubicacion
+        userCoords = null;
+        currentInput.hidden = true;
+        locationStatus.hidden = true;
+        locationChoice.hidden = false;
+    });
+
+    // Pide el precio total al servidor usando JSON
+    async function updateTotal() {
+        // Lista de platos con cantidad mayor que 0: [{ dish, quantity }, ...]
+        var items = [];
+        dishList.querySelectorAll("input").forEach(function (input) {
+            var qty = Number(input.value);
+            if (qty > 0) items.push({ dish: input.dataset.dish, quantity: qty });
+        });
+
+        if (items.length === 0) {
+            totalBox.textContent = "0.00 €";
+            return;
+        }
+
+        // 1) Objeto JS con los datos del pedido
+        var orderData = {
+            restaurant: chosenRestaurant,
+            items: items
+        };
+
+        try {
+            // 2) JSON.stringify: objeto -> texto JSON para enviarlo
+            var response = await fetch("/order/total", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(orderData)
+            });
+
+            // 3) response.json(): texto JSON de la respuesta -> objeto
+            var result = await response.json();
+
+            if (!response.ok) {
+                totalBox.textContent = result.error;
+                return;
+            }
+            totalBox.textContent = result.total.toFixed(2) + " €";
+        } catch (err) {
+            // Sin servidor: se calcula aqui con los mismos precios
+            var total = items.reduce(function (sum, item) {
+                var dish = currentMenu.find(function (d) { return d.name === item.dish; });
+                return sum + dish.price * item.quantity;
+            }, 0);
+            totalBox.textContent = total.toFixed(2) + " €";
+        }
+    }
+
+    // Se recalcula al cambiar cualquier cantidad (un solo listener para todas las casillas)
+    dishList.addEventListener("input", updateTotal);
 </script>
 </body>
 </html>

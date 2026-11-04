@@ -115,7 +115,10 @@ const brands = {
       { name: 'McNuggets', price: 5 },
       { name: 'Patatas', price: 2.5 },
       { name: 'McFlurry', price: 3.5 },
-      { name: 'McWrap', price: 4.5 }
+      { name: 'McWrap', price: 4.5 },
+      { name: 'Veggie Burger', price: 5.0 },
+      { name: 'Long Chicken', price: 5.5 },
+      
     ]
   }
 };

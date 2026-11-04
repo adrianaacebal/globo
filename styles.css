@@ -480,6 +480,23 @@ main iframe {
 
 .login-box a { color: #13916f; }
 
+/* Historial de pedidos (login) */
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.history-list li {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-left: 5px solid #13916f;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.history-list p { margin: 4px 0; }
+
 /* ===================== COMPLAINT ===================== */
 
 .complaint-box {
@@ -1196,3 +1213,54 @@ footer a {
     height: 220px;
   }
 }
+
+/* Tracker del pedido: barra que se llena hasta que llega */
+.order-tracker {
+  margin-top: 12px;
+  padding: 16px;
+  background-color: #ffffff;
+  color: #333333;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.order-tracker[hidden] { display: none; }
+
+.tracker-status {
+  margin: 0 0 10px;
+  font-weight: bold;
+  color: #13916f;
+}
+
+.tracker-bar {
+  height: 16px;
+  background-color: rgba(238, 195, 44, 0.18);
+  border: 2px solid rgba(238, 195, 44, 0.5);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.tracker-fill {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #13916f, #0d5f49);
+  border-radius: 999px;
+  transition: width 1s linear;
+}
+
+.tracker-time {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+}
+
+.tracker-arrived {
+  margin: 12px 0 0;
+  padding: 12px;
+  background-color: #13916f;
+  color: #eec32c;
+  border-radius: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.tracker-arrived[hidden] { display: none; }

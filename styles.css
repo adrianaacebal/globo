@@ -231,23 +231,8 @@ main iframe {
   text-align: center;
 }
 
-/* Caja del formulario de Google */
-.doc-frame {
-  max-width: 700px;
-  margin: 20px auto;
-  border: 3px solid #eec32c;
-  border-radius: 12px;
-  overflow: hidden;
-  background-color: #ffffff;
-}
 
-/* El formulario ocupa todo el ancho de su caja, nunca mas */
-.doc-frame iframe {
-  display: block;
-  width: 100%;
-  height: 450px;
-  border: 0;
-}
+
 
 /* Titulo y lema, uno al lado del otro */
 .hero-head {
@@ -431,6 +416,65 @@ main iframe {
 }
 
 .login-box a { color: #13916f; }
+
+/* ===================== COMPLAINT ===================== */
+
+.complaint-box {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 24px;
+  background-color: #eec32c;
+  color: #13916f;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.complaint-box[hidden] { display: none; }
+
+.complaint-box label {
+  display: block;
+  font-weight: bold;
+}
+
+.complaint-box input,
+.complaint-box select,
+.complaint-box textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 3px solid #13916f;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.complaint-box input:focus,
+.complaint-box select:focus,
+.complaint-box textarea:focus {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+  border-color: #0d5f49;
+}
+
+.complaint-box button {
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #13916f;
+  color: #eec32c;
+  border: 3px solid #13916f;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.complaint-box button:hover {
+  background-color: #ffffff;
+  color: #13916f;
+}
 
 .login-note {
   margin: 8px 0 0;

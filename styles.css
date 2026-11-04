@@ -361,20 +361,60 @@ main iframe {
 /* Menu propio de Burger King (lista de platos con precio) */
 .bk-menu {
   list-style: none;
-  max-width: 500px;
+  max-width: 800px;
   margin: 20px auto;
   padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
 }
 
+/* Cada plato es una tarjeta cuadrada: imagen arriba, nombre y precio debajo */
 .bk-menu li {
   display: flex;
-  justify-content: space-between;
-  padding: 12px 16px;
-  margin-bottom: 8px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px;
   border-radius: 8px;
   background-color: #ffffff;
-  border-left: 5px solid #eec32c;
+  border-top: 5px solid #eec32c;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  color: #333333;
+}
+
+.bk-menu img {
+  order: -1;               /* la imagen siempre va primero */
+  width: 100%;
+  aspect-ratio: 1 / 1;     /* imagen cuadrada */
+  height: auto;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.bk-menu .dish-name {
   font-weight: bold;
+}
+
+.bk-menu .dish-price {
+  color: #13916f;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+/* Descripcion de lo que incluye cada combo */
+.bk-menu .dish-desc {
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+/* Etiqueta pequeña "Combo" sobre la tarjeta */
+.bk-menu .combo-tag {
+  color: #b8900f;
+  font-size: 0.8em;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .bk-menu + .hero-actions {

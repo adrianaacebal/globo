@@ -8,9 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title> GLOBO - Burger King Menu </title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Tematica propia de la pagina de burgers -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+    <link rel="stylesheet" href="theme-burger.css">
 </head>
 
-<body>
+<body class="theme-burger">
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
 
     <header>
@@ -43,14 +47,39 @@
 
         <!-- Menu propio de GLOBO: se pide al servidor (GET /menu) -->
         <ul id="bk-menu" class="bk-menu">
-            <li><span>Whopper</span><span>6.50 €</span> <img src="images/whopper.jpg" alt="Whopper"></li>
-            <li><span>Patatas</span><span>2.50 €</span> <img src="images/patatas.jpg" alt="Patatas"></li>
+            <li><img src="images/whopper.jpg" alt="Whopper" width="180" height="180"><span class="dish-name">Whopper</span><span class="dish-price">6.50 €</span></li>
+            <li><img src="images/patatas_burger.jpg" alt="Patatas" width="180" height="180"><span class="dish-name">Patatas</span><span class="dish-price">2.50 €</span></li>
+            <li><img src="images/long_chicken.jpg" alt="Long Chicken" width="180" height="180"><span class="dish-name">Long Chicken</span><span class="dish-price">5.50 €</span></li>
+            <li><img src="images/nuggets.jpg" alt="Crispy chicken nuggets" width="180" height="180"><span class="dish-name">Crispy chicken nuggets (9 pieces)</span><span class="dish-price">4.50 €</span></li>
+            <li><img src="images/veggie_burger.jpg" alt="Veggie burger" width="180" height="180"><span class="dish-name">Veggie burger</span><span class="dish-price">5.00 €</span></li>
+            <li><img src="images/mcflurry.jpg" alt="McFlurry" width="180" height="180"><span class="dish-name">McFlurry</span><span class="dish-price">3.50 €</span></li>
         </ul>
 
         <div class="hero-actions">
             <a class="btn btn-primary" href="order.html">Order now</a>
             <a class="btn btn-secondary" href="index.html">Back to home</a>
         </div>
+     </section>
+     <!-- Combos: dos opciones de menu completo -->
+     <section>
+        <h2 class="section-title">🍟 Combos</h2>
+        <p>Choose one of our two combos and save compared to ordering each item separately:</p>
+        <ul class="bk-menu">
+            <li>
+                <img src="images/whopper.jpg" alt="Whopper combo" width="180" height="180">
+                <span class="combo-tag">⭐ Combo 1</span>
+                <span class="dish-name">Whopper Combo</span>
+                <span class="dish-desc">Whopper + Patatas + drink</span>
+                <span class="dish-price">9.90 €</span>
+            </li>
+            <li>
+                <img src="images/long_chicken.jpg" alt="Long Chicken combo" width="180" height="180">
+                <span class="combo-tag">⭐ Combo 2</span>
+                <span class="dish-name">Long Chicken Combo</span>
+                <span class="dish-desc">Long Chicken + Patatas + drink</span>
+                <span class="dish-price">8.90 €</span>
+            </li>
+        </ul>
      </section>
      <!-- Platos mas pedidos -->
      <section>
@@ -83,11 +112,29 @@
             var response = await fetch("/menu?restaurant=burgerking");
             if (!response.ok) return;
             var menu = await response.json();
+            // Guarda las imagenes del HTML para reutilizarlas por nombre de plato
+            var images = {};
+            list.querySelectorAll("li").forEach(function (li) {
+                var img = li.querySelector("img");
+                var dishName = li.querySelector(".dish-name");
+                if (img && dishName) images[dishName.textContent] = img.getAttribute("src");
+            });
             list.innerHTML = "";
             menu.forEach(function (dish) {
                 var li = document.createElement("li");
+                var src = dish.image || images[dish.name];
+                if (src) {
+                    var img = document.createElement("img");
+                    img.src = src;
+                    img.alt = dish.name;
+                    img.width = 180;
+                    img.height = 180;
+                    li.appendChild(img);
+                }
                 var name = document.createElement("span");
                 var price = document.createElement("span");
+                name.className = "dish-name";
+                price.className = "dish-price";
                 name.textContent = dish.name;
                 price.textContent = dish.price.toFixed(2) + " €";
                 li.appendChild(name);

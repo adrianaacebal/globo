@@ -6,12 +6,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> GLOBO - Sushi Menu </title>
+    <title> GLOBO - Burger King Menu </title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Tematica propia de la pagina de burgers -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+    <link rel="stylesheet" href="theme-burger.css">
 </head>
 
-<body>
-    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
+<body class="theme-burger">
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
 
     <header>
@@ -38,31 +41,33 @@
 
     <main>
      <section>
-        <h1>Sushi Menu</h1>
+        <h1> Welcome to Sushita x Globo </h1>
         <p>Take a look at the whole menu. When you know what you want,
            go to <a class="menu-link" href="order.html">Order online</a>.</p>
 
-        <div class="doc-frame menu-frame">
-            <iframe
-                src= 'https://www.stoglobo.es/menu-carta/'
-                title="Sushi Menu"
-                loading="lazy"></iframe>
-        </div>
-
+        <!-- Menu propio de GLOBO: se pide al servidor (GET /menu) -->
+        <ul id="bk-menu" class="bk-menu">
+            <li><img src="images/maki_salmon.jpg" alt="Maki with Salmon" width="180" height="180"><span class="dish-name">Maki with Salmon</span><span class="dish-price">6.50 €</span></li>
+            <li><img src="images/maki_tuna.jpg" alt="Maki with Tuna" width="180" height="180"><span class="dish-name">Maki with Tuna</span><span class="dish-price">5.50 €</span></li>
+            <li><img src="images/maki_vegan.jpg" alt="Maki with Vegetables" width="180" height="180"><span class="dish-name">Maki with Vegetables</span><span class="dish-price">4.50 €</span></li>
+        </ul>
         <div class="hero-actions">
             <a class="btn btn-primary" href="order.html">Order now</a>
             <a class="btn btn-secondary" href="index.html">Back to home</a>
         </div>
      </section>
+    
+
+     
      <!-- Platos mas pedidos -->
      <section>
         <h2 class="section-title">Most ordered dishes</h2>
-        <p>These are the dishes our users order most often from our sushi restaurant:</p>
-        <ul>
-            <li>Salmon nigiri (4 pieces)</li>
-            <li>California roll (8 pieces)</li>
-            <li>Tuna maki (6 pieces)</li>
-            <li>Miso soup</li>
+        <p>These are the most ordered dishes in our restaurant:</p>
+        <ul class="Japanese-combos">
+            <li>
+                <img src="images/maki_salmon.jpg" alt="Salmon Maki" width="180" height="180">
+                <span class="dish-name">Maki with Salmon</span>
+                <span class="dish-price">6.50 €</span>
         </ul>
      </section>
     </main>
@@ -75,6 +80,50 @@
         <p><a href="index.html">Back to homepage</a> · <a href="contact.html">Contact us</a> ·
            <a href="https://www.instagram.com/" title="Opens Instagram, an external website">Follow us on Instagram</a></p>
     </footer>
+
+    <script>
+    // Pide el menu de Burger King al servidor y lo pinta.
+    // Si el servidor no esta arrancado, se queda el menu escrito en el HTML.
+    (async function () {
+        var list = document.getElementById("bk-menu");
+        try {
+            var response = await fetch("/menu?restaurant=burgerking");
+            if (!response.ok) return;
+            var menu = await response.json();
+            // Guarda las imagenes del HTML para reutilizarlas por nombre de plato
+            var images = {};
+            list.querySelectorAll("li").forEach(function (li) {
+                var img = li.querySelector("img");
+                var dishName = li.querySelector(".dish-name");
+                if (img && dishName) images[dishName.textContent] = img.getAttribute("src");
+            });
+            list.innerHTML = "";
+            menu.forEach(function (dish) {
+                var li = document.createElement("li");
+                var src = dish.image || images[dish.name];
+                if (src) {
+                    var img = document.createElement("img");
+                    img.src = src;
+                    img.alt = dish.name;
+                    img.width = 180;
+                    img.height = 180;
+                    li.appendChild(img);
+                }
+                var name = document.createElement("span");
+                var price = document.createElement("span");
+                name.className = "dish-name";
+                price.className = "dish-price";
+                name.textContent = dish.name;
+                price.textContent = dish.price.toFixed(2) + " €";
+                li.appendChild(name);
+                li.appendChild(price);
+                list.appendChild(li);
+            });
+        } catch (err) {
+            // Sin servidor: se queda el menu local
+        }
+    })();
+    </script>
 
 </body>
 </html>

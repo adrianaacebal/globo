@@ -46,9 +46,23 @@ let restaurants = [
   { id:8, name: "mcdonalds Montecarmelo", area: 'Fuencarral', type: 'fast', lat: 40.5014306, lon: -3.6971944 }
 ];
 
-// GET /restaurants
+// GET /restaurants            -> todos
+// GET /restaurants?area=Centro -> solo los de esa zona
 function listRestaurants(req, res) {
-  res.json(restaurants);
+  const { area } = req.query;
+  if (!area) {
+    return res.json(restaurants);
+  }
+
+  const found = restaurants.filter(
+    (r) => r.area.toLowerCase() === area.toLowerCase()
+  );
+
+  if (found.length === 0) {
+    return res.status(404).json({ error: "Location not available" });
+  }
+
+  res.json(found);
 }
 
 // Handler logic for users 
@@ -106,8 +120,8 @@ const brands = {
 module.exports = brands;
 
 function login(req, res) {
-  const { name, email, order, name , area } = req.body;
-  const user = users.find((u) => u.email === email);
+  const { name, email, order, restaurants , area } = req.body;
+  const user = users.find((u) => u.restaurant === restaurants && u.area === area);
   if (user && user.password !== password) {
     return res.status(401).json({ error: "Incorrect password" });
   }

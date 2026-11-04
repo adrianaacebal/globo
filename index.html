@@ -4,18 +4,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title> GLOBO - Web Page </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> GLOBO - Food delivery from the best restaurants </title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
     <header>
-        <img class="logo-img" src="images/image.png" alt="Globo logo">
+        <img class="logo-img" src="images/image.png" alt="Globo logo" width="59" height="60">
 
-          <p class="logo">
-            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        <p class="logo">
+         <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
         </p>
+        
         <label class="menu-btn" for="menu-toggle">☰</label>
     </header>
 
@@ -31,14 +33,16 @@
             </ul>
         </nav>
 
-    <main class="home" ></main>
+    <main class="home">
      <section class="hero">
         <p class="hero-badge">🚚 Free delivery on your first order</p>
         <h1>Discover your favourite food</h1>
+        <!-- El span marca el texto destacado (CSS le da color) y el title explica que significa -->
         <p class="hero-text">Welcome to Globo. Order delicious meals from the
-           <span>best restaurants</span> near you and get them delivered to your door.</p>
+           <span title="Restaurants rated 4.5 stars or more by Globo users">best restaurants</span> near you and get them delivered to your door.
+           Already know what you want? Go straight to <a href="order.html#order-form">the order form</a>.</p>
         <div class="hero-actions">
-            <a class="btn btn-primary" href="order.html">Order now</a>
+            <a class="btn btn-primary" href="order.html" title="Choose your dishes and order online">Order now</a>
             <a class="btn btn-secondary" href="search.html">Find restaurants</a>
         </div>
         <p class="hero-note">Sign up and get <em>free delivery</em> on your first order!</p>
@@ -93,10 +97,11 @@
 
 
     <footer>
-    <p>Made by: Maria Cuadrado and Adriana Acebal</p>
-    <p>&copy; 2026 GLOBO. All rights reserved.</p>
-    <a href="contact.html">Contact us</a>
-</footer>
+        <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+        <p>&copy; 2026 GLOBO. All rights reserved.</p>
+        <p><a href="index.html">Back to homepage</a> · <a href="contact.html">Contact us</a> ·
+           <a href="https://www.instagram.com/" title="Opens Instagram, an external website">Follow us on Instagram</a></p>
+    </footer>
 
 </body>
 </html>

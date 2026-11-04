@@ -1,17 +1,18 @@
-<!-- Made by: Maria Cuadrado and Adriana Acebal -->
 
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> GLOBO - Report a problem </title>
+    <title> GLOBO - Login </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="styles.css">
+    <script src="exercises.js" defer></script>
 </head>
 
 <body>
-    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
+
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
 
     <header>
@@ -37,35 +38,48 @@
         </nav>
 
     <main>
-     <!-- Titulo e introduccion -->
      <section>
-        <h1>Report a problem</h1>
-        <p>Did your order arrive late, cold or incomplete? Tell us what happened and
-           we will answer you in <strong>less than 24 hours</strong>.</p>
-        <ul>
-            <li>Late or missing order</li>
-            <li>Wrong or incomplete dishes</li>
-            <li>Problem with the payment</li>
-            <li>Problem with your account</li>
-        </ul>
-     </section>
+        <h1>Report a Problem</h1>
 
-     <!-- Formulario de Google Forms -->
-     <section>
-        <h2 class="section-title">Complaint form</h2>
-        <p>Fill in the form below. If it is urgent, you can also
-           <a href="contact.html">contact us by phone</a>.</p>
-        <div class="doc-frame">
-            <iframe
-                src= 'https://docs.google.com/forms/d/e/1FAIpQLSf_pyBTA1BE7zOcCbMFWcc24ijC7OxjG9K8jjG177S9CyzxWQ/viewform?usp=publish-editor'
-                title="Complaint form"
-                height="450"
-                loading="lazy"></iframe>
+        <form id="complaint-form" class="complaint-box">
+            <label for="complaint-name">Name</label>
+            <input type="text" id="complaint-name" name="name" required>
+
+            <label for="complaint-email">Email</label>
+            <input type="email" id="complaint-email" name="email" autocomplete="email" required>
+
+            <label for="complaint-message">Message</label>
+            <textarea id="complaint-message" name="message" rows="5" required></textarea>
+            
+            <label for="complaint-type">Type of complaint</label>
+            <select id="complaint-type" name="type" required>
+
+                <option value="">Select a type</option>
+                <option value="delivery">Delivery issue</option>
+                <option value="food">Food quality</option>
+                <option value="payment">Payment issue</option>
+                <option value="other">Other</option>
+            </select>
+            <label for="restaurant-name">Name of the restaurant</label>
+            <input type="text" id="restaurant-name" name="restaurant" required>
+            <label for="incident-date">Date of the incident</label>
+            <input type="date" id="incident-date" name="date" required>
+            
+
+            <button type="submit">Submit Complaint</button>
+        </form>
+
+        
+        <!-- Mensaje de exito. Se ve cuando se ha enviado la queja -->
+        <div id="report-success" class="complaint-box" hidden>
+            <p>Your complaint has been submitted successfully! 🎉</p>
+            <button type="button" id="new-complaint-btn">Send another complaint</button>
         </div>
      </section>
     </main>
 
     </div>
+
     <footer>
         <p>Made by: Maria Cuadrado and Adriana Acebal</p>
         <p>&copy; 2026 GLOBO. All rights reserved.</p>
@@ -73,6 +87,24 @@
            <a href="https://www.instagram.com/" title="Opens Instagram, an external website">Follow us on Instagram</a></p>
     </footer>
 
+<script>
+    // No hay servidor: al enviar, se oculta el formulario y se ensena
+    // el mensaje de exito en vez de recargar la pagina.
+    var complaintForm = document.getElementById("complaint-form");
+    var success = document.getElementById("report-success");
+
+    complaintForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        complaintForm.reset();
+        complaintForm.hidden = true;
+        success.hidden = false;
+    });
+
+    // Volver a ensenar el formulario para enviar otra queja
+    document.getElementById("new-complaint-btn").addEventListener("click", function () {
+        success.hidden = true;
+        complaintForm.hidden = false;
+    });
+</script>
 </body>
 </html>
-

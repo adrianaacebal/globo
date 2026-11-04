@@ -52,6 +52,9 @@
             <input type="password" id="password" name="password" minlength="8"
                    autocomplete="current-password" required>
 
+            <!-- Mensaje de error. Se ve si la contrasena esta mal -->
+            <p id="login-error" class="login-error" hidden></p>
+
             <button type="submit">Sign in</button>
             <p class="login-note">Don't have an account? Just fill in the form and one is created.</p>
         </form>
@@ -85,11 +88,12 @@
     </footer>
 
 <script>
-    // Login de prueba: no hay servidor, asi que el nombre se guarda
-    // en el navegador (localStorage) y no se comprueba la contrasena.
+    // Login: el servidor (POST /login) comprueba la contrasena.
+    // Si es correcta, el nombre se guarda en el navegador (localStorage).
     var form = document.getElementById("login-form");
     var welcome = document.getElementById("login-welcome");
     var userText = document.getElementById("login-user");
+    var errorText = document.getElementById("login-error");
 
     // Ensena el formulario o la bienvenida segun si hay alguien conectado
     function showState() {
@@ -104,12 +108,38 @@
         }
     }
 
-    form.addEventListener("submit", function (event) {
+    form.addEventListener("submit", async function (event) {
         event.preventDefault();
-        var name = document.getElementById("login-name").value.trim();
-        localStorage.setItem("globoUser", name);
-        form.reset();
-        showState();
+        errorText.hidden = true;
+
+        var data = {
+            name: document.getElementById("login-name").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            password: document.getElementById("password").value
+        };
+
+        try {
+            var response = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            var result = await response.json();
+
+            // Contrasena incorrecta: ensena el error y no entra
+            if (!response.ok) {
+                errorText.textContent = result.error;
+                errorText.hidden = false;
+                return;
+            }
+
+            localStorage.setItem("globoUser", result.name);
+            form.reset();
+            showState();
+        } catch (err) {
+            errorText.textContent = "Could not connect to the server.";
+            errorText.hidden = false;
+        }
     });
 
     document.getElementById("logout-btn").addEventListener("click", function () {

@@ -16,7 +16,7 @@ body {
   font-family: Arial, sans-serif;
   background-color: #13916f;
   color:  #eec32c;
-  text-align: flex-start;
+  padding: 20px;
 }
 
 /* Menu a la izquierda y contenido a la derecha */
@@ -29,7 +29,6 @@ main {
   flex: 1;
   min-width: 0;
   padding: 20px;
-  text-align: flex-start;
 }
 
 /* Nada dentro del contenido puede ser mas ancho que su hueco:
@@ -395,10 +394,13 @@ main iframe {
 .login-box[hidden] { display: none; }
 
 .login-box label {
+  display: block;
   font-weight: bold;
 }
 
 .login-box input {
+  display: block;
+  width: 100%;
   padding: 10px;
   border: 3px solid #13916f;
   border-radius: 8px;
@@ -415,6 +417,12 @@ main iframe {
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
+}
+
+.login-box input:focus {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+  border-color: #0d5f49;
 }
 
 .login-box button:hover {

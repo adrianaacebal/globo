@@ -481,6 +481,17 @@ main iframe {
   font-size: 0.9rem;
 }
 
+.login-error {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: #fdecea;
+  color: #b3261e;
+  font-weight: bold;
+}
+
+.login-error[hidden] { display: none; }
+
 /* ===================== HOME ===================== */
 
 .home {

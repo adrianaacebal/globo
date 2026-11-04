@@ -1,13 +1,18 @@
 // Builds the Express app. Does not call listen — that lives in server.js.
 const express = require("express");
 const logger = require("./middleware/logger");
+const path = require("path");
 const tasksRouter = require("./routes/tasks");
+const { login } = require("./controllers/tasksController");
 
 const app = express();
 
 // Middleware runs before the routes
 app.use(express.json());
 app.use(logger);
+
+// Serves the HTML pages (login.html, index.html...) from the project folder
+app.use(express.static(path.join(__dirname, "..")));
 
 // Routes
 app.get("/health", (req, res) => {
@@ -19,6 +24,8 @@ app.get("/echo/:msg", (req, res) => {
 });
 
 app.use("/tasks", tasksRouter);
+
+app.post("/login", login);
 
 app.get("/boom", (req, res) => {
   throw new Error("Boom! Deliberate error");

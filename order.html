@@ -33,6 +33,8 @@
                 <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
                 <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
                 <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
+                <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
                 <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
             </ul>
         </nav>
@@ -197,6 +199,13 @@
         { name: "Honest Greens Princesa", area: "Moncloa" },
         { name: "Honest Greens Chamberí", area: "Chamberí" }
     ];
+
+    // Los locales de verdad se piden al servidor (GET /restaurants).
+    // Si no esta arrancado, se queda la copia de arriba.
+    fetch("/restaurants")
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (list) { if (list) restaurants = list; })
+        .catch(function () {});
     var menus = {
         burgerking: [{ name: "Whopper", price: 6.5 }, { name: "Patatas", price: 2.5 }],
         mcdonalds: [

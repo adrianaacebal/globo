@@ -35,6 +35,8 @@
                 <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
                 <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
                 <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
+                <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
                 <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
             </ul>
         </nav>
@@ -51,7 +53,8 @@
         <h2 class="section-title"> PIZZAS  </h2>
 
         <!-- Menu propio de GLOBO: se pide al servidor (GET /menu) -->
-        <ul id="bk-menu" class="bk-menu">
+        <p id="menu-status" class="list-state" role="status" hidden></p>
+        <ul id="menu-main" class="bk-menu">
             <li><img src="images/hawaiana.jpg" alt="Hawaiian Pizza" width="180" height="180"><span class="dish-name">Hawaiian Pizza</span><span class="dish-price">8.50 €</span></li>
             <li><img src="images/peperoni.jpg" alt="Pepperoni Pizza" width="180" height="180"><span class="dish-name">Pepperoni Pizza</span><span class="dish-price">9.00 €</span></li>
             <li><img src="images/veggie.jpg" alt="Veggie Pizza" width="180" height="180"><span class="dish-name">Veggie Pizza</span><span class="dish-price">7.50 €</span></li>
@@ -66,7 +69,7 @@
      </section>
      <section>
         <h2 class="section-title"> DRINKS </h2>
-        <ul id="bk-menu" class="bk-menu">
+        <ul id="menu-extras" class="bk-menu">
             <li><img src="images/water.jpg" alt="Water" width="180" height="180"><span class="dish-name">Water</span><span class="dish-price">1.50 €</span></li>
             <li><img src="images/coca_cola.jpg" alt="Soda" width="180" height="180"><span class="dish-name">Soda</span><span class="dish-price">2.00 €</span></li>
             <li><img src="images/beer.jpg" alt="Beer" width="180" height="180"><span class="dish-name">Beer</span><span class="dish-price">3.00 €</span></li>
@@ -87,49 +90,8 @@
            <a href="https://www.instagram.com/" title="Opens Instagram, an external website">Follow us on Instagram</a></p>
     </footer>
 
-    <script>
-    // Pide el menu de Burger King al servidor y lo pinta.
-    // Si el servidor no esta arrancado, se queda el menu escrito en el HTML.
-    (async function () {
-        var list = document.getElementById("bk-menu");
-        try {
-            var response = await fetch("/menu?restaurant=burgerking");
-            if (!response.ok) return;
-            var menu = await response.json();
-            // Guarda las imagenes del HTML para reutilizarlas por nombre de plato
-            var images = {};
-            list.querySelectorAll("li").forEach(function (li) {
-                var img = li.querySelector("img");
-                var dishName = li.querySelector(".dish-name");
-                if (img && dishName) images[dishName.textContent] = img.getAttribute("src");
-            });
-            list.innerHTML = "";
-            menu.forEach(function (dish) {
-                var li = document.createElement("li");
-                var src = dish.image || images[dish.name];
-                if (src) {
-                    var img = document.createElement("img");
-                    img.src = src;
-                    img.alt = dish.name;
-                    img.width = 180;
-                    img.height = 180;
-                    li.appendChild(img);
-                }
-                var name = document.createElement("span");
-                var price = document.createElement("span");
-                name.className = "dish-name";
-                price.className = "dish-price";
-                name.textContent = dish.name;
-                price.textContent = dish.price.toFixed(2) + " €";
-                li.appendChild(name);
-                li.appendChild(price);
-                list.appendChild(li);
-            });
-        } catch (err) {
-            // Sin servidor: se queda el menu local
-        }
-    })();
-    </script>
+    <!-- Carta: se pide al servidor (GET /menu) -->
+    <script src="menu.js" data-brand="telepizza"></script>
 
 </body>
 </html>

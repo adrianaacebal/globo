@@ -3,7 +3,7 @@
 //   all() · findById(id) · find(predicate) · create(data) · replace(id, data) · update(id, changes) · remove(id)
 const fs = require("fs");
 const path = require("path");
-const seed = require("./seed");
+const seed = require("./datos");
 
 const copy = (item) => structuredClone(item);
 

@@ -1,4 +1,3 @@
-// Datos iniciales. Se cargan en memoria cada vez que arranca el servidor.
 
 const restaurants = [
   { name: "Burger King Chamartín", brand: "burgerking", area: "Chamartín", type: "burger", lat: 40.4721547, lon: -3.6827027 },
@@ -33,7 +32,7 @@ const restaurants = [
   { name: "Honest Greens Chamberí", brand: "honestgreens", area: "Chamberí", type: "vegan", lat: 40.4323068, lon: -3.7055092 },
 ];
 
-// Los nombres de los platos tienen que coincidir con los que manda order.html
+
 const dishes = [
   { name: "Whopper", brand: "burgerking", category: "main", price: 6.5 },
   { name: "Patatas", brand: "burgerking", category: "side", price: 2.5 },
@@ -79,10 +78,11 @@ const dishes = [
   { name: "Herbal Tea", brand: "honestgreens", category: "drink", price: 2.5 },
 ];
 
-// Usuarios de ejemplo si todavia no existe data/users.json
 const users = [
   { id: 1, name: "Alice", email: "alice@example.com", password: "password123" },
   { id: 2, name: "Bob", email: "bob@example.com", password: "password456" },
+  { id:3, name: "Ana", email: "ana@example.com", password: "password789" },
+  { id:4, name: "Carlos", email: "carlos@example.com", password: "password012" }
 ];
 
 module.exports = { restaurants, dishes, users };

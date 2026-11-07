@@ -1,0 +1,184 @@
+/* Tematica propia de la pagina de burgers (inspirada en una hamburgueseria).
+   Se carga DESPUES de styles.css y solo afecta a <body class="theme-burger">.
+   Colores: crema (pan), marron (carne a la parrilla), naranja (llama) y rojo (ketchup). */
+
+.theme-burger {
+  --bun: #f5ebdc;
+  --bun-dark: #e8d5b9;
+  --grill: #502314;
+  --flame: #ff8732;
+  --ketchup: #d62300;
+  --white: #ffffff;
+
+  background-color: var(--bun);
+  color: var(--grill);
+}
+
+/* Titulos con letra gruesa y redondeada */
+.theme-burger h1,
+.theme-burger h2,
+.theme-burger .dish-name,
+.theme-burger .btn,
+.theme-burger .menu-btn,
+.theme-burger .sidebar li a {
+  font-family: "Lilita One", "Arial Black", sans-serif;
+  font-weight: normal;
+  letter-spacing: 0.5px;
+}
+
+/* Cabecera marron con borde de llama */
+.theme-burger header {
+  background-color: var(--grill);
+  border-bottom: 6px solid var(--flame);
+  border-radius: 24px 24px 0 0;
+}
+
+.theme-burger .logo .l1,
+.theme-burger .logo .l2,
+.theme-burger .logo .l3,
+.theme-burger .logo .l4,
+.theme-burger .logo .l5 {
+  color: var(--bun);
+}
+
+.theme-burger .menu-btn {
+  background-color: var(--ketchup);
+  border-color: var(--ketchup);
+  color: var(--white);
+  border-radius: 999px;
+}
+
+.theme-burger .menu-btn:hover {
+  background-color: var(--flame);
+  border-color: var(--flame);
+  color: var(--grill);
+}
+
+/* Menu lateral color pan tostado */
+.theme-burger .sidebar {
+  background-color: var(--bun-dark);
+}
+
+.theme-burger .sidebar-title {
+  color: var(--grill);
+}
+
+.theme-burger .sidebar li a {
+  background-color: var(--grill);
+  border-color: var(--grill);
+  color: var(--bun);
+  border-radius: 999px;
+}
+
+.theme-burger .sidebar li a:hover,
+.theme-burger .sidebar li a:focus {
+  background-color: var(--flame);
+  border-color: var(--flame);
+  color: var(--grill);
+}
+
+/* Contenido */
+.theme-burger main h1 {
+  color: var(--ketchup);
+  font-size: 2.6rem;
+  text-transform: uppercase;
+}
+
+.theme-burger .section-title {
+  color: var(--grill);
+  font-size: 2rem;
+  text-transform: uppercase;
+  border-bottom: 4px solid var(--flame);
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+.theme-burger .menu-link {
+  color: var(--ketchup);
+}
+
+/* Tarjetas de platos: blancas, redondeadas, con borde naranja abajo */
+.theme-burger .bk-menu li {
+  background-color: var(--white);
+  color: var(--grill);
+  border-top: none;
+  border-bottom: 6px solid var(--flame);
+  border-radius: 20px;
+  box-shadow: 0 6px 16px rgba(80, 35, 20, 0.15);
+  transition: transform 0.15s ease;
+}
+
+.theme-burger .bk-menu li:hover {
+  transform: translateY(-4px) rotate(-1deg);
+}
+
+.theme-burger .bk-menu .dish-name {
+  font-size: 1.2rem;
+}
+
+/* Precio en una pildora roja */
+.theme-burger .bk-menu .dish-price {
+  margin-top: 8px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background-color: var(--ketchup);
+  color: var(--white);
+}
+
+.theme-burger .bk-menu .combo-tag {
+  color: var(--flame);
+}
+
+/* Botones */
+.theme-burger .btn {
+  border-color: var(--ketchup);
+  font-size: 1.1rem;
+}
+
+.theme-burger .btn-primary {
+  background-color: var(--ketchup);
+  color: var(--white);
+}
+
+.theme-burger .btn-primary:hover {
+  background-color: var(--flame);
+  border-color: var(--flame);
+  color: var(--grill);
+}
+
+.theme-burger .btn-secondary {
+  color: var(--ketchup);
+}
+
+.theme-burger .btn-secondary:hover {
+  background-color: var(--ketchup);
+  color: var(--white);
+}
+
+/* Pie marron */
+.theme-burger footer {
+  background-color: var(--grill);
+  color: var(--bun);
+  border-top: 6px solid var(--flame);
+  border-radius: 0 0 24px 24px;
+}
+
+.theme-burger footer a {
+  color: var(--flame);
+}
+
+/* En movil: dos tarjetas por fila y titulo mas pequeno */
+@media (max-width: 700px) {
+  .theme-burger .bk-menu {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .theme-burger .bk-menu .dish-name {
+    font-size: 1rem;
+  }
+
+  .theme-burger main h1 {
+    font-size: 1.9rem;
+  }
+}

@@ -1,3 +1,5 @@
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,7 +16,7 @@
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
 
     <header>
-        <img class="logo-img" src="images/image.png" alt="Globo logo">
+        <img class="logo-img" src="images/image.png" alt="Globo logo" width="59" height="60">
 
           <p class="logo">
             <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
@@ -31,6 +33,8 @@
                 <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
                 <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
                 <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
+                <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
                 <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
             </ul>
         </nav>
@@ -43,14 +47,17 @@
             <label for="login-name">Name</label>
             <input type="text" id="login-name" name="name" required>
 
-            <label for="login-email">Email</label>
-            <input type="text" id="login-email" name="email" autocomplete="email" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required>
 
-            <label for="login-password">Password</label>
-            <input type="password" id="login-password" name="password"
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" minlength="8"
                    autocomplete="current-password" required>
 
-            <button type="submit">Log in</button>
+            <!-- Mensaje de error. Se ve si la contrasena esta mal -->
+            <p id="login-error" class="login-error" hidden></p>
+
+            <button type="submit">Sign in</button>
             <p class="login-note">Don't have an account? Just fill in the form and one is created.</p>
         </form>
 
@@ -58,45 +65,200 @@
         <div id="login-welcome" class="login-box" hidden>
             <p>Welcome, <strong id="login-user"></strong>! 🎉</p>
             <p>You are logged in. You can now <a href="order.html">order online</a>.</p>
+            <!-- Solo se ve si tiene un codigo de bienvenida sin usar -->
+            <p id="login-discount" class="order-eta" hidden>
+                🎁 Welcome gift! Use the code <strong id="login-discount-code"></strong>
+                to get <strong id="login-discount-percent"></strong>% off your next order.
+            </p>
             <button type="button" id="logout-btn">Log out</button>
         </div>
+
+        <!-- Historial de pedidos. Solo se ve si hay alguien conectado (GET /orders) -->
+        <div id="order-history" class="login-box" hidden>
+            <h2>📜 My orders</h2>
+            <p id="history-empty" hidden>You haven't placed any orders yet.
+                <a href="order.html">Make your first order</a>.</p>
+            <ul id="history-list" class="history-list"></ul>
+        </div>
+     </section>
+
+     <!-- Ventajas de tener cuenta -->
+     <section>
+        <h2 class="section-title">Why create a Globo account?</h2>
+        <ul>
+            <li>A <strong>discount code</strong> for your next order when you create your account.</li>
+            <li>Save your address so you can <a href="order.html#order-form">order faster</a>.</li>
+            <li>Get our weekly offers from the <a href="search.html">best restaurants near you</a>.</li>
+        </ul>
      </section>
     </main>
 
     </div>
 
+    <footer>
+        <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+        <p>&copy; 2026 GLOBO. All rights reserved.</p>
+        <p><a href="index.html">Back to homepage</a> · <a href="contact.html">Contact us</a> ·
+           <a href="https://www.instagram.com/" title="Opens Instagram, an external website">Follow us on Instagram</a></p>
+    </footer>
+
 <script>
-    // Login de prueba: no hay servidor, asi que el nombre se guarda
-    // en el navegador (localStorage) y no se comprueba la contrasena.
+    // Login: el servidor (POST /login) comprueba la contrasena.
+    // Si es correcta, el nombre se guarda en el navegador (localStorage).
     var form = document.getElementById("login-form");
     var welcome = document.getElementById("login-welcome");
     var userText = document.getElementById("login-user");
+    var errorText = document.getElementById("login-error");
 
     // Ensena el formulario o la bienvenida segun si hay alguien conectado
     function showState() {
         var user = localStorage.getItem("globoUser");
         if (user) {
             userText.textContent = user;
+            // Codigo de bienvenida (se guarda al crear la cuenta y se borra al usarlo)
+            var code = localStorage.getItem("globoDiscountCode");
+            document.getElementById("login-discount").hidden = !code;
+            if (code) {
+                document.getElementById("login-discount-code").textContent = code;
+                document.getElementById("login-discount-percent").textContent =
+                    localStorage.getItem("globoDiscountPercent") || "10";
+            }
             form.hidden = true;
             welcome.hidden = false;
+            loadHistory();
         } else {
             form.hidden = false;
             welcome.hidden = true;
+            historyBox.hidden = true;
         }
     }
 
-    form.addEventListener("submit", function (event) {
-        event.preventDefault();
-        var name = document.getElementById("login-name").value.trim();
-        localStorage.setItem("globoUser", name);
-        form.reset();
+    // Borra todo lo que se guarda en el navegador al cerrar sesion
+    function logout() {
+        ["globoUser", "globoEmail", "globoToken", "globoDiscountCode", "globoDiscountPercent"]
+            .forEach(function (key) { localStorage.removeItem(key); });
         showState();
+    }
+
+    // ---------- Historial de pedidos ----------
+    var historyBox = document.getElementById("order-history");
+    var historyList = document.getElementById("history-list");
+    var historyEmpty = document.getElementById("history-empty");
+
+    function euros(n) { return n.toFixed(2) + " €"; }
+
+    async function loadHistory() {
+        historyBox.hidden = false;
+        historyList.innerHTML = "<li>Loading...</li>";
+        historyEmpty.hidden = true;
+        try {
+            var response = await fetch("/orders", {
+                headers: { Authorization: "Bearer " + localStorage.getItem("globoToken") }
+            });
+            if (response.status === 401) {
+                // La sesion ya no vale (p. ej. se reinicio el servidor): hay que entrar otra vez
+                logout();
+                errorText.textContent = "Your session has expired. Please log in again.";
+                errorText.hidden = false;
+                return;
+            }
+            showHistory(await response.json());
+        } catch (err) {
+            historyList.innerHTML = "<li>Could not load your orders (server not running).</li>";
+        }
+    }
+
+    function showHistory(orders) {
+        historyList.innerHTML = "";
+        historyEmpty.hidden = orders.length > 0;
+        orders.forEach(function (order) {
+            var li = document.createElement("li");
+
+            var title = document.createElement("p");
+            var date = new Date(order.date).toLocaleString("en-GB",
+                { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+            title.innerHTML = "<strong></strong> · ";
+            title.firstChild.textContent = order.restaurant + " (" + order.location + ")";
+            title.appendChild(document.createTextNode(
+                date + " · " + (order.type === "pickup" ? "Pick up" : "Delivery") +
+                " · " + (order.payment === "cash" ? "Cash" : "Card")));
+
+            var dishes = document.createElement("p");
+            dishes.textContent = order.items.map(function (i) {
+                return i.quantity + " × " + i.dish;
+            }).join(", ");
+
+            var total = document.createElement("p");
+            var extras = [];
+            if (order.deliveryFee > 0) extras.push("delivery fee" +
+                (order.deliveryFeePercent ? " " + order.deliveryFeePercent + "%" : "") +
+                " " + euros(order.deliveryFee));
+            if (order.discount > 0) extras.push("discount -" + euros(order.discount));
+            total.innerHTML = "<strong></strong>";
+            total.firstChild.textContent = "Total: " + euros(order.total);
+            if (extras.length) total.appendChild(document.createTextNode(" (" + extras.join(", ") + ")"));
+
+            li.appendChild(title);
+            li.appendChild(dishes);
+            li.appendChild(total);
+            historyList.appendChild(li);
+        });
+    }
+
+    // Si hay un error: se vacia el formulario, se ensena el mensaje
+    // y se deja listo para volver a rellenarlo
+    function showLoginError(message) {
+        form.reset();
+        errorText.textContent = message;
+        errorText.hidden = false;
+        document.getElementById("login-name").focus();
+    }
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        errorText.hidden = true;
+
+        var data = {
+            name: document.getElementById("login-name").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            password: document.getElementById("password").value
+        };
+
+        try {
+            var response = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            var result = await response.json();
+
+            // Contrasena incorrecta: ensena el error y no entra
+            if (!response.ok) {
+                showLoginError(result.error);
+                return;
+            }
+
+            localStorage.setItem("globoUser", result.name);
+            localStorage.setItem("globoEmail", result.email);
+            localStorage.setItem("globoToken", result.token);   // para saber quien pide
+            // Primera vez que entra el servidor le da un codigo de descuento
+            // (y lo vuelve a mandar en cada login hasta que lo use)
+            if (result.discountCode) {
+                localStorage.setItem("globoDiscountCode", result.discountCode);
+                localStorage.setItem("globoDiscountPercent", result.discountPercent);
+            } else {
+                localStorage.removeItem("globoDiscountCode");
+                localStorage.removeItem("globoDiscountPercent");
+            }
+            form.reset();
+            showState();
+        } catch (err) {
+            // Pasa si la pagina no se abre desde el servidor de Node (p. ej. con Live Server)
+            showLoginError("Could not connect to the server. Run \"npm start\" and open http://localhost:3000/login.html");
+        }
     });
 
-    document.getElementById("logout-btn").addEventListener("click", function () {
-        localStorage.removeItem("globoUser");
-        showState();
-    });
+    document.getElementById("logout-btn").addEventListener("click", logout);
 
     showState();
 </script>

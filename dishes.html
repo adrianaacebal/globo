@@ -1,0 +1,187 @@
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> GLOBO - Manage dishes </title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="images/image.png" alt="Globo logo">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
+                <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+     <section>
+        <h1>Manage dishes</h1>
+        <p>Add, edit or delete the dishes of each brand. The menus and the order page use these dishes.</p>
+
+        <!-- Filtros: se mandan al servidor como ?q=&brand=&category=&minPrice=&maxPrice= -->
+        <form id="filters" class="search-box" role="search">
+            <div class="filter-grid">
+                <div>
+                    <label for="f-q">Dish name</label>
+                    <input type="search" id="f-q" name="q" placeholder="e.g. pizza" autocomplete="off">
+                    <p class="field-error" data-error-for="q"></p>
+                </div>
+                <div>
+                    <label for="f-brand">Brand</label>
+                    <select id="f-brand" name="brand">
+                        <option value="">All brands</option>
+                        <option value="burgerking">Burger King</option>
+                        <option value="mcdonalds">McDonald's</option>
+                        <option value="sushita">Sushita</option>
+                        <option value="telepizza">Telepizza</option>
+                        <option value="honestgreens">Honest Greens</option>
+                    </select>
+                    <p class="field-error" data-error-for="brand"></p>
+                </div>
+                <div>
+                    <label for="f-category">Category</label>
+                    <select id="f-category" name="category">
+                        <option value="">All categories</option>
+                        <option value="main">Main</option>
+                        <option value="side">Side</option>
+                        <option value="drink">Drink</option>
+                        <option value="dessert">Dessert</option>
+                    </select>
+                    <p class="field-error" data-error-for="category"></p>
+                </div>
+                <div>
+                    <label for="f-min">Min price (€)</label>
+                    <input type="number" id="f-min" name="minPrice" min="0" step="0.5">
+                    <p class="field-error" data-error-for="minPrice"></p>
+                </div>
+                <div>
+                    <label for="f-max">Max price (€)</label>
+                    <input type="number" id="f-max" name="maxPrice" min="0" step="0.5">
+                    <p class="field-error" data-error-for="maxPrice"></p>
+                </div>
+            </div>
+            <button type="button" id="filters-reset" class="link-button">Clear filters</button>
+        </form>
+
+        <!-- Estadisticas de GET /dishes/stats (con los mismos filtros) -->
+        <ul id="stats" class="stats-chips" aria-label="Statistics"></ul>
+
+        <div class="admin-layout">
+            <!-- Lista: cargando / error / vacia / resultados -->
+            <div>
+                <p id="list-state" class="list-state" role="status">Loading...</p>
+                <ul id="items" class="admin-list"></ul>
+            </div>
+
+            <!-- Formulario para crear (POST) o editar (PUT). Los errores salen debajo de cada campo -->
+            <form id="item-form" class="login-box admin-form" novalidate>
+                <h2 id="form-title">Add a dish</h2>
+
+                <label for="d-name">Name</label>
+                <input type="text" id="d-name" name="name" maxlength="60" placeholder="e.g. Tiramisu">
+                <p class="field-error" data-error-for="name"></p>
+
+                <label for="d-brand">Brand</label>
+                <select id="d-brand" name="brand">
+                    <option value="">Select a brand</option>
+                    <option value="burgerking">Burger King</option>
+                    <option value="mcdonalds">McDonald's</option>
+                    <option value="sushita">Sushita</option>
+                    <option value="telepizza">Telepizza</option>
+                    <option value="honestgreens">Honest Greens</option>
+                </select>
+                <p class="field-error" data-error-for="brand"></p>
+
+                <label for="d-category">Category</label>
+                <select id="d-category" name="category">
+                    <option value="">Select a category</option>
+                    <option value="main">Main</option>
+                    <option value="side">Side</option>
+                    <option value="drink">Drink</option>
+                    <option value="dessert">Dessert</option>
+                </select>
+                <p class="field-error" data-error-for="category"></p>
+
+                <label for="d-price">Price (€)</label>
+                <input type="number" id="d-price" name="price" step="0.01" placeholder="4.50">
+                <p class="field-error" data-error-for="price"></p>
+
+                <p id="form-message" class="login-error" role="alert" hidden></p>
+                <button type="submit">Add dish</button>
+                <button type="button" id="cancel-edit" class="link-button" hidden>Cancel editing</button>
+            </form>
+        </div>
+
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="order.html">Order now</a>
+            <a class="btn btn-secondary" href="restaurants.html">Manage restaurants</a>
+        </div>
+     </section>
+    </main>
+
+    </div>
+
+    <footer>
+    <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+    <p>&copy; 2026 GLOBO. All rights reserved.</p>
+    <a href="contact.html">Contact us</a>
+</footer>
+
+<script src="crud.js"></script>
+<script>
+    // Nombres e iconos para mostrar
+    var BRAND_NAMES = { burgerking: "Burger King", mcdonalds: "McDonald's", sushita: "Sushita", telepizza: "Telepizza", honestgreens: "Honest Greens" };
+    var CATEGORY_ICONS = { main: "🍽️", side: "🍟", drink: "🥤", dessert: "🍨" };
+
+    setupCrud({
+        endpoint: "/dishes",
+        label: "dish",
+        plural: "dishes",
+        describe: function (d) {
+            return {
+                icon: CATEGORY_ICONS[d.category] || "🍽️",
+                title: d.name + " — " + d.price.toFixed(2) + " €",
+                subtitle: (BRAND_NAMES[d.brand] || d.brand) + " · " + d.category + " · #" + d.id
+            };
+        },
+        renderStats: function (s) {
+            var chips = ["Total: " + s.total];
+            if (s.total > 0) {
+                chips.push("Average: " + s.averagePrice.toFixed(2) + " €");
+                chips.push("Cheapest: " + s.minPrice.toFixed(2) + " €");
+                chips.push("Most expensive: " + s.maxPrice.toFixed(2) + " €");
+            }
+            Object.keys(s.byCategory).forEach(function (c) {
+                chips.push((CATEGORY_ICONS[c] || "") + " " + c + ": " + s.byCategory[c].count);
+            });
+            return chips;
+        }
+    });
+</script>
+</body>
+</html>

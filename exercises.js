@@ -134,10 +134,10 @@ function validatePassword(password) {
 function validateLoginForm(email, password) {
   const errors = [];
   if (!validateEmail(email)) {
-    errors.push("Please enter a valid email address (like name@example.com).");
+    errors.push("Please enter a valid email address to sign in to GLOBO (like name@globo.es).");
   }
   if (!validatePassword(password)) {
-    errors.push("The password needs at least 8 characters, with letters and numbers.");
+    errors.push("Your GLOBO password needs at least 8 characters, with letters and numbers.");
   }
   return { valid: errors.length === 0, errors: errors };
 }
@@ -196,3 +196,44 @@ const globoLatitudes = [
 const northernmostLatitude = findMax(globoLatitudes);
 const northernmostName = globoRestaurants[globoLatitudes.indexOf(northernmostLatitude)];
 console.log("Northernmost GLOBO restaurant: " + northernmostName + " (lat " + northernmostLatitude + ")");
+console.assert(northernmostName === "McDonald's Montecarmelo", "GLOBO northernmost restaurant");
+
+// Delivery times from order.html ("30–40 min"): the worst case is the
+// biggest number, the one we promise to the customer.
+const globoDeliveryMinutes = [30, 40];
+console.log("GLOBO longest delivery time: " + findMax(globoDeliveryMinutes) + " min");
+console.assert(findMax(globoDeliveryMinutes) === 40, "GLOBO max delivery time");
+
+// =====================================================================
+// GLOBO CHECKS FOR THE OTHER FUNCTIONS
+// =====================================================================
+
+// FizzBuzz on GLOBO's 4 best-seller categories (index.html): one line
+// per category number, so 3 is "Fizz" and 4 stays a number.
+const globoCategories = ["Burgers", "Sushi", "Pizza", "Vegan"];
+console.log("GLOBO best sellers (" + globoCategories.length + " categories):");
+fizzBuzz(globoCategories.length);
+
+// isPalindrome with GLOBO words: the brand name and the GLOBO10 promo
+// code from order.html are not palindromes; a food one is.
+console.assert(isPalindrome("GLOBO") === false, "GLOBO is not a palindrome");
+console.assert(isPalindrome("GLOBO10") === false, "promo code is not a palindrome");
+console.assert(isPalindrome("Stressed? No tips? Spit on desserts!") === true, "food palindrome");
+console.assert(isPalindromeArrow("Stressed? No tips? Spit on desserts!") === true, "food palindrome (arrow)");
+
+// Login checks with the kind of data a GLOBO customer types into the
+// email and password fields of login.html.
+console.assert(validateEmail("maria@globo.es") === true, "GLOBO email valid");
+console.assert(validateEmail("maria @globo.es") === false, "GLOBO email with a space");
+console.assert(validateEmail("@globo.es") === false, "GLOBO email with nothing before @");
+console.assert(validatePassword("Globo2026") === true, "GLOBO password ok");
+console.assert(validatePassword("globoglobo") === false, "GLOBO password needs a digit");
+console.assert(validatePassword("12345678") === false, "GLOBO password needs a letter");
+
+const globoLogin = validateLoginForm("adriana@globo.es", "Burger2026");
+console.log("GLOBO login (adriana@globo.es):", globoLogin);
+console.assert(globoLogin.valid === true, "GLOBO login valid");
+
+const badGloboLogin = validateLoginForm("adriana.globo.es", "pizza");
+console.log("GLOBO login (adriana.globo.es):", badGloboLogin);
+console.assert(badGloboLogin.errors.length === 2, "GLOBO login reports both errors");

@@ -5,10 +5,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <title> GLOBO - Login </title>
+    <title> GLOBO - Report a problem </title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../css/styles.css">
-    <script src="../exercises.js" defer></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/exercises.js" defer></script>
 </head>
 
 <body>
@@ -16,7 +16,7 @@
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
 
     <header>
-        <img class="logo-img" src="../images/image.png" alt="Globo logo" width="59" height="60">
+        <img class="logo-img" src="images/image.png" alt="Globo logo" width="59" height="60">
 
           <p class="logo">
             <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
@@ -38,6 +38,7 @@
                 <li><a href="riders.html"><span class="nav-icon">🛵</span>Manage riders</a></li>
                 <li><a href="coupons.html"><span class="nav-icon">🏷️</span>Manage coupons</a></li>
                 <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
+                <li><a href="reviews.html"><span class="nav-icon">⭐</span>Manage reviews</a></li>
                 <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
             </ul>
         </nav>
@@ -92,24 +93,6 @@
            <a href="https://www.instagram.com/" title="Opens Instagram, an external website">Follow us on Instagram</a></p>
     </footer>
 
-<script>
-    // No hay servidor: al enviar, se oculta el formulario y se ensena
-    // el mensaje de exito en vez de recargar la pagina.
-    var complaintForm = document.getElementById("complaint-form");
-    var success = document.getElementById("report-success");
-
-    complaintForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-        complaintForm.reset();
-        complaintForm.hidden = true;
-        success.hidden = false;
-    });
-
-    // Volver a ensenar el formulario para enviar otra queja
-    document.getElementById("new-complaint-btn").addEventListener("click", function () {
-        success.hidden = true;
-        complaintForm.hidden = false;
-    });
-</script>
+<script src="js/complaint.js"></script>
 </body>
 </html>

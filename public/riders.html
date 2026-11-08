@@ -7,14 +7,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title> GLOBO - Manage riders </title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
 
     <header>
-        <img class="logo-img" src="../images/image.png" alt="Globo logo">
+        <img class="logo-img" src="images/image.png" alt="Globo logo">
 
           <p class="logo">
             <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
@@ -36,6 +36,7 @@
                 <li><a href="riders.html"><span class="nav-icon">🛵</span>Manage riders</a></li>
                 <li><a href="coupons.html"><span class="nav-icon">🏷️</span>Manage coupons</a></li>
                 <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
+                <li><a href="reviews.html"><span class="nav-icon">⭐</span>Manage reviews</a></li>
                 <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
             </ul>
         </nav>
@@ -160,27 +161,8 @@
     <a href="contact.html">Contact us</a>
 </footer>
 
-<script src="../crud.js"></script>
-<script>
-    // Iconos para mostrar
-    var VEHICLE_ICONS = { bike: "🚲", motorbike: "🛵", car: "🚗" };
-
-    setupCrud({
-        endpoint: "/api/riders",
-        label: "rider",
-        describe: function (r) {
-            return {
-                icon: VEHICLE_ICONS[r.vehicle] || "🛵",
-                title: r.name,
-                subtitle: r.area + " · ⭐ " + r.rating + " · " + (r.available ? "✅ available" : "⛔ not available") + " · #" + r.id
-            };
-        },
-        renderStats: function (s) {
-            var chips = ["Total: " + s.total, "✅ Available: " + s.available, "⭐ Average rating: " + s.averageRating];
-            Object.keys(s.byVehicle).forEach(function (v) { chips.push((VEHICLE_ICONS[v] || "") + " " + v + ": " + s.byVehicle[v]); });
-            return chips;
-        }
-    });
-</script>
+<script src="js/api.js"></script>
+<script src="js/crud.js"></script>
+<script src="js/riders.js"></script>
 </body>
 </html>

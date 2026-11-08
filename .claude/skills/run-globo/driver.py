@@ -18,7 +18,7 @@ from urllib.parse import urljoin, urlparse
 
 from playwright.sync_api import sync_playwright
 
-ROOT = pathlib.Path(__file__).resolve().parents[3]
+ROOT = pathlib.Path(__file__).resolve().parents[3] / "public"  # la web vive en public/
 SHOTS = pathlib.Path(__file__).resolve().parent / "shots"
 PAGES = ["index.html", "login.html", "order.html", "search.html", "complaint.html",
          "burgers.html", "sushi.html", "pizza.html", "vegan.html", "contact.html"]

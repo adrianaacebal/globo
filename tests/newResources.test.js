@@ -1,4 +1,4 @@
-// CRUD de riders, coupons y orders + filtros ?search= y ?delivery= del recurso principal
+// CRUD de riders, coupons, orders y reviews + filtros ?search= y ?delivery= del recurso principal
 const request = require("supertest");
 const app = require("../src/app");
 
@@ -75,7 +75,23 @@ crudSuite(
   ["customer", "restaurantId", "type", "status", "total", "paid"]
 );
 
+crudSuite(
+  "/api/reviews",
+  { restaurantId: 4, author: "Test Author", rating: 4, comment: "Very good burgers.", verified: false },
+  { restaurantId: 5, author: "Test Author", rating: 2, comment: "Changed my mind.", verified: true },
+  { restaurantId: 0, author: "", rating: 6, comment: "no", verified: "true" },
+  ["restaurantId", "author", "rating", "comment", "verified"]
+);
+
 describe("Relations and duplicates", () => {
+  test("a review for a restaurant that does not exist -> 400", async () => {
+    const res = await request(app).post("/api/reviews").send({
+      restaurantId: 9999, author: "Zoe", rating: 5, comment: "Great!", verified: false,
+    });
+    expect(res.status).toBe(400);
+    expect(fields(res)).toContain("restaurantId");
+  });
+
   test("an order for a restaurant that does not exist -> 400", async () => {
     const res = await request(app).post("/api/orders").send({
       customer: "Zoe", restaurantId: 9999, riderId: null, type: "pickup", status: "pending", total: 5, paid: false,

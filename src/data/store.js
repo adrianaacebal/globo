@@ -90,5 +90,6 @@ module.exports = {
   riders: createCollection(seed.riders),
   coupons: createCollection(seed.coupons),
   orders: createCollection(seed.orders),
+  reviews: createCollection(seed.reviews),
   users: createCollection(loadUsers(), saveUsers),
 };

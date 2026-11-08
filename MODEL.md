@@ -10,7 +10,7 @@ from its brand's menu and place a delivery or pickup order.
 |---|---|---|---|
 | Home (`index.html`) | Brands and food types | Browse, go to a menu or to order | — |
 | Menus (`burgers`, `pizza`, `sushi`, `vegan`) | Dishes of one brand | Browse | `GET /menu?restaurant=` |
-| Search (`search.html`) | Map + list of restaurants | Filter by name, brand, area, type | `GET /api/restaurants?q=&brand=&area=&type=` |
+| Search (`search.html`) | Map + list of restaurants | Filter by name, brand, area, type | `GET /api/restaurants?search=&brand=&area=&type=&delivery=` |
 | Login (`login.html`) | Login / register form, order history | Log in, register, see past orders | `POST /login`, `GET /orders` |
 | Order (`order.html`) | Restaurant, area, menu, price breakdown | Build an order, see the total, confirm it | `GET /api/restaurants`, `GET /menu`, `POST /order`, `POST /order/total`, `POST /orders` |
 | Admin — restaurants (`restaurants.html`) | Table of restaurants | Create, edit, delete | `/api/restaurants` CRUD |
@@ -57,7 +57,7 @@ own `orders` and `order_items` tables with foreign keys, and `brand` can become 
 | 3 | `GET /api/dishes`, `GET /api/dishes/:id`, `POST /api/dishes` | Seed | Menus; no dependencies |
 | 4 | `POST /login` (register + log in) | Seed | Orders need a user |
 | 5 | `PUT` / `PATCH` / `DELETE /api/restaurants/:id` and `/api/dishes/:id` | Complex | Admin pages; stricter validation |
-| 6 | Filters `?q=&brand=&area=&type=` and `/stats` | Complex | Search page |
+| 6 | Filters `?search=&brand=&area=&type=&delivery=` and `/stats` | Complex | Search page |
 | 7 | `POST /order`, `POST /order/total`, `POST /orders` | Complex | Must check restaurant (404), area and dishes exist |
 | 8 | `GET /orders` | Complex | Depends on users + orders |
 

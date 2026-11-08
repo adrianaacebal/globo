@@ -1,13 +1,13 @@
 {
   "info": {
     "name": "GLOBO API",
-    "description": "GLOBO food delivery API. Run the folders in order against a fresh server (npm start). baseUrl defaults to http://localhost:3000. Requests save ids and the login token in collection variables.",
+    "description": "GLOBO food ordering API (Practice 1). Start a fresh server with npm start and run the folders in order: each create saves the new id in a collection variable that the next requests use. baseUrl = http://localhost:3000/api (resources) · siteUrl = http://localhost:3000 (login and order flow of the web).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:3000"
+      "value": "http://localhost:3000/api"
     },
     {
       "key": "restaurantId",
@@ -27,6 +27,22 @@
     },
     {
       "key": "discountCode",
+      "value": ""
+    },
+    {
+      "key": "siteUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "riderId",
+      "value": ""
+    },
+    {
+      "key": "couponId",
+      "value": ""
+    },
+    {
+      "key": "orderId",
       "value": ""
     }
   ],
@@ -73,12 +89,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants",
+              "raw": "{{baseUrl}}/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ]
             }
@@ -103,12 +118,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants?area=Centro&type=pizza",
+              "raw": "{{baseUrl}}/restaurants?area=Centro&type=pizza",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ],
               "query": [
@@ -137,22 +151,21 @@
           ]
         },
         {
-          "name": "Search restaurants (q)",
+          "name": "Search restaurants (search, case-insensitive)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants?q=gran via",
+              "raw": "{{baseUrl}}/restaurants?search=gran via",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ],
               "query": [
                 {
-                  "key": "q",
+                  "key": "search",
                   "value": "gran via"
                 }
               ]
@@ -177,12 +190,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants?area=Paris&type=tacos",
+              "raw": "{{baseUrl}}/restaurants?area=Paris&type=tacos",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ],
               "query": [
@@ -205,8 +217,8 @@
                 "exec": [
                   "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
                   "const body = pm.response.json();",
-                  "pm.test(\"Error for area\", () => pm.expect(body.errors).to.have.property(\"area\"));",
-                  "pm.test(\"Error for type\", () => pm.expect(body.errors).to.have.property(\"type\"));"
+                  "pm.test(\"Error for area\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"area\"));",
+                  "pm.test(\"Error for type\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"type\"));"
                 ]
               }
             }
@@ -218,12 +230,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/stats",
+              "raw": "{{baseUrl}}/restaurants/stats",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "stats"
               ]
@@ -237,7 +248,7 @@
                 "exec": [
                   "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
                   "const s = pm.response.json();",
-                  "pm.test(\"Has totals\", () => { pm.expect(s.total).to.be.a(\"number\"); pm.expect(s).to.have.keys(\"total\", \"byBrand\", \"byArea\", \"byType\"); });"
+                  "pm.test(\"Has totals\", () => { pm.expect(s.total).to.be.a(\"number\"); pm.expect(s).to.include.keys(\"total\", \"withDelivery\", \"byBrand\", \"byArea\", \"byType\"); });"
                 ]
               }
             }
@@ -254,18 +265,17 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants",
+              "raw": "{{baseUrl}}/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Telepizza Sol\",\n  \"brand\": \"telepizza\",\n  \"area\": \"Centro\",\n  \"type\": \"pizza\",\n  \"lat\": 40.4169,\n  \"lon\": -3.7035,\n  \"id\": 999,\n  \"unknownField\": \"ignored\"\n}",
+              "raw": "{\n  \"name\": \"Telepizza Sol\",\n  \"brand\": \"telepizza\",\n  \"area\": \"Centro\",\n  \"type\": \"pizza\",\n  \"delivery\": true,\n  \"lat\": 40.4169,\n  \"lon\": -3.7035,\n  \"id\": 999,\n  \"unknownField\": \"ignored\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -300,12 +310,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants",
+              "raw": "{{baseUrl}}/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ]
             },
@@ -327,12 +336,12 @@
                 "exec": [
                   "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
                   "const body = pm.response.json();",
-                  "pm.test(\"Error for name\", () => pm.expect(body.errors).to.have.property(\"name\"));",
-                  "pm.test(\"Error for brand\", () => pm.expect(body.errors).to.have.property(\"brand\"));",
-                  "pm.test(\"Error for area\", () => pm.expect(body.errors).to.have.property(\"area\"));",
-                  "pm.test(\"Error for type\", () => pm.expect(body.errors).to.have.property(\"type\"));",
-                  "pm.test(\"Error for lat\", () => pm.expect(body.errors).to.have.property(\"lat\"));",
-                  "pm.test(\"Error for lon\", () => pm.expect(body.errors).to.have.property(\"lon\"));"
+                  "pm.test(\"Error for name\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"name\"));",
+                  "pm.test(\"Error for brand\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"brand\"));",
+                  "pm.test(\"Error for area\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"area\"));",
+                  "pm.test(\"Error for type\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"type\"));",
+                  "pm.test(\"Error for lat\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"lat\"));",
+                  "pm.test(\"Error for lon\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"lon\"));"
                 ]
               }
             }
@@ -344,12 +353,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -379,19 +387,18 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Telepizza Puerta del Sol\",\n  \"brand\": \"telepizza\",\n  \"area\": \"Centro\",\n  \"type\": \"pizza\",\n  \"lat\": 40.4169,\n  \"lon\": -3.7035\n}",
+              "raw": "{\n  \"name\": \"Telepizza Puerta del Sol\",\n  \"brand\": \"telepizza\",\n  \"area\": \"Centro\",\n  \"type\": \"pizza\",\n  \"delivery\": true,\n  \"lat\": 40.4169,\n  \"lon\": -3.7035\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -423,12 +430,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -463,12 +469,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/abc",
+              "raw": "{{baseUrl}}/restaurants/abc",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "abc"
               ]
@@ -492,12 +497,11 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -521,12 +525,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -556,12 +559,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes",
+              "raw": "{{baseUrl}}/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ]
             }
@@ -585,12 +587,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes?brand=telepizza&category=main&minPrice=8&maxPrice=10",
+              "raw": "{{baseUrl}}/dishes?brand=telepizza&category=main&minPrice=8&maxPrice=10",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ],
               "query": [
@@ -632,12 +633,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes?minPrice=9&maxPrice=2",
+              "raw": "{{baseUrl}}/dishes?minPrice=9&maxPrice=2",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ],
               "query": [
@@ -660,7 +660,7 @@
                 "exec": [
                   "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
                   "const body = pm.response.json();",
-                  "pm.test(\"Error for minPrice\", () => pm.expect(body.errors).to.have.property(\"minPrice\"));"
+                  "pm.test(\"Error for minPrice\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"minPrice\"));"
                 ]
               }
             }
@@ -672,12 +672,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/stats",
+              "raw": "{{baseUrl}}/dishes/stats",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "stats"
               ]
@@ -708,12 +707,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes",
+              "raw": "{{baseUrl}}/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ]
             },
@@ -751,12 +749,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes",
+              "raw": "{{baseUrl}}/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ]
             },
@@ -778,7 +775,7 @@
                 "exec": [
                   "pm.test(\"Status is 409\", () => pm.response.to.have.status(409));",
                   "const body = pm.response.json();",
-                  "pm.test(\"Error for name\", () => pm.expect(body.errors).to.have.property(\"name\"));"
+                  "pm.test(\"Error for name\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"name\"));"
                 ]
               }
             }
@@ -795,12 +792,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes",
+              "raw": "{{baseUrl}}/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ]
             },
@@ -822,9 +818,9 @@
                 "exec": [
                   "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
                   "const body = pm.response.json();",
-                  "pm.test(\"Error for name\", () => pm.expect(body.errors).to.have.property(\"name\"));",
-                  "pm.test(\"Error for category\", () => pm.expect(body.errors).to.have.property(\"category\"));",
-                  "pm.test(\"Error for price\", () => pm.expect(body.errors).to.have.property(\"price\"));"
+                  "pm.test(\"Error for name\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"name\"));",
+                  "pm.test(\"Error for category\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"category\"));",
+                  "pm.test(\"Error for price\", () => pm.expect(body.errors.map(e => e.field)).to.include(\"price\"));"
                 ]
               }
             }
@@ -836,12 +832,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -870,12 +865,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -914,12 +908,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -953,9 +946,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/menu?restaurant=Telepizza",
+              "raw": "{{siteUrl}}/menu?restaurant=Telepizza",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "menu"
@@ -987,12 +980,11 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -1016,12 +1008,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -1042,7 +1033,954 @@
       ]
     },
     {
-      "name": "3. Login and orders",
+      "name": "3. Riders (CRUD)",
+      "item": [
+        {
+          "name": "List riders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/riders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "riders"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns an array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter riders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/riders?available=true&vehicle=bike",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "riders"
+              ],
+              "query": [
+                {
+                  "key": "available",
+                  "value": "true"
+                },
+                {
+                  "key": "vehicle",
+                  "value": "bike"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "riders stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/riders/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "riders",
+                "stats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Has total\", () => pm.expect(pm.response.json()).to.have.property(\"total\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create riders",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/riders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "riders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Laura Pérez\",\n  \"vehicle\": \"bike\",\n  \"area\": \"Centro\",\n  \"available\": true,\n  \"rating\": 4.6,\n  \"id\": 999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Server sets the id\", () => pm.expect(r.id).to.not.eql(999));",
+                  "pm.test(\"Location header\", () => pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/api/riders/\" + r.id));",
+                  "pm.collectionVariables.set(\"riderId\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create riders invalid -> 400 (all errors)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/riders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "riders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"vehicle\": \"plane\",\n  \"available\": \"yes\",\n  \"rating\": 9\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+                  "const fields = pm.response.json().errors.map(e => e.field);",
+                  "pm.test(\"Error for name\", () => pm.expect(fields).to.include(\"name\"));",
+                  "pm.test(\"Error for vehicle\", () => pm.expect(fields).to.include(\"vehicle\"));",
+                  "pm.test(\"Error for area\", () => pm.expect(fields).to.include(\"area\"));",
+                  "pm.test(\"Error for available\", () => pm.expect(fields).to.include(\"available\"));",
+                  "pm.test(\"Error for rating\", () => pm.expect(fields).to.include(\"rating\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get riders by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/riders/{{riderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "riders",
+                "{{riderId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Replace riders (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/riders/{{riderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "riders",
+                "{{riderId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Laura Pérez\",\n  \"vehicle\": \"motorbike\",\n  \"area\": \"Retiro\",\n  \"available\": false,\n  \"rating\": 4.8\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete riders",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/riders/{{riderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "riders",
+                "{{riderId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 204\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get deleted riders -> 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/riders/{{riderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "riders",
+                "{{riderId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Coupons (CRUD)",
+      "item": [
+        {
+          "name": "List coupons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/coupons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "coupons"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns an array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter coupons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/coupons?active=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "coupons"
+              ],
+              "query": [
+                {
+                  "key": "active",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "coupons stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/coupons/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "coupons",
+                "stats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Has total\", () => pm.expect(pm.response.json()).to.have.property(\"total\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create coupons",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/coupons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "coupons"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WINTER25\",\n  \"percent\": 25,\n  \"active\": true,\n  \"orderType\": \"delivery\",\n  \"id\": 999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Server sets the id\", () => pm.expect(r.id).to.not.eql(999));",
+                  "pm.test(\"Location header\", () => pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/api/coupons/\" + r.id));",
+                  "pm.collectionVariables.set(\"couponId\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create coupons invalid -> 400 (all errors)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/coupons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "coupons"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"x\",\n  \"percent\": 150,\n  \"active\": \"no\",\n  \"orderType\": \"always\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+                  "const fields = pm.response.json().errors.map(e => e.field);",
+                  "pm.test(\"Error for code\", () => pm.expect(fields).to.include(\"code\"));",
+                  "pm.test(\"Error for percent\", () => pm.expect(fields).to.include(\"percent\"));",
+                  "pm.test(\"Error for active\", () => pm.expect(fields).to.include(\"active\"));",
+                  "pm.test(\"Error for orderType\", () => pm.expect(fields).to.include(\"orderType\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get coupons by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/coupons/{{couponId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "coupons",
+                "{{couponId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Replace coupons (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/coupons/{{couponId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "coupons",
+                "{{couponId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WINTER25\",\n  \"percent\": 30,\n  \"active\": false,\n  \"orderType\": \"all\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete coupons",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/coupons/{{couponId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "coupons",
+                "{{couponId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 204\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get deleted coupons -> 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/coupons/{{couponId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "coupons",
+                "{{couponId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Orders (CRUD)",
+      "item": [
+        {
+          "name": "List orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns an array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders?status=pending&paid=false",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                },
+                {
+                  "key": "paid",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "orders stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "stats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Has total\", () => pm.expect(pm.response.json()).to.have.property(\"total\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create orders",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer\": \"Carlos\",\n  \"restaurantId\": 4,\n  \"riderId\": 2,\n  \"type\": \"delivery\",\n  \"status\": \"pending\",\n  \"total\": 15.4,\n  \"paid\": false,\n  \"id\": 999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Server sets the id\", () => pm.expect(r.id).to.not.eql(999));",
+                  "pm.test(\"Location header\", () => pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/api/orders/\" + r.id));",
+                  "pm.collectionVariables.set(\"orderId\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create orders invalid -> 400 (all errors)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer\": \"\",\n  \"restaurantId\": \"abc\",\n  \"type\": \"boat\",\n  \"status\": \"lost\",\n  \"total\": -1,\n  \"paid\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+                  "const fields = pm.response.json().errors.map(e => e.field);",
+                  "pm.test(\"Error for customer\", () => pm.expect(fields).to.include(\"customer\"));",
+                  "pm.test(\"Error for restaurantId\", () => pm.expect(fields).to.include(\"restaurantId\"));",
+                  "pm.test(\"Error for type\", () => pm.expect(fields).to.include(\"type\"));",
+                  "pm.test(\"Error for status\", () => pm.expect(fields).to.include(\"status\"));",
+                  "pm.test(\"Error for total\", () => pm.expect(fields).to.include(\"total\"));",
+                  "pm.test(\"Error for paid\", () => pm.expect(fields).to.include(\"paid\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get orders by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Replace orders (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer\": \"Carlos\",\n  \"restaurantId\": 4,\n  \"riderId\": null,\n  \"type\": \"pickup\",\n  \"status\": \"delivered\",\n  \"total\": 15.4,\n  \"paid\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete orders",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 204\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get deleted orders -> 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. Login and orders",
       "item": [
         {
           "name": "Register invalid -> 400",
@@ -1055,9 +1993,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/login",
+              "raw": "{{siteUrl}}/login",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "login"
@@ -1100,9 +2038,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/login",
+              "raw": "{{siteUrl}}/login",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "login"
@@ -1154,9 +2092,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/login",
+              "raw": "{{siteUrl}}/login",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "login"
@@ -1195,9 +2133,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/order",
+              "raw": "{{siteUrl}}/order",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "order"
@@ -1240,9 +2178,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/order",
+              "raw": "{{siteUrl}}/order",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "order"
@@ -1286,9 +2224,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/order",
+              "raw": "{{siteUrl}}/order",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "order"
@@ -1333,9 +2271,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/order/total",
+              "raw": "{{siteUrl}}/order/total",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "order",
@@ -1381,9 +2319,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/orders",
+              "raw": "{{siteUrl}}/orders",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "orders"
@@ -1423,9 +2361,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/orders",
+              "raw": "{{siteUrl}}/orders",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "orders"
@@ -1448,7 +2386,7 @@
       ]
     },
     {
-      "name": "4. Errors",
+      "name": "7. Errors",
       "item": [
         {
           "name": "Unknown route -> 404 JSON",
@@ -1456,9 +2394,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/does-not-exist",
+              "raw": "{{siteUrl}}/does-not-exist",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "does-not-exist"
@@ -1489,12 +2427,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants",
+              "raw": "{{baseUrl}}/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ]
             },
@@ -1527,9 +2464,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/src/app.js",
+              "raw": "{{siteUrl}}/src/app.js",
               "host": [
-                "{{baseUrl}}"
+                "{{siteUrl}}"
               ],
               "path": [
                 "src",

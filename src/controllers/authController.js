@@ -1,5 +1,5 @@
 // Logica de /login
-const store = require("../store");
+const store = require("../data/store");
 const { newSession } = require("../sessions");
 const { DISCOUNT_PERCENT, newDiscountCode } = require("../pricing");
 

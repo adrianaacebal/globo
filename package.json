@@ -1,11 +1,12 @@
 {
   "name": "globo",
   "version": "1.0.0",
-  "description": "GLOBO Orders API skeleton (Express)",
+  "description": "GLOBO food ordering - Practice 1 (Express API + vanilla front end)",
   "private": true,
   "main": "src/server.js",
   "scripts": {
-    "start": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
     "test": "jest"
   },
   "dependencies": {

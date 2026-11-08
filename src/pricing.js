@@ -1,6 +1,6 @@
 // Reglas de precio compartidas: codigo de bienvenida y gastos de envio
 const crypto = require("crypto");
-const store = require("./store");
+const store = require("./data/store");
 
 const DISCOUNT_PERCENT = 10; // % de descuento del codigo de bienvenida
 

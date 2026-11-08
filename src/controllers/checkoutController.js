@@ -1,5 +1,5 @@
-// Logica de /order, /order/total y /orders (pedidos del usuario conectado)
-const store = require("../store");
+// Logica del flujo de pedido de la web: /order, /order/total y /orders (historial del usuario conectado)
+const store = require("../data/store");
 const { userFromRequest } = require("../sessions");
 const { ORDER_TYPES } = require("../constants");
 const { normalize, pickOption, brandKeyFromName, round2 } = require("../utils");
@@ -64,12 +64,21 @@ function computePrice({ restaurant, items, type, travelMinutes, discountCode }, 
   const feePercent = deliveryFeePercent(type, travelMinutes);
   const deliveryFee = (subtotal * feePercent) / 100;
 
-  // 2) Despues, el codigo de bienvenida: 10% menos sobre comida + envio (solo el del propio usuario)
+  // 2) Despues, el descuento sobre comida + envio. Vale un cupon activo de /api/coupons
+  //    (si es para ese tipo de pedido) o el codigo de bienvenida del propio usuario (10%)
   let discount = 0;
   let discountError;
+  let usedWelcomeCode = false;
   if (discountCode) {
-    if (isValidCode(discountCode, user)) {
+    const code = String(discountCode).trim().toUpperCase();
+    const coupon = store.coupons.find(
+      (c) => c.code === code && c.active && (c.orderType === "all" || c.orderType === type)
+    );
+    if (coupon) {
+      discount = ((subtotal + deliveryFee) * coupon.percent) / 100;
+    } else if (isValidCode(code, user)) {
       discount = ((subtotal + deliveryFee) * DISCOUNT_PERCENT) / 100;
+      usedWelcomeCode = true;
     } else {
       discountError = "This discount code is not valid or has already been used";
     }
@@ -83,6 +92,7 @@ function computePrice({ restaurant, items, type, travelMinutes, discountCode }, 
     deliveryFeePercent: feePercent,
     total: round2(subtotal + deliveryFee - discount),
     discountError,
+    usedWelcomeCode,
   };
 }
 
@@ -90,7 +100,8 @@ function computePrice({ restaurant, items, type, travelMinutes, discountCode }, 
 function calculateTotal(req, res) {
   const price = computePrice(req.body, userFromRequest(req));
   if (price.error) return res.status(price.status).json({ error: price.error });
-  res.json(price);
+  const { usedWelcomeCode, ...breakdown } = price;
+  res.json(breakdown);
 }
 
 // POST /orders — confirma el pedido y lo guarda en el historial (requireUser va antes).
@@ -122,9 +133,24 @@ function saveOrder(req, res) {
 
   store.users.update(user.id, {
     orders: [...(user.orders || []), order],
-    // El codigo de descuento solo vale una vez
-    discountUsed: Boolean(user.discountUsed || price.discount > 0),
+    // El codigo de bienvenida solo vale una vez (los cupones se pueden repetir)
+    discountUsed: Boolean(user.discountUsed || price.usedWelcomeCode),
   });
+
+  // Tambien se guarda en el recurso /api/orders para poder gestionarlo (estado, repartidor...)
+  const brand = brandKeyFromName(restaurant);
+  const local = store.restaurants.find((r) => r.brand === brand && normalize(r.area) === normalize(location));
+  if (local) {
+    store.orders.create({
+      customer: user.name,
+      restaurantId: local.id,
+      riderId: null,
+      type: pickOption(ORDER_TYPES, type) || "delivery",
+      status: "pending",
+      total: price.total,
+      paid: payment === "card",
+    });
+  }
 
   res.status(201).json({ message: "Order placed", order });
 }

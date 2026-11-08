@@ -45,20 +45,56 @@ function setupCrud(cfg) {
         box.querySelectorAll("[aria-invalid]").forEach(function (el) { el.removeAttribute("aria-invalid"); });
     }
 
-    // errors = { campo: "mensaje" }. Lo que no tiene sitio (p. ej. "body") se devuelve como texto
+    // errors = [ { field, message }, ... ] (lo que manda el servidor en un 400).
+    // Cada mensaje sale debajo de su campo; lo que no tiene sitio (p. ej. "body") se devuelve como texto
     function showErrors(box, errors) {
         var rest = [];
-        Object.keys(errors).forEach(function (field) {
-            var slot = box.querySelector('[data-error-for="' + field + '"]');
+        errors.forEach(function (error) {
+            var slot = box.querySelector('[data-error-for="' + error.field + '"]');
             if (slot) {
-                slot.textContent = errors[field];
-                var input = box.querySelector('[name="' + field + '"]');
+                slot.textContent = error.message;
+                var input = box.querySelector('[name="' + error.field + '"]');
                 if (input) input.setAttribute("aria-invalid", "true");
             } else {
-                rest.push(errors[field]);
+                rest.push(error.message);
             }
         });
         return rest.join(" ");
+    }
+
+    // Comprobacion en el navegador ANTES de mandar nada (el servidor vuelve a validarlo todo).
+    // Mira los campos con required y los min/max/maxlength del HTML. Devuelve la misma forma que el servidor.
+    function clientErrors() {
+        var errors = [];
+        Array.prototype.forEach.call(form.elements, function (el) {
+            if (!el.name || el.type === "checkbox") return;
+            var value = el.value.trim();
+            if (value === "") {
+                if (el.required) errors.push({ field: el.name, message: el.name + " is required" });
+                return;
+            }
+            if (el.type === "number") {
+                var n = Number(value);
+                if (el.min !== "" && n < Number(el.min) || el.max !== "" && n > Number(el.max)) {
+                    errors.push({ field: el.name, message: el.name + " must be between " + el.min + " and " + el.max });
+                }
+            }
+            if (el.minLength > 0 && value.length < el.minLength) {
+                errors.push({ field: el.name, message: el.name + " must have at least " + el.minLength + " characters" });
+            }
+        });
+        return errors;
+    }
+
+    // Lee el formulario: los checkbox se mandan como true/false y los campos vacios no se mandan
+    function formBody() {
+        var body = {};
+        Array.prototype.forEach.call(form.elements, function (el) {
+            if (!el.name) return;
+            if (el.type === "checkbox") body[el.name] = el.checked;
+            else if (el.value.trim() !== "") body[el.name] = el.value.trim();
+        });
+        return body;
     }
 
     function setMessage(text, kind) {
@@ -78,8 +114,8 @@ function setupCrud(cfg) {
         var qs = queryString();
         clearErrors(filters);
         setState("Loading...");
-        list.innerHTML = "";
-        stats.innerHTML = "";
+        list.replaceChildren();
+        stats.replaceChildren();
 
         try {
             var results = await Promise.all([api("GET", cfg.endpoint + qs), api("GET", cfg.endpoint + "/stats" + qs)]);
@@ -100,13 +136,14 @@ function setupCrud(cfg) {
         }
     }
 
+    // Una "chip" por dato de GET <endpoint>/stats, todas de golpe con replaceChildren
     function renderStats(data) {
         if (!data) return;
-        cfg.renderStats(data).forEach(function (text) {
+        stats.replaceChildren.apply(stats, cfg.renderStats(data).map(function (text) {
             var li = document.createElement("li");
             li.textContent = text;
-            stats.appendChild(li);
-        });
+            return li;
+        }));
     }
 
     function renderItems(items) {
@@ -117,7 +154,8 @@ function setupCrud(cfg) {
         }
         setState(items.length + " " + (items.length === 1 ? cfg.label : plural) + " found.");
 
-        items.forEach(function (item) {
+        // Se construye un <li> por elemento y se ponen todos de golpe con replaceChildren
+        list.replaceChildren.apply(list, items.map(function (item) {
             var info = cfg.describe(item);   // { icon, title, subtitle }
             var li = document.createElement("li");
 
@@ -150,13 +188,13 @@ function setupCrud(cfg) {
             li.appendChild(icon);
             li.appendChild(text);
             li.appendChild(actions);
-            list.appendChild(li);
-        });
+            return li;
+        }));
     }
 
     // ---------- Borrar ----------
     async function remove(item, button) {
-        if (!confirm('Delete "' + item.name + '"?')) return;
+        if (!confirm('Delete "' + cfg.describe(item).title + '"?')) return;
         button.disabled = true;
         try {
             var result = await api("DELETE", cfg.endpoint + "/" + item.id);
@@ -178,7 +216,9 @@ function setupCrud(cfg) {
         resetForm();
         editingId = item.id;
         Array.prototype.forEach.call(form.elements, function (el) {
-            if (el.name && item[el.name] !== undefined) el.value = item[el.name];
+            if (!el.name || item[el.name] === undefined) return;
+            if (el.type === "checkbox") el.checked = item[el.name] === true;
+            else el.value = item[el.name] === null ? "" : item[el.name];
         });
         formTitle.textContent = "Edit " + cfg.label + " #" + item.id;
         submitBtn.textContent = "Save changes";
@@ -192,7 +232,7 @@ function setupCrud(cfg) {
         form.reset();
         clearErrors(form);
         setMessage("");
-        formTitle.textContent = "Add a " + cfg.label;
+        formTitle.textContent = (/^[aeiou]/.test(cfg.label) ? "Add an " : "Add a ") + cfg.label;
         submitBtn.textContent = "Add " + cfg.label;
         cancelBtn.hidden = true;
     }
@@ -202,7 +242,16 @@ function setupCrud(cfg) {
         clearErrors(form);
         setMessage("");
 
-        var body = Object.fromEntries(new FormData(form));
+        // 1) Primero se comprueba en el navegador; si hay errores no se llama al servidor
+        var local = clientErrors();
+        if (local.length) {
+            var otherLocal = showErrors(form, local);
+            setMessage(otherLocal || "Please fix the fields marked in red.", "error");
+            return;
+        }
+
+        // 2) Despues se manda al servidor (POST para crear, PUT para editar)
+        var body = formBody();
         var method = editingId ? "PUT" : "POST";
         var url = editingId ? cfg.endpoint + "/" + editingId : cfg.endpoint;
 
@@ -217,7 +266,7 @@ function setupCrud(cfg) {
             }
             var saved = result.data;
             resetForm();
-            setMessage('"' + saved.name + '" was ' + (method === "PUT" ? "updated" : "added") + " (id " + saved.id + ").", "ok");
+            setMessage('"' + cfg.describe(saved).title + '" was ' + (method === "PUT" ? "updated" : "added") + " (id " + saved.id + ").", "ok");
             load();
         } catch (err) {
             setMessage("Could not connect to the server. Please try again.", "error");

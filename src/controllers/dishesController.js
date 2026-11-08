@@ -1,9 +1,9 @@
 // Logica de /api/dishes (platos de la carta de cada marca) y de /menu
-const store = require("../store");
-const { validateDish, validateDishQuery } = require("../validators/dishes");
+const store = require("../data/store");
+const { validateDish, validateDishQuery } = require("../validators/dishesValidator");
 const { normalize, brandKeyFromName, round2 } = require("../utils");
 
-// Aplica los filtros de la query: ?q=&brand=&category=&minPrice=&maxPrice=
+// Aplica los filtros de la query: ?search=&brand=&category=&minPrice=&maxPrice=
 function filterDishes(list, f) {
   return list.filter(
     (d) =>
@@ -11,7 +11,7 @@ function filterDishes(list, f) {
       (!f.category || d.category === f.category) &&
       (f.minPrice === undefined || d.price >= f.minPrice) &&
       (f.maxPrice === undefined || d.price <= f.maxPrice) &&
-      (!f.q || normalize(d.name).includes(normalize(f.q)))
+      (!f.search || normalize(d.name).includes(normalize(f.search)))
   );
 }
 
@@ -24,7 +24,7 @@ function isDuplicate({ brand, name }, exceptId) {
 
 const notFound = (res) => res.status(404).json({ error: "Dish not found" });
 const duplicate = (res) =>
-  res.status(409).json({ errors: { name: "This brand already has a dish with that name" } });
+  res.status(409).json({ errors: [{ field: "name", message: "This brand already has a dish with that name" }] });
 
 // { count, averagePrice } de una lista de platos
 function priceSummary(list) {
@@ -40,15 +40,15 @@ function groupSummary(list, field) {
 
 // GET /api/dishes -> 200 [ ... ]
 function listDishes(req, res) {
-  const { value: filters, errors } = validateDishQuery(req.query);
-  if (errors) return res.status(400).json({ errors });
+  const { valid, value: filters, errors } = validateDishQuery(req.query);
+  if (!valid) return res.status(400).json({ errors });
   res.json(filterDishes(store.dishes.all(), filters));
 }
 
 // GET /api/dishes/stats (acepta los mismos filtros)
 function dishStats(req, res) {
-  const { value: filters, errors } = validateDishQuery(req.query);
-  if (errors) return res.status(400).json({ errors });
+  const { valid, value: filters, errors } = validateDishQuery(req.query);
+  if (!valid) return res.status(400).json({ errors });
 
   const list = filterDishes(store.dishes.all(), filters);
   const prices = list.map((d) => d.price);
@@ -71,8 +71,8 @@ function getDish(req, res) {
 
 // POST /api/dishes -> 201 (409 si la marca ya tiene un plato con ese nombre)
 function createDish(req, res) {
-  const { value, errors } = validateDish(req.body);
-  if (errors) return res.status(400).json({ errors });
+  const { valid, value, errors } = validateDish(req.body);
+  if (!valid) return res.status(400).json({ errors });
   if (isDuplicate(value)) return duplicate(res);
   const created = store.dishes.create(value);
   res.status(201).location(`${req.baseUrl}/${created.id}`).json(created);
@@ -81,8 +81,8 @@ function createDish(req, res) {
 // PUT /api/dishes/:id
 function replaceDish(req, res) {
   if (!store.dishes.findById(req.id)) return notFound(res);
-  const { value, errors } = validateDish(req.body);
-  if (errors) return res.status(400).json({ errors });
+  const { valid, value, errors } = validateDish(req.body);
+  if (!valid) return res.status(400).json({ errors });
   if (isDuplicate(value, req.id)) return duplicate(res);
   res.json(store.dishes.replace(req.id, value));
 }
@@ -91,8 +91,8 @@ function replaceDish(req, res) {
 function updateDish(req, res) {
   const current = store.dishes.findById(req.id);
   if (!current) return notFound(res);
-  const { value, errors } = validateDish(req.body, { partial: true });
-  if (errors) return res.status(400).json({ errors });
+  const { valid, value, errors } = validateDish(req.body, { partial: true });
+  if (!valid) return res.status(400).json({ errors });
   if (isDuplicate({ ...current, ...value }, req.id)) return duplicate(res);
   res.json(store.dishes.update(req.id, value));
 }
@@ -107,7 +107,7 @@ function deleteDish(req, res) {
 function getMenu(req, res) {
   const { restaurant } = req.query;
   if (typeof restaurant !== "string" || !restaurant.trim()) {
-    return res.status(400).json({ errors: { restaurant: "restaurant is required" } });
+    return res.status(400).json({ errors: [{ field: "restaurant", message: "restaurant is required" }] });
   }
   const brand = brandKeyFromName(restaurant);
   if (!brand) return res.status(404).json({ error: "Restaurant not found" });

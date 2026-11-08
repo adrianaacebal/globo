@@ -37,6 +37,9 @@
                 <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
                 <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
                 <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
+                <li><a href="riders.html"><span class="nav-icon">🛵</span>Manage riders</a></li>
+                <li><a href="coupons.html"><span class="nav-icon">🏷️</span>Manage coupons</a></li>
+                <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
                 <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
             </ul>
         </nav>
@@ -52,7 +55,7 @@
         <form id="search-form" class="search-box" role="search">
             <label for="search-input">Restaurant or area</label>
             <div class="search-row">
-                <input type="search" id="search-input" name="q" placeholder="e.g. Burger King, Gran Vía..." autocomplete="off">
+                <input type="search" id="search-input" name="search" placeholder="e.g. Burger King, Gran Vía..." autocomplete="off">
                 <button type="button" id="near-me">📍 Near me</button>
             </div>
             <div class="filter-grid">
@@ -208,7 +211,7 @@
         }
     }
 
-    // Pide al servidor los restaurantes que coinciden: GET /api/restaurants?q=&area=&type=
+    // Pide al servidor los restaurantes que coinciden: GET /api/restaurants?search=&area=&type=
     async function search() {
         var id = ++lastSearch;
         var params = new URLSearchParams();
@@ -222,7 +225,7 @@
             var data = await response.json();
             if (id !== lastSearch) return;   // ya hay una busqueda mas nueva
             if (!response.ok) {
-                var errors = data.errors ? Object.values(data.errors).join(' ') : data.error;
+                var errors = data.errors ? data.errors.map(function (e) { return e.message; }).join(' ') : data.error;
                 info.textContent = 'Please check your search. ' + errors;
                 layer.clearLayers();
                 list.innerHTML = '';

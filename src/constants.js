@@ -19,6 +19,12 @@ const CATEGORIES = ["main", "side", "drink", "dessert"];
 // Tipos de pedido
 const ORDER_TYPES = ["delivery", "pickup"];
 
+// Vehiculos de los repartidores
+const VEHICLES = ["bike", "motorbike", "car"];
+// Estados de un pedido
+const ORDER_STATUSES = ["pending", "preparing", "on-the-way", "delivered", "cancelled"];
+// A que pedidos se aplica un cupon
+const COUPON_ORDER_TYPES = ["all", ...ORDER_TYPES];
 
 // en Node cada archivo es un módulo (module) y exports es para que las constantes se 'saquen a fuera' y otros modulos puedan usarlas.
-module.exports = { BRANDS, BRAND_KEYS, AREAS, TYPES, CATEGORIES, ORDER_TYPES };
+module.exports = { BRANDS, BRAND_KEYS, AREAS, TYPES, CATEGORIES, ORDER_TYPES, VEHICLES, ORDER_STATUSES, COUPON_ORDER_TYPES };

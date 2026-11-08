@@ -200,9 +200,9 @@
         { name: "Honest Greens Chamberí", area: "Chamberí" }
     ];
 
-    // Los locales de verdad se piden al servidor (GET /restaurants).
+    // Los locales de verdad se piden al servidor (GET /api/restaurants).
     // Si no esta arrancado, se queda la copia de arriba.
-    fetch("/restaurants")
+    fetch("/api/restaurants")
         .then(function (response) { return response.ok ? response.json() : null; })
         .then(function (list) { if (list) restaurants = list; })
         .catch(function () {});

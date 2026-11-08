@@ -1,6 +1,6 @@
-// Logica de /dishes (platos de la carta de cada marca) y de /menu
+// Logica de /api/dishes (platos de la carta de cada marca) y de /menu
 const store = require("../store");
-const { validateDish, validateDishQuery } = require("../validators");
+const { validateDish, validateDishQuery } = require("../validators/dishes");
 const { normalize, brandKeyFromName, round2 } = require("../utils");
 
 // Aplica los filtros de la query: ?q=&brand=&category=&minPrice=&maxPrice=
@@ -38,14 +38,14 @@ function groupSummary(list, field) {
   return Object.fromEntries(Object.entries(groups).map(([key, items]) => [key, priceSummary(items)]));
 }
 
-// GET /dishes -> 200 [ ... ]
+// GET /api/dishes -> 200 [ ... ]
 function listDishes(req, res) {
   const { value: filters, errors } = validateDishQuery(req.query);
   if (errors) return res.status(400).json({ errors });
   res.json(filterDishes(store.dishes.all(), filters));
 }
 
-// GET /dishes/stats (acepta los mismos filtros)
+// GET /api/dishes/stats (acepta los mismos filtros)
 function dishStats(req, res) {
   const { value: filters, errors } = validateDishQuery(req.query);
   if (errors) return res.status(400).json({ errors });
@@ -62,14 +62,14 @@ function dishStats(req, res) {
   });
 }
 
-// GET /dishes/:id
+// GET /api/dishes/:id
 function getDish(req, res) {
   const dish = store.dishes.findById(req.id);
   if (!dish) return notFound(res);
   res.json(dish);
 }
 
-// POST /dishes -> 201 (409 si la marca ya tiene un plato con ese nombre)
+// POST /api/dishes -> 201 (409 si la marca ya tiene un plato con ese nombre)
 function createDish(req, res) {
   const { value, errors } = validateDish(req.body);
   if (errors) return res.status(400).json({ errors });
@@ -77,7 +77,7 @@ function createDish(req, res) {
   res.status(201).json(store.dishes.create(value));
 }
 
-// PUT /dishes/:id
+// PUT /api/dishes/:id
 function replaceDish(req, res) {
   if (!store.dishes.findById(req.id)) return notFound(res);
   const { value, errors } = validateDish(req.body);
@@ -86,7 +86,7 @@ function replaceDish(req, res) {
   res.json(store.dishes.replace(req.id, value));
 }
 
-// PATCH /dishes/:id
+// PATCH /api/dishes/:id
 function updateDish(req, res) {
   const current = store.dishes.findById(req.id);
   if (!current) return notFound(res);
@@ -96,7 +96,7 @@ function updateDish(req, res) {
   res.json(store.dishes.update(req.id, value));
 }
 
-// DELETE /dishes/:id -> 204
+// DELETE /api/dishes/:id -> 204
 function deleteDish(req, res) {
   if (!store.dishes.remove(req.id)) return notFound(res);
   res.status(204).end();

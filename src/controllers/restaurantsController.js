@@ -1,6 +1,6 @@
-// Logica de /restaurants (locales de cada marca)
+// Logica de /api/restaurants (locales de cada marca)
 const store = require("../store");
-const { validateRestaurant, validateRestaurantQuery } = require("../validators");
+const { validateRestaurant, validateRestaurantQuery } = require("../validators/restaurants");
 const { normalize } = require("../utils");
 
 // Aplica los filtros de la query: ?q=&brand=&area=&type=
@@ -26,14 +26,14 @@ function countBy(list, field) {
 
 const notFound = (res) => res.status(404).json({ error: "Restaurant not found" });
 
-// GET /restaurants  (?q=&brand=&area=&type=) -> 200 [ ... ] (lista vacia si no hay coincidencias)
+// GET /api/restaurants  (?q=&brand=&area=&type=) -> 200 [ ... ] (lista vacia si no hay coincidencias)
 function listRestaurants(req, res) {
   const { value: filters, errors } = validateRestaurantQuery(req.query);
   if (errors) return res.status(400).json({ errors });
   res.json(filterRestaurants(store.restaurants.all(), filters));
 }
 
-// GET /restaurants/stats  (acepta los mismos filtros)
+// GET /api/restaurants/stats  (acepta los mismos filtros)
 function restaurantStats(req, res) {
   const { value: filters, errors } = validateRestaurantQuery(req.query);
   if (errors) return res.status(400).json({ errors });
@@ -47,21 +47,21 @@ function restaurantStats(req, res) {
   });
 }
 
-// GET /restaurants/:id
+// GET /api/restaurants/:id
 function getRestaurant(req, res) {
   const restaurant = store.restaurants.findById(req.id);
   if (!restaurant) return notFound(res);
   res.json(restaurant);
 }
 
-// POST /restaurants -> 201
+// POST /api/restaurants -> 201
 function createRestaurant(req, res) {
   const { value, errors } = validateRestaurant(req.body);
   if (errors) return res.status(400).json({ errors });
   res.status(201).json(store.restaurants.create(value));
 }
 
-// PUT /restaurants/:id -> sustituye el restaurante entero (todos los campos obligatorios)
+// PUT /api/restaurants/:id -> sustituye el restaurante entero (todos los campos obligatorios)
 function replaceRestaurant(req, res) {
   if (!store.restaurants.findById(req.id)) return notFound(res);
   const { value, errors } = validateRestaurant(req.body);
@@ -69,7 +69,7 @@ function replaceRestaurant(req, res) {
   res.json(store.restaurants.replace(req.id, value));
 }
 
-// PATCH /restaurants/:id -> cambia solo los campos enviados
+// PATCH /api/restaurants/:id -> cambia solo los campos enviados
 function updateRestaurant(req, res) {
   if (!store.restaurants.findById(req.id)) return notFound(res);
   const { value, errors } = validateRestaurant(req.body, { partial: true });
@@ -77,7 +77,7 @@ function updateRestaurant(req, res) {
   res.json(store.restaurants.update(req.id, value));
 }
 
-// DELETE /restaurants/:id -> 204 sin body
+// DELETE /api/restaurants/:id -> 204 sin body
 function deleteRestaurant(req, res) {
   if (!store.restaurants.remove(req.id)) return notFound(res);
   res.status(204).end();

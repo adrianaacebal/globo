@@ -2,7 +2,7 @@
 // request (e.g. "GET /tasks"), then calls next() so the request continues
 // down the pipeline. Without next() every request would hang forever.
 function logger(req, res, next) {
-  console.log(`${req.method} ${req.url}`);
+  if (process.env.NODE_ENV !== "test") console.log(`${req.method} ${req.url}`);
   next();
 }
 

@@ -1,0 +1,24 @@
+$kind: http-request
+name: rider stats
+method: GET
+url: '{{baseUrl}}/riders/stats'
+order: 2000
+queryParams:
+  - key: search
+    value: ''
+    disabled: true
+  - key: vehicle
+    value: motorbike
+    disabled: true
+  - key: area
+    value: Centro
+    disabled: true
+  - key: available
+    value: 'true'
+    disabled: true
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Has total", () => pm.expect(pm.response.json().total).to.be.a("number"));

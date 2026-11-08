@@ -1,6 +1,7 @@
 // const   Es solo la palabra que sirve para crear una variable. Con const puedes guardar cualquier cosa, no solo listas
 // const , crea una variable que no puede cambiar de valor , y que pertenece al servidor (backend)
 // Marcas que tenemos en la aplicación, con su nombre completo para mostrar en el cliente
+
 const BRANDS = {
   burgerking: "Burger King",
   mcdonalds: "McDonald's",

@@ -1,0 +1,27 @@
+$kind: http-request
+name: dish stats
+method: GET
+url: '{{baseUrl}}/dishes/stats'
+order: 2000
+queryParams:
+  - key: search
+    value: ''
+    disabled: true
+  - key: brand
+    value: burgerking
+    disabled: true
+  - key: category
+    value: main
+    disabled: true
+  - key: minPrice
+    value: '5'
+    disabled: true
+  - key: maxPrice
+    value: '15'
+    disabled: true
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Has total", () => pm.expect(pm.response.json().total).to.be.a("number"));

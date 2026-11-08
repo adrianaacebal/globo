@@ -1,0 +1,11 @@
+$kind: http-request
+name: get review by id
+method: GET
+url: '{{baseUrl}}/reviews/{{reviewId}}'
+order: 5000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Same id", () => pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get("reviewId"))));

@@ -1,0 +1,22 @@
+$kind: http-request
+name: 'create rider invalid -> 400'
+method: POST
+url: '{{baseUrl}}/riders'
+order: 4000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "",
+      "vehicle": "helicopter",
+      "area": "Mars"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 400", () => pm.response.to.have.status(400));
+      pm.test("Has errors", () => pm.expect(pm.response.json().errors).to.be.an("array").that.is.not.empty);

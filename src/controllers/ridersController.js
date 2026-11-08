@@ -1,9 +1,9 @@
-// Logica de /api/riders (repartidores). Solo habla con el store, nunca con los arrays.
+
 const store = require("../data/store");
 const { validateRider, validateRiderQuery } = require("../validators/ridersValidator");
 const { normalize, countBy, round2 } = require("../utils");
 
-// ?search=&vehicle=&area=&available=  (se combinan todos)
+
 function filterRiders(list, filters) {
   const search = normalize(filters.search);
   return list.filter(

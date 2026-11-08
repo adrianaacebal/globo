@@ -1,0 +1,20 @@
+$kind: http-request
+name: 'update restaurant (PATCH)'
+method: PATCH
+url: '{{baseUrl}}/restaurants/{{restaurantId}}'
+order: 8000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "area": "Retiro"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Area updated", () => pm.expect(pm.response.json().area).to.eql("Retiro"));

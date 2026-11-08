@@ -26,7 +26,7 @@ app.use(logger);
 
 // API: cada recurso bajo /api/<recurso>, con su router, controlador y validator
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
-app.use("/api/restaurants", restaurantsRouter); // recurso principal (filtros + /stats)
+app.use("/api/restaurants", restaurantsRouter);
 app.use("/api/dishes", dishesRouter);
 app.use("/api/riders", ridersRouter);
 app.use("/api/coupons", couponsRouter);

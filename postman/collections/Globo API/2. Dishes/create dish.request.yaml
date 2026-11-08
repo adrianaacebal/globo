@@ -1,0 +1,25 @@
+$kind: http-request
+name: create dish
+method: POST
+url: '{{baseUrl}}/dishes'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Whopper",
+      "brand": "burgerking",
+      "category": "main",
+      "price": 6.99
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 201", () => pm.response.to.have.status(201));
+      const r = pm.response.json();
+      pm.test("Has id", () => pm.expect(r.id).to.be.a("number"));
+      pm.collectionVariables.set("dishId", r.id);

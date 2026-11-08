@@ -1,0 +1,26 @@
+$kind: http-request
+name: create rider
+method: POST
+url: '{{baseUrl}}/riders'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Carlos López",
+      "vehicle": "motorbike",
+      "area": "Centro",
+      "available": true,
+      "rating": 4.5
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 201", () => pm.response.to.have.status(201));
+      const r = pm.response.json();
+      pm.test("Has id", () => pm.expect(r.id).to.be.a("number"));
+      pm.collectionVariables.set("riderId", r.id);

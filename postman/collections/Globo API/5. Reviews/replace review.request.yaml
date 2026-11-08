@@ -1,0 +1,24 @@
+$kind: http-request
+name: 'replace review (PUT)'
+method: PUT
+url: '{{baseUrl}}/reviews/{{reviewId}}'
+order: 6000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "restaurantId": 1,
+      "author": "Ana García",
+      "rating": 5,
+      "comment": "Excellent food and very fast delivery!",
+      "verified": true
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Rating updated", () => pm.expect(pm.response.json().rating).to.eql(5));

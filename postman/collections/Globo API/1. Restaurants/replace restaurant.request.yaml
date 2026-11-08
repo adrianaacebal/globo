@@ -1,0 +1,26 @@
+$kind: http-request
+name: 'replace restaurant (PUT)'
+method: PUT
+url: '{{baseUrl}}/restaurants/{{restaurantId}}'
+order: 7000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Telepizza Puerta del Sol",
+      "brand": "telepizza",
+      "area": "Centro",
+      "type": "pizza",
+      "delivery": true,
+      "lat": 40.4169,
+      "lon": -3.7035
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Name updated", () => pm.expect(pm.response.json().name).to.eql("Telepizza Puerta del Sol"));

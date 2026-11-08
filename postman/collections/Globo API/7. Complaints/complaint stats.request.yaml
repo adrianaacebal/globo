@@ -1,0 +1,24 @@
+$kind: http-request
+name: complaint stats
+method: GET
+url: '{{baseUrl}}/complaints/stats'
+order: 2000
+queryParams:
+  - key: search
+    value: ''
+    disabled: true
+  - key: brand
+    value: burgerking
+    disabled: true
+  - key: type
+    value: delivery
+    disabled: true
+  - key: status
+    value: open
+    disabled: true
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Has total", () => pm.expect(pm.response.json().total).to.be.a("number"));

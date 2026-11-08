@@ -1,0 +1,113 @@
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> GLOBO - Burger King Menu </title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Tematica propia de la pagina de burgers -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+    <link rel="stylesheet" href="theme-burger.css">
+</head>
+
+<body class="theme-burger">
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="images/image.png" alt="Globo logo" width="59" height="60">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
+                <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+     <section>
+        <h1> Burger King X Globo </h1>
+        <p>Take a look at the whole menu. When you know what you want,
+           go to <a class="menu-link" href="order.html">Order online</a>.</p>
+
+        <!-- Menu propio de GLOBO: se pide al servidor (GET /menu) -->
+        <p id="menu-status" class="list-state" role="status" hidden></p>
+        <ul id="menu-main" class="bk-menu">
+            <li><img src="images/whopper.jpg" alt="Whopper" width="180" height="180"><span class="dish-name">Whopper</span><span class="dish-price">6.50 €</span></li>
+            <li><img src="images/patatas_burger.jpg" alt="Patatas" width="180" height="180"><span class="dish-name">Patatas</span><span class="dish-price">2.50 €</span></li>
+            <li><img src="images/long_chicken.jpg" alt="Long Chicken" width="180" height="180"><span class="dish-name">Long Chicken</span><span class="dish-price">5.50 €</span></li>
+            <li><img src="images/nuggets.jpg" alt="Crispy chicken nuggets" width="180" height="180"><span class="dish-name">Crispy chicken nuggets (9 pieces)</span><span class="dish-price">4.50 €</span></li>
+            <li><img src="images/veggie_burger.jpg" alt="Veggie burger" width="180" height="180"><span class="dish-name">Veggie burger</span><span class="dish-price">5.00 €</span></li>
+            <li><img src="images/mcflurry.jpg" alt="McFlurry" width="180" height="180"><span class="dish-name">McFlurry</span><span class="dish-price">3.50 €</span></li>
+        </ul>
+
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="order.html">Order now</a>
+            <a class="btn btn-secondary" href="index.html">Back to home</a>
+        </div>
+     </section>
+     <!-- Combos: dos opciones de menu completo -->
+     <section>
+        <h2 class="section-title">🍟 Combos</h2>
+        <p>Choose one of our two combos and save compared to ordering each item separately:</p>
+        <ul class="bk-menu">
+            <li>
+                <img src="images/whopper.jpg" alt="Whopper combo" width="180" height="180">
+                <span class="combo-tag">⭐ Combo 1</span>
+                <span class="dish-name">Whopper Combo</span>
+                <span class="dish-desc">Whopper + Patatas + drink</span>
+                <span class="dish-price">9.90 €</span>
+            </li>
+            <li>
+                <img src="images/long_chicken.jpg" alt="Long Chicken combo" width="180" height="180">
+                <span class="combo-tag">⭐ Combo 2</span>
+                <span class="dish-name">Long Chicken Combo</span>
+                <span class="dish-desc">Long Chicken + Patatas + drink</span>
+                <span class="dish-price">8.90 €</span>
+            </li>
+        </ul>
+     </section>
+     <!-- Platos mas pedidos -->
+     <section>
+        <h2 class="section-title">Most ordered dishes</h2>
+        <p>These are the dishes our users order most often from Burger King:</p>
+        <ul>
+            <li>Whopper® with fries and a drink </li>
+            <li>Long Chicken®</li>
+            <li>Crispy chicken nuggets (9 pieces)</li>
+            <li>Veggie burger</li>
+        </ul>
+     </section>
+    </main>
+
+    </div>
+
+    <footer>
+        <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+        <p>&copy; 2026 GLOBO. All rights reserved.</p>
+        <p><a href="index.html">Back to homepage</a> · <a href="contact.html">Contact us</a> ·
+           <a href="https://www.instagram.com/" title="Opens Instagram, an external website">Follow us on Instagram</a></p>
+    </footer>
+
+    <!-- Carta: se pide al servidor (GET /menu) -->
+    <script src="menu.js" data-brand="burgerking"></script>
+
+</body>
+</html>

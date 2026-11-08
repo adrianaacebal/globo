@@ -7,90 +7,16 @@ var dishList = document.getElementById("dish-list");
 var totalBox = document.getElementById("order-total");
 var chosenRestaurant = "";   // se guarda porque el formulario se resetea
 
-// Mismos datos que en el servidor, para que la pagina funcione
-// aunque el servidor no este arrancado.
-var restaurants = [
-    { name: "burgerking", area: "Chamartín" },
-    { name: "burgerking", area: "Tetuán" },
-    { name: "mcdonalds", area: "Centro" },
-    { name: "mcdonalds", area: "Moncloa" },
-    { name: "mcdonalds", area: "Chamberí" },
-    { name: "mcdonalds Atocha", area: "Retiro" },
-    { name: "mcdonalds Montecarmelo", area: "Fuencarral" },
-    { name: "Sushita Sushi Bar", area: "Chamartín" },
-    { name: "Sushita Sushi Bar", area: "Tetuán" },
-    { name: "Sushita Sushi Bar", area: "Centro" },
-    { name: "Sushita Sushi Bar", area: "Moncloa" },
-    { name: "Sushita Sushi Bar", area: "Chamberí" },
-    { name: "Sushita Sushi Bar", area: "Retiro" },
-    { name: "Sushita Sushi Bar", area: "Fuencarral" },
-    { name: "Telepizza Chamartín", area: "Chamartín" },
-    { name: "Telepizza Tetuán", area: "Tetuán" },
-    { name: "Telepizza Gran Vía", area: "Centro" },
-    { name: "Telepizza Princesa", area: "Moncloa" },
-    { name: "Telepizza Chamberí", area: "Chamberí" },
-    { name: "Telepizza Atocha", area: "Retiro" },
-    { name: "Telepizza Montecarmelo", area: "Fuencarral" },
-    { name: "Honest Greens Chamartín", area: "Chamartín" },
-    { name: "Honest Greens Tetuán", area: "Tetuán" },
-    { name: "Honest Greens Gran Vía", area: "Centro" },
-    { name: "Honest Greens Princesa", area: "Moncloa" },
-    { name: "Honest Greens Chamberí", area: "Chamberí" }
-];
-
-// Los locales de verdad se piden al servidor (GET /api/restaurants).
-// Si no esta arrancado, se queda la copia de arriba.
+// Los locales se piden siempre al servidor (GET /api/restaurants): no hay copia en la pagina.
+var restaurants = [];
+var restaurantsError = "";
 apiRequest("GET", "/api/restaurants")
-    .then(function (result) { if (result.ok) restaurants = result.data; })
-    .catch(function () {});
-var menus = {
-    burgerking: [{ name: "Whopper", price: 6.5 }, { name: "Patatas", price: 2.5 }],
-    mcdonalds: [
-        { name: "Big Mac", price: 6.2 },
-        { name: "McNuggets", price: 5 },
-        { name: "Patatas", price: 2.5 },
-        { name: "McFlurry", price: 3.5 },
-        { name: "McWrap", price: 4.5 },
-        { name: "Veggie Burger", price: 5.0 },
-        { name: "Long Chicken", price: 5.5 }
-    ],
-    sushita: [
-        { name: "Salmon Maki", price: 6.5 },
-        { name: "Tuna Maki", price: 5.5 },
-        { name: "Veggie Maki", price: 4.5 },
-        { name: "California Roll", price: 7.0 },
-        { name: "water", price: 1.0 },
-        { name: "Soy sauce", price: 0.5 },
-        { name: "Japanese Green Tea", price: 2.0 },
-        { name: "Herbal Tea", price: 2.5 },
-        { name: "Nigiri with Salmon", price: 7.0 },
-        { name: "Nigiri with Tuna", price: 6.5 },
-        { name: "Nigiri with Vegetables", price: 5.5 }
-    ],
-    telepizza: [
-        { name: "Hawaiian Pizza", price: 8.5 },
-        { name: "Pepperoni Pizza", price: 9.0 },
-        { name: "Veggie Pizza", price: 7.5 },
-        { name: "Cheese Pizza", price: 7.0 },
-        { name: "Margarita Pizza", price: 7.5 },
-        { name: "Chicken Pizza", price: 9.5 },
-        { name: "Meat Lovers Pizza", price: 10.0 },
-        { name: "Tuna Pizza", price: 9.0 },
-        { name: "water", price: 1.0 },
-        { name: "Coca-Cola", price: 1.5 },
-        { name: "Beer", price: 2.5 }
-    ],
-    honestgreens: [
-        { name: "Quinoa Salad", price: 8.0 },
-        { name: "Vegan Burger", price: 9.0 },
-        { name: "Green Smoothie", price: 5.0 },
-        { name: "Avocado Toast", price: 7.0 },
-        { name: "water", price: 1.0 },
-        { name: "Kombucha", price: 2.0 },
-        { name: "Herbal Tea", price: 2.5 }
-    ]
-};
-var currentMenu = [];   // menu que se esta ensenando ahora (del servidor o local)
+    .then(function (result) {
+        if (result.ok) restaurants = result.data;
+        else restaurantsError = "Could not load the restaurants (error " + result.status + ").";
+    })
+    .catch(function () { restaurantsError = "Could not connect to the server. Please try again later."; });
+var currentMenu = [];   // menu que se esta ensenando ahora (viene del servidor)
 
 // ---------- Ubicacion y tiempo estimado ----------
 // Coordenadas aproximadas (centro de cada distrito de Madrid).
@@ -204,10 +130,8 @@ function normalize(text) {
 // Devuelve la marca ("burgerking" / "mcdonalds") o null si no existe
 function findBrand(restaurant) {
     var key = normalize(restaurant);
-    for (var brand in menus) {
-        if (key.indexOf(brand) === 0) return brand;
-    }
-    return null;
+    var found = restaurants.find(function (r) { return key.indexOf(r.brand) === 0; });
+    return found ? found.brand : null;
 }
 
 // Deja el formulario como al principio para volver a rellenarlo
@@ -231,18 +155,23 @@ async function showMenu(restaurant) {
     var brand = findBrand(restaurant);
     if (!brand) return;
 
-    // Se pide el menu completo al servidor (GET /menu).
-    // Si no esta arrancado, se usa la copia local.
-    currentMenu = menus[brand];
+    // El menu completo se pide al servidor (GET /menu)
+    currentMenu = [];
     try {
         var menuResult = await apiRequest("GET", "/menu?restaurant=" + encodeURIComponent(restaurant));
         if (menuResult.ok) currentMenu = menuResult.data;
     } catch (err) {
-        // Sin servidor: se queda el menu local
+        // Sin servidor: el menu se queda vacio y se avisa abajo
     }
 
     // Una fila por plato: nombre, precio y casilla de cantidad (empieza en 0)
-    dishList.innerHTML = "";
+    dishList.replaceChildren();
+    if (currentMenu.length === 0) {
+        var empty = document.createElement("p");
+        empty.textContent = "Could not load the menu. Please try again later.";
+        dishList.appendChild(empty);
+        return;
+    }
     currentMenu.forEach(function (dish, i) {
         var label = document.createElement("label");
         label.htmlFor = "qty-" + i;
@@ -263,10 +192,11 @@ async function showMenu(restaurant) {
 // Comprueba que el restaurante tiene local en esa ubicacion.
 // Devuelve el mensaje de error, o null si todo esta bien.
 function checkLocation(data) {
+    if (restaurantsError) return restaurantsError;
     var brand = findBrand(data.restaurant);
     if (!brand) return "The restaurant " + data.restaurant + " does not exist.";
 
-    var locals = restaurants.filter(function (r) { return findBrand(r.name) === brand; });
+    var locals = restaurants.filter(function (r) { return r.brand === brand; });
     var ok = locals.some(function (r) { return normalize(r.area) === normalize(data.location); });
     if (!ok) {
         var areas = locals.map(function (r) { return r.area; });

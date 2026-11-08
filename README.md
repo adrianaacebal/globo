@@ -570,7 +570,7 @@ that calls `fetch`. Each page has its own script in `public/js/`.
 `login.html`, `order.html` and `complaint.html`; it only prints to the browser console and does not
 change the page. Styles are in `public/css/styles.css` (the four menu pages also load
 `theme-burger.css`), dish photos in `public/images/`.
-
+a ve
 `crud.js` is shared by the eight admin pages: it shows a loading, an error and an empty state, checks
 the form in the browser before sending it, shows each 400 message under its field, and updates the
 list after a create, edit or delete without reloading. Lists are built with `createElement` +

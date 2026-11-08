@@ -11,7 +11,7 @@ Toda página nueva **parte de [template.html](template.html)** (está en esta mi
 
 ## Crear una página nueva (pasos)
 
-1. Copia `.claude/skills/globo-brand/template.html` a la raíz del repo con un nombre en inglés y minúsculas (`offers.html`, `about.html`).
+1. Copia `.claude/skills/globo-brand/template.html` a la carpeta `public/` con un nombre en inglés y minúsculas (`offers.html`, `about.html`).
 2. Sustituye `{{PAGE_TITLE}}` (en `<title>` y `<h1>`) e `{{INTRO_TEXT}}`. El `<title>` siempre es `GLOBO - <Nombre>`; no copies el título de otra página.
 3. Rellena el contenido con los componentes de abajo. Borra el comentario `{{CONTENIDO...}}`.
 4. Si la página debe aparecer en el menú, añade un `<li>` con icono emoji (`<span class="nav-icon">…</span>`) en la `<nav class="sidebar">` de **todas** las páginas `.html`, en el mismo orden.

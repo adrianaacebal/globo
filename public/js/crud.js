@@ -1,5 +1,5 @@
 // Pantalla de gestion (restaurants.html y dishes.html): lista + filtros + estadisticas + formulario.
-// Todo pasa por el API: los filtros se aplican en el servidor, no aqui.
+// Todo pasa por el API con apiRequest (js/api.js): los filtros se aplican en el servidor, no aqui.
 //
 // La pagina llama a setupCrud({ endpoint, label, plural, describe, renderStats }) y tiene estos elementos:
 //   #filters (form) · #filters-reset · #stats · #list-state · #items · #item-form · #form-title
@@ -16,18 +16,6 @@ function setupCrud(cfg) {
     var submitBtn = form.querySelector("button[type=submit]");
     var editingId = null;   // null = crear · numero = editar ese id
     var lastLoad = 0;       // para ignorar respuestas viejas si se escribe rapido
-
-    // ---------- Peticiones ----------
-    // Devuelve { ok, status, data }. Si no hay servidor lanza un error.
-    async function api(method, url, body) {
-        var response = await fetch(url, {
-            method: method,
-            headers: body ? { "Content-Type": "application/json" } : {},
-            body: body ? JSON.stringify(body) : undefined
-        });
-        var data = response.status === 204 ? null : await response.json();
-        return { ok: response.ok, status: response.status, data: data };
-    }
 
     // Solo los filtros con valor: { area: "Centro" } -> "?area=Centro"
     function queryString() {
@@ -118,7 +106,7 @@ function setupCrud(cfg) {
         stats.replaceChildren();
 
         try {
-            var results = await Promise.all([api("GET", cfg.endpoint + qs), api("GET", cfg.endpoint + "/stats" + qs)]);
+            var results = await Promise.all([apiRequest("GET", cfg.endpoint + qs), apiRequest("GET", cfg.endpoint + "/stats" + qs)]);
             if (id !== lastLoad) return;   // ya hay una busqueda mas nueva
             var items = results[0];
             var summary = results[1];
@@ -197,7 +185,7 @@ function setupCrud(cfg) {
         if (!confirm('Delete "' + cfg.describe(item).title + '"?')) return;
         button.disabled = true;
         try {
-            var result = await api("DELETE", cfg.endpoint + "/" + item.id);
+            var result = await apiRequest("DELETE", cfg.endpoint + "/" + item.id);
             if (!result.ok && result.status !== 404) {
                 alert(result.data.error || "Could not delete it.");
                 button.disabled = false;
@@ -258,7 +246,7 @@ function setupCrud(cfg) {
         submitBtn.disabled = true;
         submitBtn.textContent = "Saving...";
         try {
-            var result = await api(method, url, body);
+            var result = await apiRequest(method, url, body);
             if (!result.ok) {
                 var other = result.data.errors ? showErrors(form, result.data.errors) : result.data.error;
                 setMessage(other || "Please fix the fields marked in red.", "error");

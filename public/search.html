@@ -1,0 +1,133 @@
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GLOBO - Search for restaurants</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Estilos de Leaflet, la libreria que dibuja el mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+
+
+<body>
+    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="images/image.png" alt="Globo logo" width="59" height="60">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
+                <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
+                <li><a href="riders.html"><span class="nav-icon">🛵</span>Manage riders</a></li>
+                <li><a href="coupons.html"><span class="nav-icon">🏷️</span>Manage coupons</a></li>
+                <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
+                <li><a href="reviews.html"><span class="nav-icon">⭐</span>Manage reviews</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+
+     <section>
+        <div class="hero-head">
+            <h1>Search for restaurants</h1>
+            <p class="tagline">Find the <span>best restaurants</span><br>near you on the map.</p>
+        </div>
+        
+        <form id="search-form" class="search-box" role="search">
+            <label for="search-input">Restaurant or area</label>
+            <div class="search-row">
+                <input type="search" id="search-input" name="search" placeholder="e.g. Burger King, Gran Vía..." autocomplete="off">
+                <button type="button" id="near-me">📍 Near me</button>
+            </div>
+            <div class="filter-grid">
+                <div>
+                    <label for="search-area">Area</label>
+                    <select id="search-area" name="area">
+                        <option value="">All areas</option>
+                        <option>Centro</option>
+                        <option>Chamartín</option>
+                        <option>Chamberí</option>
+                        <option>Fuencarral</option>
+                        <option>Moncloa</option>
+                        <option>Retiro</option>
+                        <option>Tetuán</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="search-type">Type of food</label>
+                    <select id="search-type" name="type">
+                        <option value="">All types</option>
+                        <option value="burger">🍔 Burger</option>
+                        <option value="pizza">🍕 Pizza</option>
+                        <option value="sushi">🍣 Sushi</option>
+                        <option value="vegan">🥗 Vegan</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        <!-- Mapa de Madrid con una chincheta en cada restaurante. Se puede mover y hacer zoom -->
+        <div class="map-frame">
+            <div id="map"></div>
+        </div>
+
+        <p id="map-info">Loading the restaurants...</p>
+
+        <!-- Lista de restaurantes: al pinchar uno, el mapa va hasta el -->
+        <ul id="results" class="results-list"></ul>
+
+        <p class="map-link">
+            <a class="menu-link" href="https://www.google.com/maps/d/viewer?mid=1vvtNmKEOjAvRJi3hE8i_VUNIZCVOBMg"
+               target="_blank">Open the map in Google Maps</a>
+        </p>
+     </section>
+
+     <!-- Como usar el mapa -->
+     <section>
+        <h2 class="section-title">How to use the map</h2>
+        <ol>
+            <li>Write the name of a restaurant or an area in the search box.</li>
+            <li>Press <strong>Near me</strong> to see the restaurants closest to you.</li>
+            <li>Click a restaurant in the list and the map will take you there.</li>
+        </ol>
+        <p>Found one you like? <a href="order.html#order-form">Order it online</a>.</p>
+     </section>
+
+    </main>
+    </div>
+
+    <footer>
+        <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+        <p>&copy; 2026 GLOBO. All rights reserved.</p>
+        <p><a href="index.html">Back to homepage</a> · <a href="contact.html">Contact us</a> ·
+           <a href="https://www.instagram.com/" title="Opens Instagram, an external website">Follow us on Instagram</a></p>
+    </footer>
+
+
+<!-- Leaflet: la libreria que hace funcionar el mapa -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/api.js"></script>
+<script src="js/search.js"></script>
+
+</body>
+</html>

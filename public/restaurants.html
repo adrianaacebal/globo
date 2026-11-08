@@ -7,14 +7,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title> GLOBO - Manage restaurants </title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
 
     <header>
-        <img class="logo-img" src="../images/image.png" alt="Globo logo">
+        <img class="logo-img" src="images/image.png" alt="Globo logo">
 
           <p class="logo">
             <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
@@ -36,6 +36,7 @@
                 <li><a href="riders.html"><span class="nav-icon">🛵</span>Manage riders</a></li>
                 <li><a href="coupons.html"><span class="nav-icon">🏷️</span>Manage coupons</a></li>
                 <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
+                <li><a href="reviews.html"><span class="nav-icon">⭐</span>Manage reviews</a></li>
                 <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
             </ul>
         </nav>
@@ -189,29 +190,8 @@
     <a href="contact.html">Contact us</a>
 </footer>
 
-<script src="../crud.js"></script>
-<script>
-    // Nombres e iconos para mostrar
-    var BRAND_NAMES = { burgerking: "Burger King", mcdonalds: "McDonald's", sushita: "Sushita", telepizza: "Telepizza", honestgreens: "Honest Greens" };
-    var TYPE_ICONS = { burger: "🍔", pizza: "🍕", sushi: "🍣", vegan: "🥗" };
-
-    setupCrud({
-        endpoint: "/api/restaurants",
-        label: "restaurant",
-        describe: function (r) {
-            return {
-                icon: TYPE_ICONS[r.type] || "📍",
-                title: r.name,
-                subtitle: (BRAND_NAMES[r.brand] || r.brand) + " · " + r.area + " · " + (r.delivery ? "🛵 delivery" : "🏪 pickup only") + " · #" + r.id
-            };
-        },
-        renderStats: function (s) {
-            var chips = ["Total: " + s.total, "🛵 Delivery: " + s.withDelivery, "🏪 Pickup only: " + s.pickupOnly];
-            Object.keys(s.byType).forEach(function (t) { chips.push((TYPE_ICONS[t] || "") + " " + t + ": " + s.byType[t]); });
-            Object.keys(s.byArea).forEach(function (a) { chips.push("📍 " + a + ": " + s.byArea[a]); });
-            return chips;
-        }
-    });
-</script>
+<script src="js/api.js"></script>
+<script src="js/crud.js"></script>
+<script src="js/restaurants.js"></script>
 </body>
 </html>

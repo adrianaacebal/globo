@@ -108,4 +108,13 @@ const orders = [
   { customer: "Ana", restaurantId: 14, riderId: 2, type: "delivery", status: "on-the-way", total: 21, paid: false },
 ];
 
-module.exports = { restaurants, dishes, users, riders, coupons, orders };
+// Opiniones de los clientes sobre un restaurante. restaurantId -> restaurants.id
+const reviews = [
+  { restaurantId: 4, author: "Alice", rating: 5, comment: "Fast and hot, the Big Mac was perfect.", verified: true },
+  { restaurantId: 4, author: "Carlos", rating: 3, comment: "Good food but the delivery took a while.", verified: true },
+  { restaurantId: 12, author: "Ana", rating: 4, comment: "Fresh sushi and friendly staff.", verified: false },
+  { restaurantId: 20, author: "Bob", rating: 2, comment: "The pizza arrived cold.", verified: true },
+  { restaurantId: 29, author: "Lucía", rating: 5, comment: "Best vegan burger in Madrid!", verified: false },
+];
+
+module.exports = { restaurants, dishes, users, riders, coupons, orders, reviews };

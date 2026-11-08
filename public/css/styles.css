@@ -1526,3 +1526,21 @@ footer a {
   margin: 0;
   accent-color: #13916f;
 }
+
+/* Cuadro de texto largo (comentario de las opiniones): igual que los inputs */
+.login-box textarea {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: 3px solid #13916f;
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.login-box textarea:focus {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+  border-color: #0d5f49;
+}

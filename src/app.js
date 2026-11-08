@@ -6,6 +6,7 @@ const { notFound, errorHandler } = require("./middleware/errors");
 const restaurantsRouter = require("./routes/restaurants");
 const dishesRouter = require("./routes/dishes");
 const ordersRouter = require("./routes/orders");
+const tasksRouter = require("./routes/tasks");
 
 const app = express();
 
@@ -20,6 +21,18 @@ app.use(logger);
 
 // API
 app.get("/health", (req, res) => res.json({ status: "ok" }));
+
+// Session 13 lab: reflects the URL segment -> /echo/hi gives { "echo": "hi" }
+app.get("/echo/:msg", (req, res) => res.json({ echo: req.params.msg }));
+
+// Session 13 lab: Tasks API (thin router -> tasksController)
+app.use("/tasks", tasksRouter);
+
+// Session 13 lab: forces an error to prove the error handler (registered last) catches it
+app.get("/boom", (req, res, next) => {
+  next(new Error("Boom! Forced failure"));
+});
+
 app.use("/restaurants", restaurantsRouter);
 app.use("/dishes", dishesRouter);
 app.use("/", ordersRouter); // /login, /menu, /order, /order/total, /orders

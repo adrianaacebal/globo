@@ -1,18 +1,11 @@
 {
   "name": "globo",
   "version": "1.0.0",
-<<<<<<< HEAD
   "description": "GLOBO Orders API skeleton (Express)",
   "private": true,
   "main": "src/server.js",
   "scripts": {
     "start": "node --watch src/server.js"
-=======
-  "private": true,
-  "main": "src/server.js",
-  "scripts": {
-    "start": "node src/server.js"
->>>>>>> 75debf54854a0ad3d4364b0f9d01fe04616281bb
   },
   "dependencies": {
     "express": "^5.2.1"

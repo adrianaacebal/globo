@@ -1,4 +1,4 @@
-// Validator del recurso dishes: esquema del body (POST/PUT/PATCH) y de los filtros (GET /api/dishes?...)
+// Validator de dishes: body de POST/PUT/PATCH y filtros de GET /api/dishes?...
 const { BRAND_KEYS, CATEGORIES } = require("../constants");
 const { validateBody, validateQuery } = require("./common");
 
@@ -10,22 +10,24 @@ const dishSchema = {
 };
 
 const dishQuerySchema = {
-  q: { type: "text", min: 1, max: 60 },
+  search: { type: "text", min: 1, max: 60 },
   brand: dishSchema.brand,
   category: dishSchema.category,
   minPrice: { type: "number", min: 0, max: 500 },
   maxPrice: { type: "number", min: 0, max: 500 },
 };
 
-// options = { partial: true } en PATCH
+// options = { partial: true } en PATCH. Devuelve { valid, value, errors: [{ field, message }] }
 const validateDish = (body, options) => validateBody(dishSchema, body, options);
 
 function validateDishQuery(query) {
-  const { value, errors } = validateQuery(dishQuerySchema, query);
-  if (value.minPrice !== undefined && value.maxPrice !== undefined && value.minPrice > value.maxPrice) {
-    errors.minPrice = "minPrice cannot be greater than maxPrice";
+  const check = validateQuery(dishQuerySchema, query);
+  const { minPrice, maxPrice } = check.value;
+  if (minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice) {
+    check.errors.push({ field: "minPrice", message: "minPrice cannot be greater than maxPrice" });
+    check.valid = false;
   }
-  return { value, errors: Object.keys(errors).length ? errors : null };
+  return check;
 }
 
 module.exports = { validateDish, validateDishQuery };

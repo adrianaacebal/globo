@@ -2,7 +2,7 @@
 // y manda en la cabecera Authorization: Bearer <token>. Asi sabemos quien es.
 // Se guardan en memoria: si se reinicia el servidor hay que volver a hacer login.
 const crypto = require("crypto");
-const store = require("./store");
+const store = require("./data/store");
 
 const sessions = new Map(); // token -> email
 

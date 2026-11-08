@@ -25,4 +25,12 @@ function brandKeyFromName(name) {
 
 const round2 = (n) => Math.round(n * 100) / 100;
 
-module.exports = { normalize, pickOption, brandKeyFromName, round2 };
+// Cuenta cuantos hay de cada valor: countBy(restaurantes, "area") -> { Centro: 4, Retiro: 2, ... }
+function countBy(list, field) {
+  return list.reduce((acc, item) => {
+    acc[item[field]] = (acc[item[field]] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+module.exports = { normalize, pickOption, brandKeyFromName, round2, countBy };

@@ -34,6 +34,9 @@
                 <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
                 <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
                 <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
+                <li><a href="riders.html"><span class="nav-icon">🛵</span>Manage riders</a></li>
+                <li><a href="coupons.html"><span class="nav-icon">🏷️</span>Manage coupons</a></li>
+                <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
                 <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
             </ul>
         </nav>
@@ -43,13 +46,13 @@
         <h1>Manage dishes</h1>
         <p>Add, edit or delete the dishes of each brand. The menus and the order page use these dishes.</p>
 
-        <!-- Filtros: se mandan al servidor como ?q=&brand=&category=&minPrice=&maxPrice= -->
+        <!-- Filtros: se mandan al servidor como ?search=&brand=&category=&minPrice=&maxPrice= -->
         <form id="filters" class="search-box" role="search">
             <div class="filter-grid">
                 <div>
                     <label for="f-q">Dish name</label>
-                    <input type="search" id="f-q" name="q" placeholder="e.g. pizza" autocomplete="off">
-                    <p class="field-error" data-error-for="q"></p>
+                    <input type="search" id="f-q" name="search" placeholder="e.g. pizza" autocomplete="off">
+                    <p class="field-error" data-error-for="search"></p>
                 </div>
                 <div>
                     <label for="f-brand">Brand</label>
@@ -103,11 +106,11 @@
                 <h2 id="form-title">Add a dish</h2>
 
                 <label for="d-name">Name</label>
-                <input type="text" id="d-name" name="name" maxlength="60" placeholder="e.g. Tiramisu">
+                <input type="text" id="d-name" name="name" required minlength="2" maxlength="60" placeholder="e.g. Tiramisu">
                 <p class="field-error" data-error-for="name"></p>
 
                 <label for="d-brand">Brand</label>
-                <select id="d-brand" name="brand">
+                <select id="d-brand" name="brand" required>
                     <option value="">Select a brand</option>
                     <option value="burgerking">Burger King</option>
                     <option value="mcdonalds">McDonald's</option>
@@ -118,7 +121,7 @@
                 <p class="field-error" data-error-for="brand"></p>
 
                 <label for="d-category">Category</label>
-                <select id="d-category" name="category">
+                <select id="d-category" name="category" required>
                     <option value="">Select a category</option>
                     <option value="main">Main</option>
                     <option value="side">Side</option>
@@ -128,7 +131,7 @@
                 <p class="field-error" data-error-for="category"></p>
 
                 <label for="d-price">Price (€)</label>
-                <input type="number" id="d-price" name="price" step="0.01" placeholder="4.50">
+                <input type="number" id="d-price" name="price" step="0.01" required min="0.1" max="500" placeholder="4.50">
                 <p class="field-error" data-error-for="price"></p>
 
                 <p id="form-message" class="login-error" role="alert" hidden></p>

@@ -2,6 +2,9 @@
 const request = require("supertest");
 const app = require("../src/app");
 
+// Los 400 traen { errors: [ { field, message } ] }: nos quedamos con los nombres de los campos
+const fields = (res) => res.body.errors.map((e) => e.field);
+
 const valid = { name: "Veggie Wrap", brand: "honestgreens", category: "main", price: 9.5 };
 
 describe("GET /api/dishes", () => {
@@ -46,7 +49,7 @@ describe("POST /api/dishes", () => {
   test("400 if price is not a number", async () => {
     const res = await request(app).post("/api/dishes").send({ ...valid, price: "free" });
     expect(res.status).toBe(400);
-    expect(res.body.errors).toHaveProperty("price");
+    expect(fields(res)).toContain("price");
   });
 });
 

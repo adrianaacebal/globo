@@ -3,7 +3,7 @@
 //   all() · findById(id) · find(predicate) · create(data) · replace(id, data) · update(id, changes) · remove(id)
 const fs = require("fs");
 const path = require("path");
-const seed = require("./datos");
+const seed = require("./seed");
 
 const copy = (item) => structuredClone(item);
 
@@ -69,7 +69,7 @@ function createCollection(initial = [], onChange = () => {}) {
 }
 
 // ---------- Usuarios: se guardan en data/users.json para no perderlos al reiniciar ----------
-const USERS_FILE = path.join(__dirname, "..", "data", "users.json");
+const USERS_FILE = path.join(__dirname, "..", "..", "data", "users.json");
 
 function loadUsers() {
   try {
@@ -87,5 +87,8 @@ function saveUsers(items) {
 module.exports = {
   restaurants: createCollection(seed.restaurants),
   dishes: createCollection(seed.dishes),
+  riders: createCollection(seed.riders),
+  coupons: createCollection(seed.coupons),
+  orders: createCollection(seed.orders),
   users: createCollection(loadUsers(), saveUsers),
 };

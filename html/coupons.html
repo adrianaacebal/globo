@@ -1,0 +1,158 @@
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> GLOBO - Manage coupons </title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="../images/image.png" alt="Globo logo">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
+                <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
+                <li><a href="riders.html"><span class="nav-icon">🛵</span>Manage riders</a></li>
+                <li><a href="coupons.html"><span class="nav-icon">🏷️</span>Manage coupons</a></li>
+                <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+     <section>
+        <h1>Manage coupons</h1>
+        <p>Create discount codes that customers can type when they order. Every change is saved on the server.</p>
+
+        <!-- Filtros: se mandan al servidor como ?search=&active=&orderType= (se filtra en el servidor) -->
+        <form id="filters" class="search-box" role="search">
+            <div class="filter-grid">
+                <div>
+                    <label for="f-search">Code</label>
+                    <input type="search" id="f-search" name="search" placeholder="e.g. GLOBO" autocomplete="off">
+                    <p class="field-error" data-error-for="search"></p>
+                </div>
+                <div>
+                    <label for="f-active">Status</label>
+                    <select id="f-active" name="active">
+                        <option value="">All</option>
+                        <option value="true">✅ Active</option>
+                        <option value="false">⛔ Inactive</option>
+                    </select>
+                    <p class="field-error" data-error-for="active"></p>
+                </div>
+                <div>
+                    <label for="f-orderType">Valid for</label>
+                    <select id="f-orderType" name="orderType">
+                        <option value="">Any</option>
+                        <option value="all">All orders</option>
+                        <option value="delivery">🛵 Delivery only</option>
+                        <option value="pickup">🏪 Pickup only</option>
+                    </select>
+                    <p class="field-error" data-error-for="orderType"></p>
+                </div>
+            </div>
+            <button type="button" id="filters-reset" class="link-button">Clear filters</button>
+        </form>
+
+        <!-- Estadisticas de GET /api/coupons/stats (con los mismos filtros) -->
+        <ul id="stats" class="stats-chips" aria-label="Statistics"></ul>
+
+        <div class="admin-layout">
+            <!-- Lista: cargando / error / vacia / resultados -->
+            <div>
+                <p id="list-state" class="list-state" role="status">Loading...</p>
+                <ul id="items" class="admin-list"></ul>
+            </div>
+
+            <!-- Formulario para crear (POST) o editar (PUT). Los errores salen debajo de cada campo -->
+            <form id="item-form" class="login-box admin-form" novalidate>
+                <h2 id="form-title">Add a coupon</h2>
+
+                <label for="c-code">Code</label>
+                <input type="text" id="c-code" name="code" required minlength="3" maxlength="20" placeholder="e.g. GLOBO20">
+                <p class="field-error" data-error-for="code"></p>
+
+                <label for="c-percent">Discount (%)</label>
+                <input type="number" id="c-percent" name="percent" step="1" required min="1" max="90" placeholder="20">
+                <p class="field-error" data-error-for="percent"></p>
+
+                <label class="check-label" for="c-active">
+                    <input type="checkbox" id="c-active" name="active" checked> Active
+                </label>
+                <p class="field-error" data-error-for="active"></p>
+
+                <label for="c-orderType">Valid for</label>
+                <select id="c-orderType" name="orderType" required>
+                    <option value="">Select an order type</option>
+                    <option value="all">All orders</option>
+                    <option value="delivery">🛵 Delivery only</option>
+                    <option value="pickup">🏪 Pickup only</option>
+                </select>
+                <p class="field-error" data-error-for="orderType"></p>
+
+                <p id="form-message" class="login-error" role="alert" hidden></p>
+                <button type="submit">Add coupon</button>
+                <button type="button" id="cancel-edit" class="link-button" hidden>Cancel editing</button>
+            </form>
+        </div>
+
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="order.html">Try a coupon in an order</a>
+            <a class="btn btn-secondary" href="orders.html">Manage orders</a>
+        </div>
+     </section>
+    </main>
+
+    </div>
+
+    <footer>
+    <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+    <p>&copy; 2026 GLOBO. All rights reserved.</p>
+    <a href="contact.html">Contact us</a>
+</footer>
+
+<script src="../crud.js"></script>
+<script>
+    var ORDER_TYPE_NAMES = { all: "all orders", delivery: "delivery orders", pickup: "pickup orders" };
+
+    setupCrud({
+        endpoint: "/api/coupons",
+        label: "coupon",
+        describe: function (c) {
+            return {
+                icon: c.active ? "🏷️" : "⛔",
+                title: c.code,
+                subtitle: c.percent + "% off · " + ORDER_TYPE_NAMES[c.orderType] + " · " + (c.active ? "active" : "inactive") + " · #" + c.id
+            };
+        },
+        renderStats: function (s) {
+            var chips = ["Total: " + s.total, "✅ Active: " + s.active, "Average discount: " + s.averagePercent + "%"];
+            Object.keys(s.byOrderType).forEach(function (t) { chips.push(ORDER_TYPE_NAMES[t] + ": " + s.byOrderType[t]); });
+            return chips;
+        }
+    });
+</script>
+</body>
+</html>

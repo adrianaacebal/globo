@@ -1,0 +1,1090 @@
+
+===== src/app.js =====
+// Builds the Express app. Does not call listen — that lives in server.js.
+const express = require("express");
+const path = require("path");
+const logger = require("./middleware/logger");
+const { notFound, errorHandler } = require("./middleware/errors");
+const restaurantsRouter = require("./routes/restaurants");
+const dishesRouter = require("./routes/dishes");
+const ordersRouter = require("./routes/orders");
+const tasksRouter = require("./routes/tasks");
+
+const app = express();
+
+// Middleware runs before the routes
+app.use(express.json());
+app.use((req, res, next) => {
+  // Express 5 deja req.body en undefined si no llega body: asi los controladores siempre tienen un objeto
+  if (req.body === undefined) req.body = {};
+  next();
+});
+app.use(logger);
+
+// API
+app.get("/health", (req, res) => res.json({ status: "ok" }));
+
+// Session 13 lab: reflects the URL segment -> /echo/hi gives { "echo": "hi" }
+app.get("/echo/:msg", (req, res) => res.json({ echo: req.params.msg }));
+
+// Session 13 lab: Tasks API (thin router -> tasksController)
+app.use("/tasks", tasksRouter);
+
+// Session 13 lab: forces an error to prove the error handler (registered last) catches it
+app.get("/boom", (req, res, next) => {
+  next(new Error("Boom! Forced failure"));
+});
+
+app.use("/api/restaurants", restaurantsRouter);
+app.use("/api/dishes", dishesRouter);
+app.use("/", ordersRouter); // /login, /menu, /order, /order/total, /orders
+
+// El codigo del servidor y los datos (usuarios y contrasenas) no se sirven al navegador
+const PRIVATE = /^\/(src|data|node_modules|postman|package(-lock)?\.json)(\/|$)/i;
+app.use((req, res, next) => (PRIVATE.test(req.path) ? notFound(req, res) : next()));
+
+// The pages now live in html/, so the home URL sends you to the homepage
+app.get("/", (req, res) => res.redirect("/html/index.html"));
+
+// Serves the HTML pages (html/login.html, html/index.html...) from the project folder
+app.use(express.static(path.join(__dirname, "..")));
+
+// Anything else -> 404 JSON, then the centralised error handler (registered last)
+app.use(notFound);
+app.use(errorHandler);
+
+module.exports = app;
+
+===== src/constants.js =====
+// const   Es solo la palabra que sirve para crear una variable. Con const puedes guardar cualquier cosa, no solo listas
+// const , crea una variable que no puede cambiar de valor , y que pertenece al servidor (backend)
+// Marcas que tenemos en la aplicación, con su nombre completo para mostrar en el cliente
+const BRANDS = {
+  burgerking: "Burger King",
+  mcdonalds: "McDonald's",
+  sushita: "Sushita",
+  telepizza: "Telepizza",
+  honestgreens: "Honest Greens",
+};
+
+const BRAND_KEYS = Object.keys(BRANDS);
+// Areas 
+const AREAS = ["Centro", "Chamartín", "Chamberí", "Fuencarral", "Moncloa", "Retiro", "Tetuán"];
+// Tipos de comida
+const TYPES = ["burger", "pizza", "sushi", "vegan"];
+// Categorías de platos
+const CATEGORIES = ["main", "side", "drink", "dessert"];
+// Tipos de pedido
+const ORDER_TYPES = ["delivery", "pickup"];
+
+
+// en Node cada archivo es un módulo (module) y exports es para que las constantes se 'saquen a fuera' y otros modulos puedan usarlas.
+module.exports = { BRANDS, BRAND_KEYS, AREAS, TYPES, CATEGORIES, ORDER_TYPES };
+
+===== src/controllers/authController.js =====
+// Logica de /login
+const store = require("../store");
+const { newSession } = require("../sessions");
+const { DISCOUNT_PERCENT, newDiscountCode } = require("../pricing");
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Errores del registro, todos a la vez
+function registrationErrors({ name, email, password }) {
+  const errors = {};
+  if (!name) errors.name = "name is required";
+  else if (name.length > 60) errors.name = "name must be at most 60 characters";
+  if (!email) errors.email = "email is required";
+  else if (!EMAIL_RE.test(email)) errors.email = "email is not valid";
+  if (!password) errors.password = "password is required";
+  else if (password.length < 6) errors.password = "password must be at least 6 characters";
+  return Object.keys(errors).length ? errors : null;
+}
+
+// POST /login — si el email existe comprueba nombre y contrasena; si no, registra al usuario nuevo
+function login(req, res) {
+  const name = String(req.body.name ?? "").trim();
+  const email = String(req.body.email ?? "").trim().toLowerCase();
+  const password = String(req.body.password ?? "");
+
+  // El email no distingue mayusculas (Ana@Mail.com es el mismo que ana@mail.com)
+  const user = email ? store.users.find((u) => u.email.toLowerCase() === email) : null;
+
+  if (user) {
+    const sameName = user.name.trim().toLowerCase() === name.toLowerCase();
+    if (!sameName || user.password !== password) {
+      return res.status(401).json({ error: "This email is already registered. Incorrect name or password" });
+    }
+    // Si todavia no ha usado su codigo de bienvenida, se le vuelve a dar
+    const pending = user.discountCode && !user.discountUsed;
+    return res.json({
+      name: user.name,
+      email: user.email,
+      token: newSession(user),
+      discountCode: pending ? user.discountCode : undefined,
+      discountPercent: pending ? DISCOUNT_PERCENT : undefined,
+    });
+  }
+
+  const errors = registrationErrors({ name, email, password });
+  if (errors) {
+    return res.status(400).json({ error: Object.values(errors).join(". "), errors });
+  }
+
+  // Primera vez: se crea la cuenta y se le regala un codigo de descuento
+  const newUser = store.users.create({
+    name,
+    email,
+    password,
+    discountCode: newDiscountCode(),
+    discountUsed: false,
+    orders: [],
+  });
+  res.status(201).json({
+    name: newUser.name,
+    email: newUser.email,
+    token: newSession(newUser),
+    firstTime: true,
+    discountCode: newUser.discountCode,
+    discountPercent: DISCOUNT_PERCENT,
+  });
+}
+
+module.exports = { login };
+
+===== src/controllers/dishesController.js =====
+// Logica de /api/dishes (platos de la carta de cada marca) y de /menu
+const store = require("../store");
+const { validateDish, validateDishQuery } = require("../validators/dishes");
+const { normalize, brandKeyFromName, round2 } = require("../utils");
+
+// Aplica los filtros de la query: ?q=&brand=&category=&minPrice=&maxPrice=
+function filterDishes(list, f) {
+  return list.filter(
+    (d) =>
+      (!f.brand || d.brand === f.brand) &&
+      (!f.category || d.category === f.category) &&
+      (f.minPrice === undefined || d.price >= f.minPrice) &&
+      (f.maxPrice === undefined || d.price <= f.maxPrice) &&
+      (!f.q || normalize(d.name).includes(normalize(f.q)))
+  );
+}
+
+// Una marca no puede tener dos platos con el mismo nombre (exceptId: el plato que se edita)
+function isDuplicate({ brand, name }, exceptId) {
+  return Boolean(
+    store.dishes.find((d) => d.id !== exceptId && d.brand === brand && normalize(d.name) === normalize(name))
+  );
+}
+
+const notFound = (res) => res.status(404).json({ error: "Dish not found" });
+const duplicate = (res) =>
+  res.status(409).json({ errors: { name: "This brand already has a dish with that name" } });
+
+// { count, averagePrice } de una lista de platos
+function priceSummary(list) {
+  const sum = list.reduce((acc, d) => acc + d.price, 0);
+  return { count: list.length, averagePrice: list.length ? round2(sum / list.length) : 0 };
+}
+
+function groupSummary(list, field) {
+  const groups = {};
+  for (const dish of list) (groups[dish[field]] ||= []).push(dish);
+  return Object.fromEntries(Object.entries(groups).map(([key, items]) => [key, priceSummary(items)]));
+}
+
+// GET /api/dishes -> 200 [ ... ]
+function listDishes(req, res) {
+  const { value: filters, errors } = validateDishQuery(req.query);
+  if (errors) return res.status(400).json({ errors });
+  res.json(filterDishes(store.dishes.all(), filters));
+}
+
+// GET /api/dishes/stats (acepta los mismos filtros)
+function dishStats(req, res) {
+  const { value: filters, errors } = validateDishQuery(req.query);
+  if (errors) return res.status(400).json({ errors });
+
+  const list = filterDishes(store.dishes.all(), filters);
+  const prices = list.map((d) => d.price);
+  res.json({
+    total: list.length,
+    averagePrice: priceSummary(list).averagePrice,
+    minPrice: list.length ? Math.min(...prices) : null,
+    maxPrice: list.length ? Math.max(...prices) : null,
+    byBrand: groupSummary(list, "brand"),
+    byCategory: groupSummary(list, "category"),
+  });
+}
+
+// GET /api/dishes/:id
+function getDish(req, res) {
+  const dish = store.dishes.findById(req.id);
+  if (!dish) return notFound(res);
+  res.json(dish);
+}
+
+// POST /api/dishes -> 201 (409 si la marca ya tiene un plato con ese nombre)
+function createDish(req, res) {
+  const { value, errors } = validateDish(req.body);
+  if (errors) return res.status(400).json({ errors });
+  if (isDuplicate(value)) return duplicate(res);
+  res.status(201).json(store.dishes.create(value));
+}
+
+// PUT /api/dishes/:id
+function replaceDish(req, res) {
+  if (!store.dishes.findById(req.id)) return notFound(res);
+  const { value, errors } = validateDish(req.body);
+  if (errors) return res.status(400).json({ errors });
+  if (isDuplicate(value, req.id)) return duplicate(res);
+  res.json(store.dishes.replace(req.id, value));
+}
+
+// PATCH /api/dishes/:id
+function updateDish(req, res) {
+  const current = store.dishes.findById(req.id);
+  if (!current) return notFound(res);
+  const { value, errors } = validateDish(req.body, { partial: true });
+  if (errors) return res.status(400).json({ errors });
+  if (isDuplicate({ ...current, ...value }, req.id)) return duplicate(res);
+  res.json(store.dishes.update(req.id, value));
+}
+
+// DELETE /api/dishes/:id -> 204
+function deleteDish(req, res) {
+  if (!store.dishes.remove(req.id)) return notFound(res);
+  res.status(204).end();
+}
+
+// GET /menu?restaurant=McDonald's -> carta completa de la marca (la usa order.html)
+function getMenu(req, res) {
+  const { restaurant } = req.query;
+  if (typeof restaurant !== "string" || !restaurant.trim()) {
+    return res.status(400).json({ errors: { restaurant: "restaurant is required" } });
+  }
+  const brand = brandKeyFromName(restaurant);
+  if (!brand) return res.status(404).json({ error: "Restaurant not found" });
+  res.json(store.dishes.all().filter((d) => d.brand === brand));
+}
+
+module.exports = { listDishes, dishStats, getDish, createDish, replaceDish, updateDish, deleteDish, getMenu };
+
+===== src/controllers/ordersController.js =====
+// Logica de /order, /order/total y /orders (pedidos del usuario conectado)
+const store = require("../store");
+const { userFromRequest } = require("../sessions");
+const { ORDER_TYPES } = require("../constants");
+const { normalize, pickOption, brandKeyFromName, round2 } = require("../utils");
+const { DISCOUNT_PERCENT, deliveryFeePercent, isValidCode } = require("../pricing");
+
+// Respuesta 400 con todos los errores: "error" (texto para el cliente actual) + "errors" por campo
+const badRequest = (res, errors) => res.status(400).json({ error: Object.values(errors).join(". "), errors });
+
+// POST /order — comprueba que la marca tiene local en esa zona (requireUser va antes)
+function createOrder(req, res) {
+  const { name, email } = req.user;
+  const { restaurant, location } = req.body;
+  const type = pickOption(ORDER_TYPES, req.body.type);
+
+  const errors = {};
+  if (!restaurant) errors.restaurant = "Restaurant is required";
+  if (!location) errors.location = "Location is required";
+  if (!type) errors.type = `type must be one of: ${ORDER_TYPES.join(", ")}`;
+  if (Object.keys(errors).length) return badRequest(res, errors);
+
+  const brand = brandKeyFromName(restaurant);
+  const brandLocals = brand ? store.restaurants.all().filter((r) => r.brand === brand) : [];
+  if (brandLocals.length === 0) {
+    return res.status(404).json({ error: "Restaurant not found" });
+  }
+
+  const local = brandLocals.find((r) => normalize(r.area) === normalize(location));
+  if (!local) {
+    const allowed = [...new Set(brandLocals.map((r) => r.area))];
+    return badRequest(res, {
+      location: `The location ${location} does not exist for ${restaurant}. Available locations: ${allowed.join(", ")}`,
+    });
+  }
+
+  res.status(201).json({ message: "Order created", order: { name, email, type, restaurant: local.name, area: local.area } });
+}
+
+// Calcula el precio de un pedido. Lo usan /order/total y /orders.
+// Devuelve { status, error } si algo esta mal, o el desglose del precio.
+function computePrice({ restaurant, items, type, travelMinutes, discountCode }, user) {
+  const brand = brandKeyFromName(restaurant);
+  if (!brand) return { status: 404, error: "Restaurant not found" };
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return { status: 400, error: "Choose at least one dish" };
+  }
+
+  const menu = store.dishes.all().filter((d) => d.brand === brand);
+  let subtotal = 0;
+  for (const item of items) {
+    const menuItem = menu.find((d) => d.name === item?.dish);
+    if (!menuItem) return { status: 404, error: `Dish not found: ${item?.dish}` };
+
+    const qty = Number(item.quantity);
+    if (!Number.isInteger(qty) || qty < 1) {
+      return { status: 400, error: "Quantity must be 1 or more" };
+    }
+    subtotal += menuItem.price * qty;
+  }
+
+  // 1) Envio a domicilio: % sobre el precio de la comida
+  const feePercent = deliveryFeePercent(type, travelMinutes);
+  const deliveryFee = (subtotal * feePercent) / 100;
+
+  // 2) Despues, el codigo de bienvenida: 10% menos sobre comida + envio (solo el del propio usuario)
+  let discount = 0;
+  let discountError;
+  if (discountCode) {
+    if (isValidCode(discountCode, user)) {
+      discount = ((subtotal + deliveryFee) * DISCOUNT_PERCENT) / 100;
+    } else {
+      discountError = "This discount code is not valid or has already been used";
+    }
+  }
+
+  return {
+    // Importes redondeados a centimos
+    subtotal: round2(subtotal),
+    discount: round2(discount),
+    deliveryFee: round2(deliveryFee),
+    deliveryFeePercent: feePercent,
+    total: round2(subtotal + deliveryFee - discount),
+    discountError,
+  };
+}
+
+// POST /order/total — solo calcula, no guarda nada (el login es opcional: hace falta para el codigo)
+function calculateTotal(req, res) {
+  const price = computePrice(req.body, userFromRequest(req));
+  if (price.error) return res.status(price.status).json({ error: price.error });
+  res.json(price);
+}
+
+// POST /orders — confirma el pedido y lo guarda en el historial (requireUser va antes).
+// Hay que volver a escribir la contrasena.
+function saveOrder(req, res) {
+  const user = req.user;
+  const { password, restaurant, location, type, items, payment } = req.body;
+  if (password !== user.password) {
+    return res.status(401).json({ error: "Incorrect password" });
+  }
+
+  const price = computePrice(req.body, user);
+  if (price.error) return res.status(price.status).json({ error: price.error });
+
+  const order = {
+    id: Date.now(),
+    date: new Date().toISOString(),
+    restaurant,
+    location,
+    type,
+    payment,
+    items: items.map(({ dish, quantity }) => ({ dish, quantity: Number(quantity) })),
+    subtotal: price.subtotal,
+    discount: price.discount,
+    deliveryFee: price.deliveryFee,
+    deliveryFeePercent: price.deliveryFeePercent,
+    total: price.total,
+  };
+
+  store.users.update(user.id, {
+    orders: [...(user.orders || []), order],
+    // El codigo de descuento solo vale una vez
+    discountUsed: Boolean(user.discountUsed || price.discount > 0),
+  });
+
+  res.status(201).json({ message: "Order placed", order });
+}
+
+// GET /orders — historial del usuario conectado (el mas nuevo primero)
+function listOrders(req, res) {
+  res.json((req.user.orders || []).slice().reverse());
+}
+
+module.exports = { createOrder, calculateTotal, saveOrder, listOrders };
+
+===== src/controllers/restaurantsController.js =====
+// Logica de /api/restaurants (locales de cada marca)
+const store = require("../store");
+const { validateRestaurant, validateRestaurantQuery } = require("../validators/restaurants");
+const { normalize } = require("../utils");
+
+// Aplica los filtros de la query: ?q=&brand=&area=&type=
+// q busca en el nombre y en la zona ("retiro" encuentra "Telepizza Atocha", que esta en Retiro)
+function filterRestaurants(list, filters) {
+  const q = normalize(filters.q);
+  return list.filter(
+    (r) =>
+      (!filters.brand || r.brand === filters.brand) &&
+      (!filters.area || r.area === filters.area) &&
+      (!filters.type || r.type === filters.type) &&
+      (!q || normalize(r.name + r.area).includes(q))
+  );
+}
+
+// { Centro: 4, Retiro: 2, ... }
+function countBy(list, field) {
+  return list.reduce((acc, item) => {
+    acc[item[field]] = (acc[item[field]] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+const notFound = (res) => res.status(404).json({ error: "Restaurant not found" });
+
+// GET /api/restaurants  (?q=&brand=&area=&type=) -> 200 [ ... ] (lista vacia si no hay coincidencias)
+function listRestaurants(req, res) {
+  const { value: filters, errors } = validateRestaurantQuery(req.query);
+  if (errors) return res.status(400).json({ errors });
+  res.json(filterRestaurants(store.restaurants.all(), filters));
+}
+
+// GET /api/restaurants/stats  (acepta los mismos filtros)
+function restaurantStats(req, res) {
+  const { value: filters, errors } = validateRestaurantQuery(req.query);
+  if (errors) return res.status(400).json({ errors });
+
+  const list = filterRestaurants(store.restaurants.all(), filters);
+  res.json({
+    total: list.length,
+    byBrand: countBy(list, "brand"),
+    byArea: countBy(list, "area"),
+    byType: countBy(list, "type"),
+  });
+}
+
+// GET /api/restaurants/:id
+function getRestaurant(req, res) {
+  const restaurant = store.restaurants.findById(req.id);
+  if (!restaurant) return notFound(res);
+  res.json(restaurant);
+}
+
+// POST /api/restaurants -> 201
+function createRestaurant(req, res) {
+  const { value, errors } = validateRestaurant(req.body);
+  if (errors) return res.status(400).json({ errors });
+  res.status(201).json(store.restaurants.create(value));
+}
+
+// PUT /api/restaurants/:id -> sustituye el restaurante entero (todos los campos obligatorios)
+function replaceRestaurant(req, res) {
+  if (!store.restaurants.findById(req.id)) return notFound(res);
+  const { value, errors } = validateRestaurant(req.body);
+  if (errors) return res.status(400).json({ errors });
+  res.json(store.restaurants.replace(req.id, value));
+}
+
+// PATCH /api/restaurants/:id -> cambia solo los campos enviados
+function updateRestaurant(req, res) {
+  if (!store.restaurants.findById(req.id)) return notFound(res);
+  const { value, errors } = validateRestaurant(req.body, { partial: true });
+  if (errors) return res.status(400).json({ errors });
+  res.json(store.restaurants.update(req.id, value));
+}
+
+// DELETE /api/restaurants/:id -> 204 sin body
+function deleteRestaurant(req, res) {
+  if (!store.restaurants.remove(req.id)) return notFound(res);
+  res.status(204).end();
+}
+
+module.exports = {
+  listRestaurants,
+  restaurantStats,
+  getRestaurant,
+  createRestaurant,
+  replaceRestaurant,
+  updateRestaurant,
+  deleteRestaurant,
+};
+
+===== src/controllers/tasksController.js =====
+// Handler logic for /tasks. Placeholder data until Session 22 adds a database.
+// The route file only calls these functions; it never touches the data directly.
+const tasks = [
+  { id: 1, title: "Write the API skeleton", done: true, userId: 1 },
+  { id: 2, title: "Add a request logger", done: false, userId: 1 },
+  { id: 3, title: "Split handlers into a controller", done: false, userId: 2 },
+];
+
+// GET /tasks
+function listTasks(req, res, next) {
+  res.json(tasks);
+}
+
+// POST /tasks — echoes the parsed body back (express.json() already parsed it)
+function createTask(req, res, next) {
+  res.status(201).json(req.body);
+}
+
+module.exports = { listTasks, createTask };
+
+===== src/datos.js =====
+
+const restaurants = [
+  { name: "Burger King Chamartín", brand: "burgerking", area: "Chamartín", type: "burger", lat: 40.4721547, lon: -3.6827027 },
+  { name: "Burger King Tetuán", brand: "burgerking", area: "Tetuán", type: "burger", lat: 40.4606115, lon: -3.69986 },
+  { name: "Burger King Cuatro Caminos", brand: "burgerking", area: "Tetuán", type: "burger", lat: 40.4582009, lon: -3.7009311 },
+  { name: "McDonald's Gran Vía", brand: "mcdonalds", area: "Centro", type: "burger", lat: 40.4217486, lon: -3.7082893 },
+  { name: "McDonald's Princesa", brand: "mcdonalds", area: "Moncloa", type: "burger", lat: 40.4250027, lon: -3.7126422 },
+  { name: "McDonald's Chamberí", brand: "mcdonalds", area: "Chamberí", type: "burger", lat: 40.4323068, lon: -3.7055092 },
+  { name: "McDonald's Atocha", brand: "mcdonalds", area: "Retiro", type: "burger", lat: 40.4096453, lon: -3.6927171 },
+  { name: "McDonald's Montecarmelo", brand: "mcdonalds", area: "Fuencarral", type: "burger", lat: 40.5014306, lon: -3.6971944 },
+  { name: "Sushita Chamartín", brand: "sushita", area: "Chamartín", type: "sushi", lat: 40.4721547, lon: -3.6827027 },
+  { name: "Sushita Tetuán", brand: "sushita", area: "Tetuán", type: "sushi", lat: 40.4606115, lon: -3.69986 },
+  { name: "Sushita Cuatro Caminos", brand: "sushita", area: "Tetuán", type: "sushi", lat: 40.4582009, lon: -3.7009311 },
+  { name: "Sushita Gran Vía", brand: "sushita", area: "Centro", type: "sushi", lat: 40.4217486, lon: -3.7082893 },
+  { name: "Sushita Princesa", brand: "sushita", area: "Moncloa", type: "sushi", lat: 40.4250027, lon: -3.7126422 },
+  { name: "Sushita Chamberí", brand: "sushita", area: "Chamberí", type: "sushi", lat: 40.4323068, lon: -3.7055092 },
+  { name: "Sushita Atocha", brand: "sushita", area: "Retiro", type: "sushi", lat: 40.4096453, lon: -3.6927171 },
+  { name: "Sushita Montecarmelo", brand: "sushita", area: "Fuencarral", type: "sushi", lat: 40.5014306, lon: -3.6971944 },
+  { name: "Telepizza Chamartín", brand: "telepizza", area: "Chamartín", type: "pizza", lat: 40.4721547, lon: -3.6827027 },
+  { name: "Telepizza Tetuán", brand: "telepizza", area: "Tetuán", type: "pizza", lat: 40.4606115, lon: -3.69986 },
+  { name: "Telepizza Cuatro Caminos", brand: "telepizza", area: "Tetuán", type: "pizza", lat: 40.4582009, lon: -3.7009311 },
+  { name: "Telepizza Gran Vía", brand: "telepizza", area: "Centro", type: "pizza", lat: 40.4217486, lon: -3.7082893 },
+  { name: "Telepizza Princesa", brand: "telepizza", area: "Moncloa", type: "pizza", lat: 40.4250027, lon: -3.7126422 },
+  { name: "Telepizza Chamberí", brand: "telepizza", area: "Chamberí", type: "pizza", lat: 40.4323068, lon: -3.7055092 },
+  { name: "Telepizza Atocha", brand: "telepizza", area: "Retiro", type: "pizza", lat: 40.4096453, lon: -3.6927171 },
+  { name: "Telepizza Montecarmelo", brand: "telepizza", area: "Fuencarral", type: "pizza", lat: 40.5014306, lon: -3.6971944 },
+  { name: "Honest Greens Chamartín", brand: "honestgreens", area: "Chamartín", type: "vegan", lat: 40.4721547, lon: -3.6827027 },
+  { name: "Honest Greens Tetuán", brand: "honestgreens", area: "Tetuán", type: "vegan", lat: 40.4606115, lon: -3.69986 },
+  { name: "Honest Greens Cuatro Caminos", brand: "honestgreens", area: "Tetuán", type: "vegan", lat: 40.4582009, lon: -3.7009311 },
+  { name: "Honest Greens Gran Vía", brand: "honestgreens", area: "Centro", type: "vegan", lat: 40.4217486, lon: -3.7082893 },
+  { name: "Honest Greens Princesa", brand: "honestgreens", area: "Moncloa", type: "vegan", lat: 40.4250027, lon: -3.7126422 },
+  { name: "Honest Greens Chamberí", brand: "honestgreens", area: "Chamberí", type: "vegan", lat: 40.4323068, lon: -3.7055092 },
+];
+
+
+const dishes = [
+  { name: "Whopper", brand: "burgerking", category: "main", price: 6.5 },
+  { name: "Patatas", brand: "burgerking", category: "side", price: 2.5 },
+
+  { name: "Big Mac", brand: "mcdonalds", category: "main", price: 6.2 },
+  { name: "McNuggets", brand: "mcdonalds", category: "main", price: 5 },
+  { name: "Patatas", brand: "mcdonalds", category: "side", price: 2.5 },
+  { name: "McFlurry", brand: "mcdonalds", category: "dessert", price: 3.5 },
+  { name: "McWrap", brand: "mcdonalds", category: "main", price: 4.5 },
+  { name: "Veggie Burger", brand: "mcdonalds", category: "main", price: 5 },
+  { name: "Long Chicken", brand: "mcdonalds", category: "main", price: 5.5 },
+
+  { name: "Salmon Maki", brand: "sushita", category: "main", price: 6.5 },
+  { name: "Tuna Maki", brand: "sushita", category: "main", price: 5.5 },
+  { name: "Veggie Maki", brand: "sushita", category: "main", price: 4.5 },
+  { name: "California Roll", brand: "sushita", category: "main", price: 7 },
+  { name: "water", brand: "sushita", category: "drink", price: 1 },
+  { name: "Soy sauce", brand: "sushita", category: "side", price: 0.5 },
+  { name: "Japanese Green Tea", brand: "sushita", category: "drink", price: 2 },
+  { name: "Herbal Tea", brand: "sushita", category: "drink", price: 2.5 },
+  { name: "Nigiri with Salmon", brand: "sushita", category: "main", price: 7 },
+  { name: "Nigiri with Tuna", brand: "sushita", category: "main", price: 6.5 },
+  { name: "Nigiri with Vegetables", brand: "sushita", category: "main", price: 5.5 },
+
+  { name: "Hawaiian Pizza", brand: "telepizza", category: "main", price: 8.5 },
+  { name: "Pepperoni Pizza", brand: "telepizza", category: "main", price: 9 },
+  { name: "Veggie Pizza", brand: "telepizza", category: "main", price: 7.5 },
+  { name: "Cheese Pizza", brand: "telepizza", category: "main", price: 7 },
+  { name: "Margarita Pizza", brand: "telepizza", category: "main", price: 7.5 },
+  { name: "Chicken Pizza", brand: "telepizza", category: "main", price: 9.5 },
+  { name: "Meat Lovers Pizza", brand: "telepizza", category: "main", price: 10 },
+  { name: "Tuna Pizza", brand: "telepizza", category: "main", price: 9 },
+  { name: "water", brand: "telepizza", category: "drink", price: 1 },
+  { name: "Coca-Cola", brand: "telepizza", category: "drink", price: 1.5 },
+  { name: "Beer", brand: "telepizza", category: "drink", price: 2.5 },
+
+  { name: "Quinoa Salad", brand: "honestgreens", category: "main", price: 8 },
+  { name: "Vegan Burger", brand: "honestgreens", category: "main", price: 9 },
+  { name: "Green Smoothie", brand: "honestgreens", category: "drink", price: 5 },
+  { name: "Avocado Toast", brand: "honestgreens", category: "main", price: 7 },
+  { name: "water", brand: "honestgreens", category: "drink", price: 1 },
+  { name: "Kombucha", brand: "honestgreens", category: "drink", price: 2 },
+  { name: "Herbal Tea", brand: "honestgreens", category: "drink", price: 2.5 },
+];
+
+const users = [
+  { id: 1, name: "Alice", email: "alice@example.com", password: "password123" },
+  { id: 2, name: "Bob", email: "bob@example.com", password: "password456" },
+  { id:3, name: "Ana", email: "ana@example.com", password: "password789" },
+  { id:4, name: "Carlos", email: "carlos@example.com", password: "password012" }
+];
+
+module.exports = { restaurants, dishes, users };
+
+===== src/middleware/errors.js =====
+// Rutas que no existen -> 404 en JSON (se registra despues de todas las rutas)
+function notFound(req, res) {
+  res.status(404).json({ error: `Route ${req.method} ${req.originalUrl} not found` });
+}
+
+// Manejador de errores centralizado (se registra el ultimo)
+function errorHandler(err, req, res, next) {
+  // JSON mal escrito en el body -> es culpa del cliente
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({ error: "Invalid JSON in request body" });
+  }
+  // Otros errores del cliente que lanza Express (p. ej. 413 body demasiado grande)
+  if (err.status >= 400 && err.status < 500) {
+    return res.status(err.status).json({ error: err.message });
+  }
+  console.error(err);
+  res.status(500).json({ error: "Internal server error" });
+}
+
+module.exports = { notFound, errorHandler };
+
+===== src/middleware/logger.js =====
+// Application-level middleware: prints exactly one "METHOD URL" line per
+// request (e.g. "GET /tasks"), then calls next() so the request continues
+// down the pipeline. Without next() every request would hang forever.
+function logger(req, res, next) {
+  console.log(`${req.method} ${req.url}`);
+  next();
+}
+
+module.exports = logger;
+
+===== src/middleware/requireUser.js =====
+// Solo deja pasar si la peticion trae un token valido (Authorization: Bearer <token>).
+// Deja el usuario conectado en req.user.
+const { userFromRequest } = require("../sessions");
+
+function requireUser(req, res, next) {
+  const user = userFromRequest(req);
+  if (!user) {
+    return res.status(401).json({ error: "You need to log in to order", needLogin: true });
+  }
+  req.user = user;
+  next();
+}
+
+module.exports = requireUser;
+
+===== src/middleware/validateId.js =====
+// Se usa con router.param("id", validateId): comprueba :id antes de llegar al controlador.
+// "/restaurants/abc" -> 400 · "/restaurants/7" -> req.id = 7
+function validateId(req, res, next, value) {
+  if (!/^[1-9]\d*$/.test(value)) {
+    return res.status(400).json({ error: "id must be a positive integer" });
+  }
+  req.id = Number(value);
+  next();
+}
+
+module.exports = validateId;
+
+===== src/pricing.js =====
+// Reglas de precio compartidas: codigo de bienvenida y gastos de envio
+const crypto = require("crypto");
+const store = require("./store");
+
+const DISCOUNT_PERCENT = 10; // % de descuento del codigo de bienvenida
+
+// Gastos de envio segun lo que tarda la moto (sin contar la cocina):
+//   hasta 15 min -> 5% del precio de la comida · mas de 15 min -> 7%
+const SHORT_TRIP_MAX_MINUTES = 15;
+const SHORT_TRIP_FEE_PERCENT = 5;
+const LONG_TRIP_FEE_PERCENT = 7;
+
+// Porcentaje de envio para un pedido (0 si es para recoger)
+function deliveryFeePercent(type, travelMinutes) {
+  if (type !== "delivery") return 0;
+  const mins = Number(travelMinutes);
+  if (Number.isFinite(mins) && mins <= SHORT_TRIP_MAX_MINUTES) return SHORT_TRIP_FEE_PERCENT;
+  return LONG_TRIP_FEE_PERCENT;
+}
+
+// "GLOBO-3F9A1C" (se repite si por casualidad ya existe)
+function newDiscountCode() {
+  let code;
+  do {
+    code = "GLOBO-" + crypto.randomBytes(3).toString("hex").toUpperCase();
+  } while (store.users.find((u) => u.discountCode === code));
+  return code;
+}
+
+// true si el codigo es el de este usuario y todavia no lo ha usado
+function isValidCode(code, user) {
+  const clean = String(code || "").trim().toUpperCase();
+  return Boolean(user && clean && user.discountCode === clean && !user.discountUsed);
+}
+
+module.exports = { DISCOUNT_PERCENT, deliveryFeePercent, newDiscountCode, isValidCode };
+
+===== src/routes/dishes.js =====
+// Router fino: solo une rutas con funciones del controlador.
+const express = require("express");
+const validateId = require("../middleware/validateId");
+const c = require("../controllers/dishesController");
+
+const router = express.Router();
+
+router.param("id", validateId);
+
+router.get("/", c.listDishes);
+router.get("/stats", c.dishStats); // antes de /:id para que "stats" no se lea como id
+router.get("/:id", c.getDish);
+router.post("/", c.createDish);
+router.put("/:id", c.replaceDish);
+router.patch("/:id", c.updateDish);
+router.delete("/:id", c.deleteDish);
+
+module.exports = router;
+
+===== src/routes/orders.js =====
+// Rutas que usa la web para entrar y pedir (login.html, order.html, burgers.html...)
+const express = require("express");
+const requireUser = require("../middleware/requireUser");
+const { login } = require("../controllers/authController");
+const { getMenu } = require("../controllers/dishesController");
+const { createOrder, calculateTotal, saveOrder, listOrders } = require("../controllers/ordersController");
+
+const router = express.Router();
+
+router.post("/login", login);
+router.get("/menu", getMenu);
+router.post("/order", requireUser, createOrder);   // comprueba restaurante + zona
+router.post("/order/total", calculateTotal);       // calcula el precio
+router.post("/orders", requireUser, saveOrder);    // confirmar pedido (pide la contrasena)
+router.get("/orders", requireUser, listOrders);    // historial de pedidos
+
+module.exports = router;
+
+===== src/routes/restaurants.js =====
+// Router fino: solo une rutas con funciones del controlador.
+const express = require("express");
+const validateId = require("../middleware/validateId");
+const c = require("../controllers/restaurantsController");
+
+const router = express.Router();
+
+router.param("id", validateId);
+
+router.get("/", c.listRestaurants);
+router.get("/stats", c.restaurantStats); // antes de /:id para que "stats" no se lea como id
+router.get("/:id", c.getRestaurant);
+router.post("/", c.createRestaurant);
+router.put("/:id", c.replaceRestaurant);
+router.patch("/:id", c.updateRestaurant);
+router.delete("/:id", c.deleteRestaurant);
+
+module.exports = router;
+
+===== src/routes/tasks.js =====
+// Thin router: only maps paths to controller functions.
+// Mounted in app.js with app.use("/tasks", tasksRouter), so "/" here is /tasks.
+const express = require("express");
+const { listTasks, createTask } = require("../controllers/tasksController");
+
+const router = express.Router();
+
+router.get("/", listTasks);    // GET  /tasks
+router.post("/", createTask);  // POST /tasks
+
+module.exports = router;
+
+===== src/server.js =====
+// Entry point: imports the app and starts listening.
+const app = require("./app");
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server listening on http://localhost:${PORT}`);
+});
+
+===== src/sessions.js =====
+// Sesiones: al hacer login el servidor da un "token" (texto aleatorio) que el navegador guarda
+// y manda en la cabecera Authorization: Bearer <token>. Asi sabemos quien es.
+// Se guardan en memoria: si se reinicia el servidor hay que volver a hacer login.
+const crypto = require("crypto");
+const store = require("./store");
+
+const sessions = new Map(); // token -> email
+
+function newSession(user) {
+  const token = crypto.randomBytes(24).toString("hex");
+  sessions.set(token, user.email);
+  return token;
+}
+
+// Devuelve el usuario conectado, o null si no hay token valido
+function userFromRequest(req) {
+  const header = req.headers.authorization || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : "";
+  const email = sessions.get(token);
+  return email ? store.users.find((u) => u.email === email) : null;
+}
+
+module.exports = { newSession, userFromRequest };
+
+===== src/store.js =====
+// Capa de datos. Los controladores SOLO hablan con estas funciones, nunca con los arrays.
+// Para pasar a una base de datos real basta con reescribir este archivo con la misma interfaz:
+//   all() · findById(id) · find(predicate) · create(data) · replace(id, data) · update(id, changes) · remove(id)
+const fs = require("fs");
+const path = require("path");
+const seed = require("./datos");
+
+const copy = (item) => structuredClone(item);
+
+// Crea una coleccion en memoria. onChange(items) se llama tras cada escritura (para guardar en disco).
+function createCollection(initial = [], onChange = () => {}) {
+  let nextId = initial.reduce((max, item) => Math.max(max, item.id || 0), 0) + 1;
+  const items = initial.map((item) => (item.id ? copy(item) : { id: nextId++, ...copy(item) }));
+
+  const indexOf = (id) => items.findIndex((item) => item.id === id);
+
+  return {
+    all() {
+      return items.map(copy);
+    },
+
+    findById(id) {
+      const item = items.find((i) => i.id === id);
+      return item ? copy(item) : null;
+    },
+
+    find(predicate) {
+      const item = items.find(predicate);
+      return item ? copy(item) : null;
+    },
+
+    // El id siempre lo pone el servidor, aunque venga uno en data
+    create(data) {
+      const { id: _ignored, ...fields } = data;
+      const item = { id: nextId++, ...copy(fields) };
+      items.push(item);
+      onChange(items);
+      return copy(item);
+    },
+
+    // PUT: sustituye todos los campos (menos el id)
+    replace(id, data) {
+      const index = indexOf(id);
+      if (index === -1) return null;
+      const { id: _ignored, ...fields } = data;
+      items[index] = { id, ...copy(fields) };
+      onChange(items);
+      return copy(items[index]);
+    },
+
+    // PATCH: cambia solo los campos recibidos
+    update(id, changes) {
+      const index = indexOf(id);
+      if (index === -1) return null;
+      const { id: _ignored, ...fields } = changes;
+      items[index] = { ...items[index], ...copy(fields) };
+      onChange(items);
+      return copy(items[index]);
+    },
+
+    remove(id) {
+      const index = indexOf(id);
+      if (index === -1) return false;
+      items.splice(index, 1);
+      onChange(items);
+      return true;
+    },
+  };
+}
+
+// ---------- Usuarios: se guardan en data/users.json para no perderlos al reiniciar ----------
+const USERS_FILE = path.join(__dirname, "..", "data", "users.json");
+
+function loadUsers() {
+  try {
+    return JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
+  } catch {
+    return seed.users;
+  }
+}
+
+function saveUsers(items) {
+  fs.mkdirSync(path.dirname(USERS_FILE), { recursive: true });
+  fs.writeFileSync(USERS_FILE, JSON.stringify(items, null, 2));
+}
+
+module.exports = {
+  restaurants: createCollection(seed.restaurants),
+  dishes: createCollection(seed.dishes),
+  users: createCollection(loadUsers(), saveUsers),
+};
+
+===== src/utils.js =====
+const { BRAND_KEYS } = require("./constants");
+
+// Normaliza texto para comparar: minusculas, sin tildes, sin espacios ni apostrofes
+// ("McDonald's" -> "mcdonalds", "Chamberí" -> "chamberi")
+function normalize(text) {
+  return String(text ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]/g, "");
+}
+
+// Busca un valor en una lista fija sin importar mayusculas/tildes y devuelve el valor oficial
+// pickOption(AREAS, "chamberi") -> "Chamberí"   ·   pickOption(AREAS, "Paris") -> undefined
+function pickOption(options, value) {
+  const wanted = normalize(value);
+  return options.find((option) => normalize(option) === wanted);
+}
+
+// Marca a partir de un nombre de local: "Telepizza Gran Vía" -> "telepizza"
+function brandKeyFromName(name) {
+  const clean = normalize(name);
+  return clean ? BRAND_KEYS.find((key) => clean.startsWith(key)) : undefined;
+}
+
+const round2 = (n) => Math.round(n * 100) / 100;
+
+module.exports = { normalize, pickOption, brandKeyFromName, round2 };
+
+===== src/validators/common.js =====
+// Validacion comun de body y query (la usan los validators de cada recurso). Devuelve TODOS los errores a la vez: { value, errors }
+// - value: solo los campos conocidos y ya limpios (los desconocidos y el id se ignoran)
+// - errors: { campo: "mensaje" } o null si todo esta bien
+const { pickOption, round2 } = require("../utils");
+
+// ---------- Reglas por tipo de campo ----------
+function checkField(field, rule, raw) {
+  if (Array.isArray(raw)) return { error: `${field} must be a single value` };
+
+  if (rule.type === "text") {
+    if (typeof raw !== "string") return { error: `${field} must be text` };
+    const text = raw.trim();
+    if (text.length < rule.min || text.length > rule.max) {
+      return { error: `${field} must be between ${rule.min} and ${rule.max} characters` };
+    }
+    return { value: text };
+  }
+
+  if (rule.type === "number") {
+    // Se aceptan numeros y textos numericos ("7.5"), porque los formularios mandan texto
+    const n = typeof raw === "number" ? raw : typeof raw === "string" && raw.trim() !== "" ? Number(raw) : NaN;
+    if (!Number.isFinite(n)) return { error: `${field} must be a number` };
+    if (n < rule.min || n > rule.max) return { error: `${field} must be between ${rule.min} and ${rule.max}` };
+    return { value: rule.decimals !== undefined ? round2(n) : n };
+  }
+
+  if (rule.type === "option") {
+    const option = typeof raw === "string" ? pickOption(rule.options, raw) : undefined;
+    if (!option) return { error: `${field} must be one of: ${rule.options.join(", ")}` };
+    return { value: option };
+  }
+
+  throw new Error(`Unknown rule type ${rule.type}`);
+}
+
+const isEmpty = (raw) => raw === null || (typeof raw === "string" && raw.trim() === "");
+const isPlainObject = (x) => x !== null && typeof x === "object" && !Array.isArray(x);
+
+// partial = true en PATCH: los campos que no vienen no son obligatorios
+function validateBody(schema, body, { partial = false } = {}) {
+  if (!isPlainObject(body)) return { value: {}, errors: { body: "Body must be a JSON object" } };
+
+  const value = {};
+  const errors = {};
+  for (const [field, rule] of Object.entries(schema)) {
+    const raw = body[field];
+    if (raw === undefined && partial) continue;
+    if (raw === undefined || isEmpty(raw)) {
+      errors[field] = `${field} is required`;
+      continue;
+    }
+    const result = checkField(field, rule, raw);
+    if (result.error) errors[field] = result.error;
+    else value[field] = result.value;
+  }
+
+  if (partial && Object.keys(value).length === 0 && Object.keys(errors).length === 0) {
+    errors.body = `Send at least one of: ${Object.keys(schema).join(", ")}`;
+  }
+  return { value, errors: Object.keys(errors).length ? errors : null };
+}
+
+// En la query todo es opcional; los parametros desconocidos se ignoran
+function validateQuery(schema, query) {
+  const value = {};
+  const errors = {};
+  for (const [field, rule] of Object.entries(schema)) {
+    const raw = query[field];
+    if (raw === undefined || raw === "") continue;
+    const result = checkField(field, rule, raw);
+    if (result.error) errors[field] = result.error;
+    else value[field] = result.value;
+  }
+  return { value, errors };
+}
+
+module.exports = { validateBody, validateQuery };
+
+===== src/validators/dishes.js =====
+// Validator del recurso dishes: esquema del body (POST/PUT/PATCH) y de los filtros (GET /api/dishes?...)
+const { BRAND_KEYS, CATEGORIES } = require("../constants");
+const { validateBody, validateQuery } = require("./common");
+
+const dishSchema = {
+  name: { type: "text", min: 2, max: 60 },
+  brand: { type: "option", options: BRAND_KEYS },
+  category: { type: "option", options: CATEGORIES },
+  price: { type: "number", min: 0.1, max: 500, decimals: 2 },
+};
+
+const dishQuerySchema = {
+  q: { type: "text", min: 1, max: 60 },
+  brand: dishSchema.brand,
+  category: dishSchema.category,
+  minPrice: { type: "number", min: 0, max: 500 },
+  maxPrice: { type: "number", min: 0, max: 500 },
+};
+
+// options = { partial: true } en PATCH
+const validateDish = (body, options) => validateBody(dishSchema, body, options);
+
+function validateDishQuery(query) {
+  const { value, errors } = validateQuery(dishQuerySchema, query);
+  if (value.minPrice !== undefined && value.maxPrice !== undefined && value.minPrice > value.maxPrice) {
+    errors.minPrice = "minPrice cannot be greater than maxPrice";
+  }
+  return { value, errors: Object.keys(errors).length ? errors : null };
+}
+
+module.exports = { validateDish, validateDishQuery };
+
+===== src/validators/restaurants.js =====
+// Validator del recurso restaurants: esquema del body (POST/PUT/PATCH) y de los filtros (GET /api/restaurants?...)
+const { BRAND_KEYS, AREAS, TYPES } = require("../constants");
+const { validateBody, validateQuery } = require("./common");
+
+const restaurantSchema = {
+  name: { type: "text", min: 2, max: 60 },
+  brand: { type: "option", options: BRAND_KEYS },
+  area: { type: "option", options: AREAS },
+  type: { type: "option", options: TYPES },
+  lat: { type: "number", min: -90, max: 90 },
+  lon: { type: "number", min: -180, max: 180 },
+};
+
+const restaurantQuerySchema = {
+  q: { type: "text", min: 1, max: 60 },
+  brand: restaurantSchema.brand,
+  area: restaurantSchema.area,
+  type: restaurantSchema.type,
+};
+
+// options = { partial: true } en PATCH
+const validateRestaurant = (body, options) => validateBody(restaurantSchema, body, options);
+
+function validateRestaurantQuery(query) {
+  const { value, errors } = validateQuery(restaurantQuerySchema, query);
+  return { value, errors: Object.keys(errors).length ? errors : null };
+}
+
+module.exports = { validateRestaurant, validateRestaurantQuery };

@@ -58,7 +58,8 @@ function getRestaurant(req, res) {
 function createRestaurant(req, res) {
   const { value, errors } = validateRestaurant(req.body);
   if (errors) return res.status(400).json({ errors });
-  res.status(201).json(store.restaurants.create(value));
+  const created = store.restaurants.create(value);
+  res.status(201).location(`${req.baseUrl}/${created.id}`).json(created);
 }
 
 // PUT /api/restaurants/:id -> sustituye el restaurante entero (todos los campos obligatorios)

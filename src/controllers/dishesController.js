@@ -74,7 +74,8 @@ function createDish(req, res) {
   const { value, errors } = validateDish(req.body);
   if (errors) return res.status(400).json({ errors });
   if (isDuplicate(value)) return duplicate(res);
-  res.status(201).json(store.dishes.create(value));
+  const created = store.dishes.create(value);
+  res.status(201).location(`${req.baseUrl}/${created.id}`).json(created);
 }
 
 // PUT /api/dishes/:id

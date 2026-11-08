@@ -1,7 +1,8 @@
-// Logica de /order, /order/total y /orders (pedidos del usuario conectado)
+// Logica del checkout: /order, /order/total y /orders (pedidos del usuario conectado).
+// Los pedidos se guardan en la coleccion orders, la misma que gestiona /api/orders.
 const store = require("../store");
 const { userFromRequest } = require("../sessions");
-const { ORDER_TYPES } = require("../constants");
+const { ORDER_TYPES, AREAS, PAYMENTS } = require("../constants");
 const { normalize, pickOption, brandKeyFromName, round2 } = require("../utils");
 const { DISCOUNT_PERCENT, deliveryFeePercent, isValidCode } = require("../pricing");
 
@@ -97,41 +98,51 @@ function calculateTotal(req, res) {
 // Hay que volver a escribir la contrasena.
 function saveOrder(req, res) {
   const user = req.user;
-  const { password, restaurant, location, type, items, payment } = req.body;
+  const { password, restaurant, location, items } = req.body;
   if (password !== user.password) {
     return res.status(401).json({ error: "Incorrect password" });
   }
 
-  const price = computePrice(req.body, user);
+  // Zona, tipo y forma de pago tienen que ser de las listas fijas (todos los errores a la vez)
+  const area = pickOption(AREAS, location);
+  const type = pickOption(ORDER_TYPES, req.body.type);
+  const payment = pickOption(PAYMENTS, req.body.payment);
+  const errors = {};
+  if (!area) errors.location = `location must be one of: ${AREAS.join(", ")}`;
+  if (!type) errors.type = `type must be one of: ${ORDER_TYPES.join(", ")}`;
+  if (!payment) errors.payment = `payment must be one of: ${PAYMENTS.join(", ")}`;
+  if (Object.keys(errors).length) return badRequest(res, errors);
+
+  const price = computePrice({ ...req.body, type }, user);
   if (price.error) return res.status(price.status).json({ error: price.error });
 
-  const order = {
-    id: Date.now(),
-    date: new Date().toISOString(),
-    restaurant,
-    location,
+  const order = store.orders.create({
+    email: user.email,
+    brand: brandKeyFromName(restaurant),
+    area,
     type,
     payment,
+    status: "pending",
     items: items.map(({ dish, quantity }) => ({ dish, quantity: Number(quantity) })),
     subtotal: price.subtotal,
     discount: price.discount,
     deliveryFee: price.deliveryFee,
     deliveryFeePercent: price.deliveryFeePercent,
     total: price.total,
-  };
-
-  store.users.update(user.id, {
-    orders: [...(user.orders || []), order],
-    // El codigo de descuento solo vale una vez
-    discountUsed: Boolean(user.discountUsed || price.discount > 0),
+    date: new Date().toISOString(),
+    userId: user.id,
   });
+
+  // El codigo de descuento solo vale una vez
+  if (price.discount > 0) store.users.update(user.id, { discountUsed: true });
 
   res.status(201).json({ message: "Order placed", order });
 }
 
 // GET /orders — historial del usuario conectado (el mas nuevo primero)
 function listOrders(req, res) {
-  res.json((req.user.orders || []).slice().reverse());
+  const mine = store.orders.all().filter((o) => o.userId === req.user.id);
+  res.json(mine.reverse());
 }
 
 module.exports = { createOrder, calculateTotal, saveOrder, listOrders };

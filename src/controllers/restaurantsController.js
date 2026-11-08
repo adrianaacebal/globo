@@ -1,7 +1,7 @@
 // Logica de /api/restaurants (locales de cada marca)
 const store = require("../store");
 const { validateRestaurant, validateRestaurantQuery } = require("../validators/restaurants");
-const { normalize } = require("../utils");
+const { normalize, countBy } = require("../utils");
 
 // Aplica los filtros de la query: ?q=&brand=&area=&type=
 // q busca en el nombre y en la zona ("retiro" encuentra "Telepizza Atocha", que esta en Retiro)
@@ -14,14 +14,6 @@ function filterRestaurants(list, filters) {
       (!filters.type || r.type === filters.type) &&
       (!q || normalize(r.name + r.area).includes(q))
   );
-}
-
-// { Centro: 4, Retiro: 2, ... }
-function countBy(list, field) {
-  return list.reduce((acc, item) => {
-    acc[item[field]] = (acc[item[field]] || 0) + 1;
-    return acc;
-  }, {});
 }
 
 const notFound = (res) => res.status(404).json({ error: "Restaurant not found" });
@@ -78,9 +70,12 @@ function updateRestaurant(req, res) {
   res.json(store.restaurants.update(req.id, value));
 }
 
-// DELETE /api/restaurants/:id -> 204 sin body
+// DELETE /api/restaurants/:id -> 204 sin body. Sus valoraciones se borran tambien (no quedan huerfanas)
 function deleteRestaurant(req, res) {
   if (!store.restaurants.remove(req.id)) return notFound(res);
+  for (const review of store.reviews.all()) {
+    if (review.restaurantId === req.id) store.reviews.remove(review.id);
+  }
   res.status(204).end();
 }
 

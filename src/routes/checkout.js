@@ -3,7 +3,7 @@ const express = require("express");
 const requireUser = require("../middleware/requireUser");
 const { login } = require("../controllers/authController");
 const { getMenu } = require("../controllers/dishesController");
-const { createOrder, calculateTotal, saveOrder, listOrders } = require("../controllers/ordersController");
+const { createOrder, calculateTotal, saveOrder, listOrders } = require("../controllers/checkoutController");
 
 const router = express.Router();
 

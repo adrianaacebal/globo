@@ -85,4 +85,46 @@ const users = [
   { id:4, name: "Carlos", email: "carlos@example.com", password: "password012" }
 ];
 
-module.exports = { restaurants, dishes, users };
+// Pedidos de ejemplo. Los que se hacen desde order.html llevan ademas userId (el usuario conectado)
+const orders = [
+  {
+    email: "alice@example.com", brand: "telepizza", area: "Centro", type: "delivery", payment: "card", status: "delivered",
+    items: [{ dish: "Pepperoni Pizza", quantity: 2 }], subtotal: 18, discount: 0, deliveryFee: 0.9, deliveryFeePercent: 5,
+    total: 18.9, date: "2026-11-01T13:30:00.000Z", userId: 1,
+  },
+  {
+    email: "bob@example.com", brand: "sushita", area: "Chamberí", type: "pickup", payment: "cash", status: "pending",
+    items: [{ dish: "California Roll", quantity: 1 }], subtotal: 8, discount: 0, deliveryFee: 0, deliveryFeePercent: 0,
+    total: 8, date: "2026-11-05T20:10:00.000Z", userId: 2,
+  },
+  {
+    email: "ana@example.com", brand: "burgerking", area: "Tetuán", type: "delivery", payment: "card", status: "on the way",
+    items: [{ dish: "Whopper", quantity: 2 }], subtotal: 13, discount: 0, deliveryFee: 0.91, deliveryFeePercent: 7,
+    total: 13.91, date: "2026-11-07T21:00:00.000Z", userId: 3,
+  },
+];
+
+// Reclamaciones de ejemplo (las nuevas llegan desde complaint.html)
+const complaints = [
+  { name: "Alice", email: "alice@example.com", brand: "telepizza", type: "delivery", date: "2026-11-01", message: "The pizza arrived 40 minutes late and cold.", status: "resolved", createdAt: "2026-11-01T15:00:00.000Z" },
+  { name: "Bob", email: "bob@example.com", brand: "mcdonalds", type: "food", date: "2026-11-03", message: "My burger was missing the cheese I paid for.", status: "in progress", createdAt: "2026-11-03T19:20:00.000Z" },
+  { name: "Ana", email: "ana@example.com", brand: "sushita", type: "payment", date: "2026-11-06", message: "I was charged twice for the same order.", status: "open", createdAt: "2026-11-06T12:45:00.000Z" },
+];
+
+// Mensajes de contacto de ejemplo (los nuevos llegan desde contact.html)
+const messages = [
+  { name: "Carlos", email: "carlos@example.com", subject: "account", message: "How can I change the email of my account?", status: "answered", createdAt: "2026-11-02T10:00:00.000Z" },
+  { name: "Lucia", email: "lucia@example.com", subject: "restaurant", message: "Will you add more restaurants in Retiro soon?", status: "read", createdAt: "2026-11-04T17:30:00.000Z" },
+  { name: "Pedro", email: "pedro@example.com", subject: "order", message: "Can I schedule an order for tomorrow at lunch time?", status: "new", createdAt: "2026-11-07T09:15:00.000Z" },
+];
+
+// Valoraciones de ejemplo. restaurantId apunta a un restaurante de la lista de arriba
+const reviews = [
+  { restaurantId: 1, author: "Alice", rating: 5, comment: "Fast service and the Whopper was perfect.", createdAt: "2026-11-01T14:00:00.000Z" },
+  { restaurantId: 1, author: "Bob", rating: 3, comment: "Good food but a long queue.", createdAt: "2026-11-02T13:00:00.000Z" },
+  { restaurantId: 4, author: "Ana", rating: 4, comment: "Clean and quick, right in Gran Vía.", createdAt: "2026-11-03T20:00:00.000Z" },
+  { restaurantId: 12, author: "Carlos", rating: 5, comment: "Best California rolls in Madrid.", createdAt: "2026-11-04T21:00:00.000Z" },
+  { restaurantId: 20, author: "Lucia", rating: 2, comment: "The pizza was cold when it arrived.", createdAt: "2026-11-05T22:00:00.000Z" },
+];
+
+module.exports = { restaurants, dishes, users, orders, complaints, messages, reviews };

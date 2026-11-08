@@ -6,7 +6,10 @@ const { notFound, errorHandler } = require("./middleware/errors");
 const restaurantsRouter = require("./routes/restaurants");
 const dishesRouter = require("./routes/dishes");
 const ordersRouter = require("./routes/orders");
-const tasksRouter = require("./routes/tasks");
+const complaintsRouter = require("./routes/complaints");
+const messagesRouter = require("./routes/messages");
+const reviewsRouter = require("./routes/reviews");
+const checkoutRouter = require("./routes/checkout");
 
 const app = express();
 
@@ -22,20 +25,13 @@ app.use(logger);
 // API
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
-// Session 13 lab: reflects the URL segment -> /echo/hi gives { "echo": "hi" }
-app.get("/echo/:msg", (req, res) => res.json({ echo: req.params.msg }));
-
-// Session 13 lab: Tasks API (thin router -> tasksController)
-app.use("/tasks", tasksRouter);
-
-// Session 13 lab: forces an error to prove the error handler (registered last) catches it
-app.get("/boom", (req, res, next) => {
-  next(new Error("Boom! Forced failure"));
-});
-
 app.use("/api/restaurants", restaurantsRouter);
 app.use("/api/dishes", dishesRouter);
-app.use("/", ordersRouter); // /login, /menu, /order, /order/total, /orders
+app.use("/api/orders", ordersRouter);
+app.use("/api/complaints", complaintsRouter);
+app.use("/api/messages", messagesRouter);
+app.use("/api/reviews", reviewsRouter);
+app.use("/", checkoutRouter); // /login, /menu, /order, /order/total, /orders
 
 // El codigo del servidor y los datos (usuarios y contrasenas) no se sirven al navegador
 const PRIVATE = /^\/(src|data|node_modules|postman|package(-lock)?\.json)(\/|$)/i;

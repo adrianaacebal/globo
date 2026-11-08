@@ -45,8 +45,10 @@ restaurants   1 ───── N  orders          orders.restaurant + orders.lo
 orders        N ───── M  dishes          through orderItems (orderId, dish, quantity)
 ```
 
-Today `orders` are stored inside each user (`users[i].orders`). In Session 22 they become their
-own `orders` and `order_items` tables with foreign keys, and `brand` can become a `brands` table.
+`orders` are their own collection (`/api/orders`, saved in `data/orders.json`) and point to the
+user with `userId`; the dishes of each order are kept inside it (`items`). Practice 1 also added
+`reviews` (→ `restaurants` via `restaurantId`), `complaints` and `messages`. In Session 22 orders
+become `orders` and `order_items` tables with foreign keys, and `brand` can become a `brands` table.
 
 ## 0.4 CRUD build order
 

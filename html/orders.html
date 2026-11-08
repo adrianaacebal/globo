@@ -1,0 +1,250 @@
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> GLOBO - Manage orders </title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+    <!-- Guarda si el menu esta abierto (marcado) o cerrado (sin marcar) -->
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="../images/image.png" alt="Globo logo">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
+                <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
+                <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
+                <li><a href="reviews.html"><span class="nav-icon">⭐</span>Manage reviews</a></li>
+                <li><a href="complaints.html"><span class="nav-icon">📋</span>Manage complaints</a></li>
+                <li><a href="messages.html"><span class="nav-icon">💬</span>Manage messages</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+     <section>
+        <h1>Manage orders</h1>
+        <p>Every order placed on GLOBO. Change its status as it moves from the kitchen to the customer, or add an order taken by phone.</p>
+
+        <!-- Filtros: se mandan al servidor como ?q=&status=&brand=&area=&type=&payment=&minTotal=&maxTotal= -->
+        <form id="filters" class="search-box" role="search">
+            <div class="filter-grid">
+                <div>
+                    <label for="f-q">Customer email</label>
+                    <input id="f-q" name="q" type="search" placeholder="e.g. alice" autocomplete="off">
+                    <p class="field-error" data-error-for="q"></p>
+                </div>
+                <div>
+                    <label for="f-status">Status</label>
+                    <select id="f-status" name="status">
+                        <option value="">All statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="preparing">Preparing</option>
+                        <option value="on the way">On the way</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <p class="field-error" data-error-for="status"></p>
+                </div>
+                <div>
+                    <label for="f-brand">Brand</label>
+                    <select id="f-brand" name="brand">
+                        <option value="">All brands</option>
+                        <option value="burgerking">Burger King</option>
+                        <option value="mcdonalds">McDonald's</option>
+                        <option value="sushita">Sushita</option>
+                        <option value="telepizza">Telepizza</option>
+                        <option value="honestgreens">Honest Greens</option>
+                    </select>
+                    <p class="field-error" data-error-for="brand"></p>
+                </div>
+                <div>
+                    <label for="f-area">Area</label>
+                    <select id="f-area" name="area">
+                        <option value="">All areas</option>
+                        <option value="Centro">Centro</option>
+                        <option value="Chamartín">Chamartín</option>
+                        <option value="Chamberí">Chamberí</option>
+                        <option value="Fuencarral">Fuencarral</option>
+                        <option value="Moncloa">Moncloa</option>
+                        <option value="Retiro">Retiro</option>
+                        <option value="Tetuán">Tetuán</option>
+                    </select>
+                    <p class="field-error" data-error-for="area"></p>
+                </div>
+                <div>
+                    <label for="f-type">Type</label>
+                    <select id="f-type" name="type">
+                        <option value="">All types</option>
+                        <option value="delivery">Delivery</option>
+                        <option value="pickup">Pick up</option>
+                    </select>
+                    <p class="field-error" data-error-for="type"></p>
+                </div>
+                <div>
+                    <label for="f-payment">Payment</label>
+                    <select id="f-payment" name="payment">
+                        <option value="">All payments</option>
+                        <option value="card">Card</option>
+                        <option value="cash">Cash</option>
+                    </select>
+                    <p class="field-error" data-error-for="payment"></p>
+                </div>
+                <div>
+                    <label for="f-min">Min total (€)</label>
+                    <input id="f-min" name="minTotal" type="number" min="0" step="1">
+                    <p class="field-error" data-error-for="minTotal"></p>
+                </div>
+                <div>
+                    <label for="f-max">Max total (€)</label>
+                    <input id="f-max" name="maxTotal" type="number" min="0" step="1">
+                    <p class="field-error" data-error-for="maxTotal"></p>
+                </div>
+            </div>
+            <button type="button" id="filters-reset" class="link-button">Clear filters</button>
+        </form>
+
+        <!-- Estadisticas de GET /api/orders/stats (con los mismos filtros) -->
+        <ul id="stats" class="stats-chips" aria-label="Statistics"></ul>
+
+        <div class="admin-layout">
+            <!-- Lista: cargando / error / vacia / resultados -->
+            <div>
+                <p id="list-state" class="list-state" role="status">Loading...</p>
+                <ul id="items" class="admin-list"></ul>
+            </div>
+
+            <!-- Formulario para crear (POST) o editar (PUT). Los errores salen debajo de cada campo -->
+            <form id="item-form" class="login-box admin-form" novalidate>
+                <h2 id="form-title">Add an order</h2>
+
+                <label for="o-email">Customer email</label>
+                <input id="o-email" name="email" type="email" maxlength="100" placeholder="customer@example.com">
+                <p class="field-error" data-error-for="email"></p>
+
+                <label for="o-brand">Brand</label>
+                <select id="o-brand" name="brand">
+                    <option value="">Select a brand</option>
+                    <option value="burgerking">Burger King</option>
+                    <option value="mcdonalds">McDonald's</option>
+                    <option value="sushita">Sushita</option>
+                    <option value="telepizza">Telepizza</option>
+                    <option value="honestgreens">Honest Greens</option>
+                </select>
+                <p class="field-error" data-error-for="brand"></p>
+
+                <label for="o-area">Area</label>
+                <select id="o-area" name="area">
+                    <option value="">Select an area</option>
+                    <option value="Centro">Centro</option>
+                    <option value="Chamartín">Chamartín</option>
+                    <option value="Chamberí">Chamberí</option>
+                    <option value="Fuencarral">Fuencarral</option>
+                    <option value="Moncloa">Moncloa</option>
+                    <option value="Retiro">Retiro</option>
+                    <option value="Tetuán">Tetuán</option>
+                </select>
+                <p class="field-error" data-error-for="area"></p>
+
+                <label for="o-type">Type</label>
+                <select id="o-type" name="type">
+                    <option value="">Select a type</option>
+                    <option value="delivery">Delivery</option>
+                    <option value="pickup">Pick up</option>
+                </select>
+                <p class="field-error" data-error-for="type"></p>
+
+                <label for="o-payment">Payment</label>
+                <select id="o-payment" name="payment">
+                    <option value="">Select a payment</option>
+                    <option value="card">Card</option>
+                    <option value="cash">Cash</option>
+                </select>
+                <p class="field-error" data-error-for="payment"></p>
+
+                <label for="o-status">Status</label>
+                <select id="o-status" name="status">
+                    <option value="">Pending (default)</option>
+                    <option value="pending">Pending</option>
+                    <option value="preparing">Preparing</option>
+                    <option value="on the way">On the way</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <p class="field-error" data-error-for="status"></p>
+
+                <label for="o-total">Total (€)</label>
+                <input id="o-total" name="total" type="number" step="0.01" min="0" placeholder="18.90">
+                <p class="field-error" data-error-for="total"></p>
+
+                <p id="form-message" class="login-error" role="alert" hidden></p>
+                <button type="submit">Add order</button>
+                <button type="button" id="cancel-edit" class="link-button" hidden>Cancel editing</button>
+            </form>
+        </div>
+
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="order.html">Place an order</a>
+            <a class="btn btn-secondary" href="dishes.html">Manage dishes</a>
+        </div>
+     </section>
+    </main>
+
+    </div>
+
+    <footer>
+    <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+    <p>&copy; 2026 GLOBO. All rights reserved.</p>
+    <a href="contact.html">Contact us</a>
+</footer>
+
+<script src="../crud.js"></script>
+<script>
+    // Nombres e iconos para mostrar
+    var BRAND_NAMES = { burgerking: "Burger King", mcdonalds: "McDonald's", sushita: "Sushita", telepizza: "Telepizza", honestgreens: "Honest Greens" };
+    var STATUS_ICONS = { pending: "⏳", preparing: "👩‍🍳", "on the way": "🛵", delivered: "✅", cancelled: "❌" };
+
+    setupCrud({
+        endpoint: "/api/orders",
+        article: "an",
+        label: "order",
+        describe: function (o) {
+            var dishes = (o.items || []).map(function (i) { return i.quantity + "× " + i.dish; }).join(", ");
+            return {
+                icon: STATUS_ICONS[o.status] || "🧾",
+                title: "Order #" + o.id + " — " + o.total.toFixed(2) + " €",
+                subtitle: (BRAND_NAMES[o.brand] || o.brand) + " · " + o.area + " · " + o.type + " · " + o.payment +
+                    " · " + o.status + " · " + o.email + (dishes ? " · " + dishes : "")
+            };
+        },
+        renderStats: function (s) {
+            var chips = ["Total: " + s.total, "Revenue: " + s.revenue.toFixed(2) + " €"];
+            if (s.total > 0) chips.push("Average: " + s.averageTotal.toFixed(2) + " €");
+            Object.keys(s.byStatus).forEach(function (st) { chips.push((STATUS_ICONS[st] || "") + " " + st + ": " + s.byStatus[st]); });
+            return chips;
+        }
+    });
+</script>
+</body>
+</html>

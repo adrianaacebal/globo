@@ -54,7 +54,6 @@ function login(req, res) {
     password,
     discountCode: newDiscountCode(),
     discountUsed: false,
-    orders: [],
   });
   res.status(201).json({
     name: newUser.name,

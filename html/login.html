@@ -35,6 +35,10 @@
                 <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
                 <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
                 <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
+                <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
+                <li><a href="reviews.html"><span class="nav-icon">⭐</span>Manage reviews</a></li>
+                <li><a href="complaints.html"><span class="nav-icon">📋</span>Manage complaints</a></li>
+                <li><a href="messages.html"><span class="nav-icon">💬</span>Manage messages</a></li>
                 <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
             </ul>
         </nav>
@@ -168,6 +172,8 @@
         }
     }
 
+    var BRAND_NAMES = { burgerking: "Burger King", mcdonalds: "McDonald's", sushita: "Sushita", telepizza: "Telepizza", honestgreens: "Honest Greens" };
+
     function showHistory(orders) {
         historyList.innerHTML = "";
         historyEmpty.hidden = orders.length > 0;
@@ -178,9 +184,9 @@
             var date = new Date(order.date).toLocaleString("en-GB",
                 { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
             title.innerHTML = "<strong></strong> · ";
-            title.firstChild.textContent = order.restaurant + " (" + order.location + ")";
+            title.firstChild.textContent = (BRAND_NAMES[order.brand] || order.brand) + " (" + order.area + ")";
             title.appendChild(document.createTextNode(
-                date + " · " + (order.type === "pickup" ? "Pick up" : "Delivery") +
+                date + " · " + order.status + " · " + (order.type === "pickup" ? "Pick up" : "Delivery") +
                 " · " + (order.payment === "cash" ? "Cash" : "Card")));
 
             var dishes = document.createElement("p");

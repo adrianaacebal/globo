@@ -1,6 +1,7 @@
 // Capa de datos. Los controladores SOLO hablan con estas funciones, nunca con los arrays.
 // Para pasar a una base de datos real basta con reescribir este archivo con la misma interfaz:
 //   all() · findById(id) · find(predicate) · create(data) · replace(id, data) · update(id, changes) · remove(id)
+// Colecciones: restaurants, dishes, users, orders, complaints, messages, reviews
 const fs = require("fs");
 const path = require("path");
 const seed = require("./datos");
@@ -68,24 +69,34 @@ function createCollection(initial = [], onChange = () => {}) {
   };
 }
 
-// ---------- Usuarios: se guardan en data/users.json para no perderlos al reiniciar ----------
-const USERS_FILE = path.join(__dirname, "..", "data", "users.json");
+// ---------- Usuarios y pedidos: se guardan en data/*.json para no perderlos al reiniciar ----------
+// En los tests (NODE_ENV=test) no se lee ni se escribe en disco: siempre se empieza con los datos de ejemplo.
+const DATA_DIR = path.join(__dirname, "..", "data");
+const USE_DISK = process.env.NODE_ENV !== "test";
 
-function loadUsers() {
+function loadFile(name, fallback) {
+  if (!USE_DISK) return fallback;
   try {
-    return JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
+    return JSON.parse(fs.readFileSync(path.join(DATA_DIR, name), "utf8"));
   } catch {
-    return seed.users;
+    return fallback;
   }
 }
 
-function saveUsers(items) {
-  fs.mkdirSync(path.dirname(USERS_FILE), { recursive: true });
-  fs.writeFileSync(USERS_FILE, JSON.stringify(items, null, 2));
+function saveFile(name) {
+  if (!USE_DISK) return () => {};
+  return (items) => {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+    fs.writeFileSync(path.join(DATA_DIR, name), JSON.stringify(items, null, 2));
+  };
 }
 
 module.exports = {
   restaurants: createCollection(seed.restaurants),
   dishes: createCollection(seed.dishes),
-  users: createCollection(loadUsers(), saveUsers),
+  users: createCollection(loadFile("users.json", seed.users), saveFile("users.json")),
+  orders: createCollection(loadFile("orders.json", seed.orders), saveFile("orders.json")),
+  complaints: createCollection(seed.complaints),
+  messages: createCollection(seed.messages),
+  reviews: createCollection(seed.reviews),
 };

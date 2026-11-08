@@ -1,7 +1,9 @@
-// Pantalla de gestion (restaurants.html y dishes.html): lista + filtros + estadisticas + formulario.
-// Todo pasa por el API: los filtros se aplican en el servidor, no aqui.
+// Pantalla de gestion (restaurants, dishes, orders, reviews, complaints y messages.html):
+// lista + filtros + estadisticas + formulario. Todo pasa por el API: los filtros se aplican en el servidor, no aqui.
 //
-// La pagina llama a setupCrud({ endpoint, label, plural, describe, renderStats }) y tiene estos elementos:
+// La pagina llama a setupCrud({ endpoint, label, plural, article, describe, renderStats }):
+//   describe(item) -> { icon, title, subtitle } · renderStats(stats) -> [ "texto", ... ] · article "an" -> "Add an order"
+// y tiene estos elementos:
 //   #filters (form) · #filters-reset · #stats · #list-state · #items · #item-form · #form-title
 //   #form-message · #cancel-edit · y un <p class="field-error" data-error-for="campo"> por campo
 function setupCrud(cfg) {
@@ -156,7 +158,7 @@ function setupCrud(cfg) {
 
     // ---------- Borrar ----------
     async function remove(item, button) {
-        if (!confirm('Delete "' + item.name + '"?')) return;
+        if (!confirm('Delete "' + cfg.describe(item).title + '"?')) return;
         button.disabled = true;
         try {
             var result = await api("DELETE", cfg.endpoint + "/" + item.id);
@@ -184,7 +186,7 @@ function setupCrud(cfg) {
         submitBtn.textContent = "Save changes";
         cancelBtn.hidden = false;
         form.scrollIntoView({ behavior: "smooth", block: "start" });
-        form.querySelector("input, select").focus({ preventScroll: true });
+        form.querySelector("input, select, textarea").focus({ preventScroll: true });
     }
 
     function resetForm() {
@@ -192,7 +194,7 @@ function setupCrud(cfg) {
         form.reset();
         clearErrors(form);
         setMessage("");
-        formTitle.textContent = "Add a " + cfg.label;
+        formTitle.textContent = "Add " + (cfg.article || "a") + " " + cfg.label;   // "an order"
         submitBtn.textContent = "Add " + cfg.label;
         cancelBtn.hidden = true;
     }
@@ -217,7 +219,7 @@ function setupCrud(cfg) {
             }
             var saved = result.data;
             resetForm();
-            setMessage('"' + saved.name + '" was ' + (method === "PUT" ? "updated" : "added") + " (id " + saved.id + ").", "ok");
+            setMessage('"' + cfg.describe(saved).title + '" was ' + (method === "PUT" ? "updated" : "added") + " (id " + saved.id + ").", "ok");
             load();
         } catch (err) {
             setMessage("Could not connect to the server. Please try again.", "error");

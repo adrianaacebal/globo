@@ -1,12 +1,16 @@
 {
   "info": {
     "name": "GLOBO API",
-    "description": "GLOBO food delivery API. Run the folders in order against a fresh server (npm start). baseUrl defaults to http://localhost:3000. Requests save ids and the login token in collection variables.",
+    "description": "GLOBO food delivery API. Run the folders in order against a fresh server (npm start). baseUrl is http://localhost:3000/api (REST resources); serverUrl is http://localhost:3000 (health, login, checkout, menu and error checks). Requests save ids and the login token in collection variables.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "serverUrl",
       "value": "http://localhost:3000"
     },
     {
@@ -28,6 +32,22 @@
     {
       "key": "discountCode",
       "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    },
+    {
+      "key": "complaintId",
+      "value": ""
+    },
+    {
+      "key": "messageId",
+      "value": ""
+    },
+    {
+      "key": "reviewId",
+      "value": ""
     }
   ],
   "item": [
@@ -40,9 +60,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/health",
+              "raw": "{{serverUrl}}/health",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "health"
@@ -73,12 +93,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants",
+              "raw": "{{baseUrl}}/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ]
             }
@@ -103,12 +122,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants?area=Centro&type=pizza",
+              "raw": "{{baseUrl}}/restaurants?area=Centro&type=pizza",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ],
               "query": [
@@ -142,12 +160,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants?q=gran via",
+              "raw": "{{baseUrl}}/restaurants?q=gran via",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ],
               "query": [
@@ -177,12 +194,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants?area=Paris&type=tacos",
+              "raw": "{{baseUrl}}/restaurants?area=Paris&type=tacos",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ],
               "query": [
@@ -218,12 +234,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/stats",
+              "raw": "{{baseUrl}}/restaurants/stats",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "stats"
               ]
@@ -254,12 +269,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants",
+              "raw": "{{baseUrl}}/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ]
             },
@@ -300,12 +314,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants",
+              "raw": "{{baseUrl}}/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ]
             },
@@ -344,12 +357,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -379,12 +391,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -423,12 +434,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -463,12 +473,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/abc",
+              "raw": "{{baseUrl}}/restaurants/abc",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "abc"
               ]
@@ -492,12 +501,11 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -521,12 +529,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -556,12 +563,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes",
+              "raw": "{{baseUrl}}/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ]
             }
@@ -585,12 +591,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes?brand=telepizza&category=main&minPrice=8&maxPrice=10",
+              "raw": "{{baseUrl}}/dishes?brand=telepizza&category=main&minPrice=8&maxPrice=10",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ],
               "query": [
@@ -632,12 +637,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes?minPrice=9&maxPrice=2",
+              "raw": "{{baseUrl}}/dishes?minPrice=9&maxPrice=2",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ],
               "query": [
@@ -672,12 +676,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/stats",
+              "raw": "{{baseUrl}}/dishes/stats",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "stats"
               ]
@@ -708,12 +711,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes",
+              "raw": "{{baseUrl}}/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ]
             },
@@ -751,12 +753,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes",
+              "raw": "{{baseUrl}}/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ]
             },
@@ -795,12 +796,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes",
+              "raw": "{{baseUrl}}/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes"
               ]
             },
@@ -836,12 +836,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -870,12 +869,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -914,12 +912,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -953,9 +950,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/menu?restaurant=Telepizza",
+              "raw": "{{serverUrl}}/menu?restaurant=Telepizza",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "menu"
@@ -987,12 +984,11 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -1016,12 +1012,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -1055,9 +1050,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/login",
+              "raw": "{{serverUrl}}/login",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "login"
@@ -1100,9 +1095,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/login",
+              "raw": "{{serverUrl}}/login",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "login"
@@ -1154,9 +1149,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/login",
+              "raw": "{{serverUrl}}/login",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "login"
@@ -1195,9 +1190,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/order",
+              "raw": "{{serverUrl}}/order",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "order"
@@ -1240,9 +1235,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/order",
+              "raw": "{{serverUrl}}/order",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "order"
@@ -1286,9 +1281,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/order",
+              "raw": "{{serverUrl}}/order",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "order"
@@ -1333,9 +1328,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/order/total",
+              "raw": "{{serverUrl}}/order/total",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "order",
@@ -1381,9 +1376,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/orders",
+              "raw": "{{serverUrl}}/orders",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "orders"
@@ -1423,9 +1418,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/orders",
+              "raw": "{{serverUrl}}/orders",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "orders"
@@ -1448,7 +1443,1714 @@
       ]
     },
     {
-      "name": "4. Errors",
+      "name": "4. Orders (CRUD)",
+      "item": [
+        {
+          "name": "List orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter orders (status=pending&maxTotal=50)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders?status=pending&maxTotal=50",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                },
+                {
+                  "key": "maxTotal",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "const list = pm.response.json();",
+                  "pm.test(\"Every result matches\", () => pm.expect(list.every(x => x.status === \"pending\" && x.total <= 50)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid filter -> 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders?minTotal=50&maxTotal=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "minTotal",
+                  "value": "50"
+                },
+                {
+                  "key": "maxTotal",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error for minTotal\", () => pm.expect(pm.response.json().errors).to.have.property(\"minTotal\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "stats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Has total\", () => pm.expect(pm.response.json().total).to.be.a(\"number\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"phone@example.com\",\n  \"brand\": \"telepizza\",\n  \"area\": \"Retiro\",\n  \"type\": \"pickup\",\n  \"payment\": \"cash\",\n  \"total\": 15.5,\n  \"id\": 999,\n  \"unknownField\": \"ignored\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Location header\", () => pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/api/orders/\" + r.id));",
+                  "pm.test(\"Server sets the id\", () => pm.expect(r.id).to.not.eql(999));",
+                  "pm.test(\"Unknown fields ignored\", () => pm.expect(r).to.not.have.property(\"unknownField\"));",
+                  "pm.test(\"Default value\", () => pm.expect(r.status).to.eql(\"pending\"));",
+                  "pm.collectionVariables.set(\"orderId\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create order invalid -> 400 (all errors)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nope\",\n  \"brand\": \"kfc\",\n  \"payment\": \"bitcoin\",\n  \"total\": -1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Error for email\", () => pm.expect(body.errors).to.have.property(\"email\"));",
+                  "pm.test(\"Error for brand\", () => pm.expect(body.errors).to.have.property(\"brand\"));",
+                  "pm.test(\"Error for area\", () => pm.expect(body.errors).to.have.property(\"area\"));",
+                  "pm.test(\"Error for type\", () => pm.expect(body.errors).to.have.property(\"type\"));",
+                  "pm.test(\"Error for payment\", () => pm.expect(body.errors).to.have.property(\"payment\"));",
+                  "pm.test(\"Error for total\", () => pm.expect(body.errors).to.have.property(\"total\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get order by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Same id\", () => pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get(\"orderId\"))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Replace order (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"phone@example.com\",\n  \"brand\": \"telepizza\",\n  \"area\": \"Centro\",\n  \"type\": \"delivery\",\n  \"payment\": \"card\",\n  \"status\": \"preparing\",\n  \"total\": 19.9\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Replaced\", () => pm.expect(pm.response.json()).to.include({\"email\":\"phone@example.com\",\"brand\":\"telepizza\",\"area\":\"Centro\",\"type\":\"delivery\",\"payment\":\"card\",\"status\":\"preparing\",\"total\":19.9}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update order (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"delivered\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Only that field changed\", () => pm.expect(pm.response.json()).to.include({\"email\":\"phone@example.com\",\"brand\":\"telepizza\",\"area\":\"Centro\",\"type\":\"delivery\",\"payment\":\"card\",\"status\":\"delivered\",\"total\":19.9}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get order with a bad id -> 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "abc"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete order",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 204\", () => pm.response.to.have.status(204));",
+                  "pm.test(\"Empty body\", () => pm.expect(pm.response.text()).to.eql(\"\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get deleted order -> 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Complaints (CRUD)",
+      "item": [
+        {
+          "name": "List complaints",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/complaints",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter complaints (status=open)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/complaints?status=open",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "open"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "const list = pm.response.json();",
+                  "pm.test(\"Every result matches\", () => pm.expect(list.every(x => x.status === \"open\")).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid filter -> 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/complaints?status=closed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "closed"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error for status\", () => pm.expect(pm.response.json().errors).to.have.property(\"status\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/complaints/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints",
+                "stats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Has total\", () => pm.expect(pm.response.json().total).to.be.a(\"number\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create complaint",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/complaints",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Eva\",\n  \"email\": \"eva@example.com\",\n  \"brand\": \"telepizza\",\n  \"type\": \"food\",\n  \"date\": \"2026-11-01\",\n  \"message\": \"The pizza had far too much salt.\",\n  \"id\": 999,\n  \"unknownField\": \"ignored\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Location header\", () => pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/api/complaints/\" + r.id));",
+                  "pm.test(\"Server sets the id\", () => pm.expect(r.id).to.not.eql(999));",
+                  "pm.test(\"Unknown fields ignored\", () => pm.expect(r).to.not.have.property(\"unknownField\"));",
+                  "pm.test(\"Default value\", () => pm.expect(r.status).to.eql(\"open\"));",
+                  "pm.collectionVariables.set(\"complaintId\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create complaint invalid -> 400 (all errors)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/complaints",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"E\",\n  \"email\": \"nope\",\n  \"date\": \"2999-01-01\",\n  \"message\": \"short\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Error for name\", () => pm.expect(body.errors).to.have.property(\"name\"));",
+                  "pm.test(\"Error for email\", () => pm.expect(body.errors).to.have.property(\"email\"));",
+                  "pm.test(\"Error for brand\", () => pm.expect(body.errors).to.have.property(\"brand\"));",
+                  "pm.test(\"Error for type\", () => pm.expect(body.errors).to.have.property(\"type\"));",
+                  "pm.test(\"Error for date\", () => pm.expect(body.errors).to.have.property(\"date\"));",
+                  "pm.test(\"Error for message\", () => pm.expect(body.errors).to.have.property(\"message\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get complaint by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/complaints/{{complaintId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints",
+                "{{complaintId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Same id\", () => pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get(\"complaintId\"))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Replace complaint (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/complaints/{{complaintId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints",
+                "{{complaintId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Eva\",\n  \"email\": \"eva@example.com\",\n  \"brand\": \"telepizza\",\n  \"type\": \"delivery\",\n  \"date\": \"2026-11-02\",\n  \"message\": \"The order arrived one hour late.\",\n  \"status\": \"in progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Replaced\", () => pm.expect(pm.response.json()).to.include({\"name\":\"Eva\",\"email\":\"eva@example.com\",\"brand\":\"telepizza\",\"type\":\"delivery\",\"date\":\"2026-11-02\",\"message\":\"The order arrived one hour late.\",\"status\":\"in progress\"}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update complaint (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/complaints/{{complaintId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints",
+                "{{complaintId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Only that field changed\", () => pm.expect(pm.response.json()).to.include({\"name\":\"Eva\",\"email\":\"eva@example.com\",\"brand\":\"telepizza\",\"type\":\"delivery\",\"date\":\"2026-11-02\",\"message\":\"The order arrived one hour late.\",\"status\":\"resolved\"}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get complaint with a bad id -> 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/complaints/abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints",
+                "abc"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete complaint",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/complaints/{{complaintId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints",
+                "{{complaintId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 204\", () => pm.response.to.have.status(204));",
+                  "pm.test(\"Empty body\", () => pm.expect(pm.response.text()).to.eql(\"\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get deleted complaint -> 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/complaints/{{complaintId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints",
+                "{{complaintId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. Messages (CRUD)",
+      "item": [
+        {
+          "name": "List messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter messages (subject=account)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages?subject=account",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages"
+              ],
+              "query": [
+                {
+                  "key": "subject",
+                  "value": "account"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "const list = pm.response.json();",
+                  "pm.test(\"Every result matches\", () => pm.expect(list.every(x => x.subject === \"account\")).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid filter -> 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages?subject=spam",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages"
+              ],
+              "query": [
+                {
+                  "key": "subject",
+                  "value": "spam"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error for subject\", () => pm.expect(pm.response.json().errors).to.have.property(\"subject\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages",
+                "stats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Has total\", () => pm.expect(pm.response.json().total).to.be.a(\"number\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Leo\",\n  \"email\": \"leo@example.com\",\n  \"subject\": \"account\",\n  \"message\": \"How do I change my password?\",\n  \"id\": 999,\n  \"unknownField\": \"ignored\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Location header\", () => pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/api/messages/\" + r.id));",
+                  "pm.test(\"Server sets the id\", () => pm.expect(r.id).to.not.eql(999));",
+                  "pm.test(\"Unknown fields ignored\", () => pm.expect(r).to.not.have.property(\"unknownField\"));",
+                  "pm.test(\"Default value\", () => pm.expect(r.status).to.eql(\"new\"));",
+                  "pm.collectionVariables.set(\"messageId\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create message invalid -> 400 (all errors)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"email\": \"leo\",\n  \"subject\": \"spam\",\n  \"message\": \"hi\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Error for name\", () => pm.expect(body.errors).to.have.property(\"name\"));",
+                  "pm.test(\"Error for email\", () => pm.expect(body.errors).to.have.property(\"email\"));",
+                  "pm.test(\"Error for subject\", () => pm.expect(body.errors).to.have.property(\"subject\"));",
+                  "pm.test(\"Error for message\", () => pm.expect(body.errors).to.have.property(\"message\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get message by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages/{{messageId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages",
+                "{{messageId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Same id\", () => pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get(\"messageId\"))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Replace message (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/messages/{{messageId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages",
+                "{{messageId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Leo\",\n  \"email\": \"leo@example.com\",\n  \"subject\": \"order\",\n  \"message\": \"Can I change my order after paying?\",\n  \"status\": \"read\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Replaced\", () => pm.expect(pm.response.json()).to.include({\"name\":\"Leo\",\"email\":\"leo@example.com\",\"subject\":\"order\",\"message\":\"Can I change my order after paying?\",\"status\":\"read\"}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update message (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/messages/{{messageId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages",
+                "{{messageId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"answered\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Only that field changed\", () => pm.expect(pm.response.json()).to.include({\"name\":\"Leo\",\"email\":\"leo@example.com\",\"subject\":\"order\",\"message\":\"Can I change my order after paying?\",\"status\":\"answered\"}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get message with a bad id -> 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages/abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages",
+                "abc"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete message",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages/{{messageId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages",
+                "{{messageId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 204\", () => pm.response.to.have.status(204));",
+                  "pm.test(\"Empty body\", () => pm.expect(pm.response.text()).to.eql(\"\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get deleted message -> 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages/{{messageId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "messages",
+                "{{messageId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "7. Reviews (CRUD)",
+      "item": [
+        {
+          "name": "List reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reviews",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter reviews (minRating=4)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reviews?minRating=4",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews"
+              ],
+              "query": [
+                {
+                  "key": "minRating",
+                  "value": "4"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "const list = pm.response.json();",
+                  "pm.test(\"Every result matches\", () => pm.expect(list.every(x => x.rating >= 4)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid filter -> 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reviews?minRating=9",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews"
+              ],
+              "query": [
+                {
+                  "key": "minRating",
+                  "value": "9"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error for minRating\", () => pm.expect(pm.response.json().errors).to.have.property(\"minRating\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reviews/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "stats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Has total\", () => pm.expect(pm.response.json().total).to.be.a(\"number\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reviews",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": 4,\n  \"author\": \"Iris\",\n  \"rating\": 4,\n  \"comment\": \"Quick and friendly.\",\n  \"id\": 999,\n  \"unknownField\": \"ignored\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"Location header\", () => pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/api/reviews/\" + r.id));",
+                  "pm.test(\"Server sets the id\", () => pm.expect(r.id).to.not.eql(999));",
+                  "pm.test(\"Unknown fields ignored\", () => pm.expect(r).to.not.have.property(\"unknownField\"));",
+                  "pm.collectionVariables.set(\"reviewId\", r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create review invalid -> 400 (all errors)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reviews",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": 9999,\n  \"author\": \"I\",\n  \"rating\": 4.5,\n  \"comment\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Error for restaurantId\", () => pm.expect(body.errors).to.have.property(\"restaurantId\"));",
+                  "pm.test(\"Error for author\", () => pm.expect(body.errors).to.have.property(\"author\"));",
+                  "pm.test(\"Error for rating\", () => pm.expect(body.errors).to.have.property(\"rating\"));",
+                  "pm.test(\"Error for comment\", () => pm.expect(body.errors).to.have.property(\"comment\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get review by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reviews/{{reviewId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "{{reviewId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Same id\", () => pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get(\"reviewId\"))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Replace review (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reviews/{{reviewId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "{{reviewId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": 4,\n  \"author\": \"Iris\",\n  \"rating\": 5,\n  \"comment\": \"Even better the second time.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Replaced\", () => pm.expect(pm.response.json()).to.include({\"restaurantId\":4,\"author\":\"Iris\",\"rating\":5,\"comment\":\"Even better the second time.\"}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update review (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reviews/{{reviewId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "{{reviewId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Only that field changed\", () => pm.expect(pm.response.json()).to.include({\"restaurantId\":4,\"author\":\"Iris\",\"rating\":3,\"comment\":\"Even better the second time.\"}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get review with a bad id -> 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reviews/abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "abc"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete review",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reviews/{{reviewId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "{{reviewId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 204\", () => pm.response.to.have.status(204));",
+                  "pm.test(\"Empty body\", () => pm.expect(pm.response.text()).to.eql(\"\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get deleted review -> 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reviews/{{reviewId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "{{reviewId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "8. Errors",
       "item": [
         {
           "name": "Unknown route -> 404 JSON",
@@ -1456,9 +3158,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/does-not-exist",
+              "raw": "{{serverUrl}}/does-not-exist",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "does-not-exist"
@@ -1489,12 +3191,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/restaurants",
+              "raw": "{{baseUrl}}/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "restaurants"
               ]
             },
@@ -1527,9 +3228,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/src/app.js",
+              "raw": "{{serverUrl}}/src/app.js",
               "host": [
-                "{{baseUrl}}"
+                "{{serverUrl}}"
               ],
               "path": [
                 "src",

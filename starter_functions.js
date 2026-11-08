@@ -57,15 +57,11 @@
 // ---------------------------------------------------------------------
 
 function isPrime(n) {
-  if (n < 2) {
-    return false;
+  if (n < 2 ) return false ;
+  for (let i = 2; i <= Math.sqrt(n); i++){
+    if (n%i == 0 ) return false ; 
   }
-  for (let divisor = 2; divisor <= Math.sqrt(n); divisor++) {
-    if (n % divisor === 0) {
-      return false;
-    }
-  }
-  return true;
+  return true ; 
 }
 
 // ---------------------------------------------------------------------
@@ -99,7 +95,6 @@ const countVowels = function (text) {
 const findLongestWord = (words) => {
   let longest = "";
   for (const word of words) {
-    // Strict ">" so that on a tie the first word stays
     if (word.length > longest.length) {
       longest = word;
     }

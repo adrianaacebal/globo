@@ -1,11 +1,8 @@
-// Application-level middleware: one log line per request.
-// Prints "METHOD URL -> status (ms)" once the response has been sent.
+// Application-level middleware: prints exactly one "METHOD URL" line per
+// request (e.g. "GET /tasks"), then calls next() so the request continues
+// down the pipeline. Without next() every request would hang forever.
 function logger(req, res, next) {
-  const start = Date.now();
-  res.on("finish", () => {
-    const ms = Date.now() - start;
-    console.log(`${req.method} ${req.originalUrl} -> ${res.statusCode} (${ms} ms)`);
-  });
+  console.log(`${req.method} ${req.url}`);
   next();
 }
 

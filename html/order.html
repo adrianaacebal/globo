@@ -703,7 +703,7 @@
             trackerArrived.textContent = "🎉 " + message;
             trackerArrived.hidden = false;
             if ("Notification" in window && Notification.permission === "granted") {
-                new Notification("GLOBO", { body: message, icon: "images/image.png" });
+                new Notification("GLOBO", { body: message, icon: "../images/image.png" });
             }
         }
 

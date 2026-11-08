@@ -2,11 +2,15 @@
 const request = require("supertest");
 const app = require("../src/app");
 
+// Los 400 traen { errors: [ { field, message } ] }: nos quedamos con los nombres de los campos
+const fields = (res) => res.body.errors.map((e) => e.field);
+
 const valid = {
   name: "Telepizza Test",
   brand: "telepizza",
   area: "Centro",
   type: "pizza",
+  delivery: true,
   lat: 40.42,
   lon: -3.7,
 };
@@ -29,7 +33,7 @@ describe("GET /api/restaurants", () => {
   test("400 on an invalid filter", async () => {
     const res = await request(app).get("/api/restaurants?brand=kfc");
     expect(res.status).toBe(400);
-    expect(res.body.errors).toHaveProperty("brand");
+    expect(fields(res)).toContain("brand");
   });
 });
 
@@ -66,15 +70,15 @@ describe("POST /api/restaurants", () => {
   test("400 if the body is empty", async () => {
     const res = await request(app).post("/api/restaurants").send({});
     expect(res.status).toBe(400);
-    expect(Object.keys(res.body.errors)).toEqual(
-      expect.arrayContaining(["name", "brand", "area", "type", "lat", "lon"])
+    expect(fields(res)).toEqual(
+      expect.arrayContaining(["name", "brand", "area", "type", "delivery", "lat", "lon"])
     );
   });
 
   test("400 if a field is invalid", async () => {
     const res = await request(app).post("/api/restaurants").send({ ...valid, lat: 200 });
     expect(res.status).toBe(400);
-    expect(res.body.errors).toHaveProperty("lat");
+    expect(fields(res)).toContain("lat");
   });
 });
 
@@ -89,7 +93,7 @@ describe("PUT / PATCH /api/restaurants/:id", () => {
     const { lon, ...partial } = valid;
     const res = await request(app).put("/api/restaurants/2").send(partial);
     expect(res.status).toBe(400);
-    expect(res.body.errors).toHaveProperty("lon");
+    expect(fields(res)).toContain("lon");
   });
 
   test("PUT 404 if not found", async () => {

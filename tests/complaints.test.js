@@ -2,6 +2,8 @@
 const request = require("supertest");
 const app = require("../src/app");
 
+const fields = (res) => res.body.errors.map((e) => e.field);
+
 const valid = {
   name: "Eva Test",
   email: "eva@example.com",
@@ -27,7 +29,7 @@ describe("GET /api/complaints", () => {
   test("400 on an invalid filter", async () => {
     const res = await request(app).get("/api/complaints?status=closed");
     expect(res.status).toBe(400);
-    expect(res.body.errors).toHaveProperty("status");
+    expect(fields(res)).toContain("status");
   });
 
   test("stats count by status", async () => {
@@ -51,10 +53,10 @@ describe("POST /api/complaints", () => {
   test("400 with every error at once", async () => {
     const res = await request(app).post("/api/complaints").send({ email: "nope", date: "2999-01-01" });
     expect(res.status).toBe(400);
-    expect(Object.keys(res.body.errors)).toEqual(
+    expect(fields(res)).toEqual(
       expect.arrayContaining(["name", "email", "brand", "type", "date", "message"])
     );
-    expect(res.body.errors.date).toMatch(/future/);
+    expect(res.body.errors.find((e) => e.field === "date").message).toMatch(/future/);
   });
 });
 

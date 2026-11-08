@@ -1,57 +1,58 @@
-// Logica de /api/orders: gestion de todos los pedidos (pagina orders.html).
-// Los pedidos de los clientes llegan desde el checkout (checkoutController -> POST /orders).
-const store = require("../store");
-const { validateOrder, validateOrderQuery } = require("../validators/orders");
-const { normalize, round2, countBy } = require("../utils");
+// Logica de /api/orders (CRUD de pedidos). Los pedidos que se confirman en order.html tambien acaban aqui.
+// (checkoutController.js es el flujo de la web: /order, /order/total y el historial /orders del usuario)
+const store = require("../data/store");
+const { validateOrder, validateOrderQuery } = require("../validators/ordersValidator");
+const { normalize, countBy, round2 } = require("../utils");
 
-// Campos que pone el servidor y no se pueden cambiar desde /api/orders
-const SERVER_FIELDS = ["userId", "date", "items", "subtotal", "discount", "deliveryFee", "deliveryFeePercent"];
-
-function serverFields(order) {
-  return Object.fromEntries(SERVER_FIELDS.filter((f) => order[f] !== undefined).map((f) => [f, order[f]]));
-}
-
-// Aplica los filtros de la query: ?q=&brand=&area=&type=&payment=&status=&minTotal=&maxTotal=
-// q busca en el email del cliente
-function filterOrders(list, f) {
-  const q = normalize(f.q);
+// ?search=&type=&status=&paid=  (search busca en el nombre del cliente)
+function filterOrders(list, filters) {
+  const search = normalize(filters.search);
   return list.filter(
     (o) =>
-      (!f.brand || o.brand === f.brand) &&
-      (!f.area || o.area === f.area) &&
-      (!f.type || o.type === f.type) &&
-      (!f.payment || o.payment === f.payment) &&
-      (!f.status || o.status === f.status) &&
-      (f.minTotal === undefined || o.total >= f.minTotal) &&
-      (f.maxTotal === undefined || o.total <= f.maxTotal) &&
-      (!q || normalize(o.email).includes(q))
+      (!filters.type || o.type === filters.type) &&
+      (!filters.status || o.status === filters.status) &&
+      (filters.paid === undefined || o.paid === filters.paid) &&
+      (!search || normalize(o.customer).includes(search))
   );
+}
+
+// El restaurante y el repartidor tienen que existir. Un pedido para recoger no lleva repartidor.
+function relationErrors(order) {
+  const errors = [];
+  if (!store.restaurants.findById(order.restaurantId)) {
+    errors.push({ field: "restaurantId", message: `There is no restaurant with id ${order.restaurantId}` });
+  }
+  if (order.riderId && !store.riders.findById(order.riderId)) {
+    errors.push({ field: "riderId", message: `There is no rider with id ${order.riderId}` });
+  }
+  if (order.type === "pickup" && order.riderId) {
+    errors.push({ field: "riderId", message: "A pickup order cannot have a rider" });
+  }
+  return errors;
 }
 
 const notFound = (res) => res.status(404).json({ error: "Order not found" });
 
-// GET /api/orders -> 200 [ ... ] (el mas nuevo primero)
+// GET /api/orders -> 200 [ ... ]
 function listOrders(req, res) {
-  const { value: filters, errors } = validateOrderQuery(req.query);
-  if (errors) return res.status(400).json({ errors });
-  res.json(filterOrders(store.orders.all(), filters).reverse());
+  const { valid, value: filters, errors } = validateOrderQuery(req.query);
+  if (!valid) return res.status(400).json({ errors });
+  res.json(filterOrders(store.orders.all(), filters));
 }
 
-// GET /api/orders/stats (acepta los mismos filtros)
+// GET /api/orders/stats
 function orderStats(req, res) {
-  const { value: filters, errors } = validateOrderQuery(req.query);
-  if (errors) return res.status(400).json({ errors });
-
+  const { valid, value: filters, errors } = validateOrderQuery(req.query);
+  if (!valid) return res.status(400).json({ errors });
   const list = filterOrders(store.orders.all(), filters);
-  const revenue = round2(list.reduce((sum, o) => sum + o.total, 0));
+  const revenue = list.reduce((acc, o) => acc + o.total, 0);
   res.json({
     total: list.length,
-    revenue,
+    paid: list.filter((o) => o.paid).length,
+    revenue: round2(revenue),
     averageTotal: list.length ? round2(revenue / list.length) : 0,
     byStatus: countBy(list, "status"),
-    byBrand: countBy(list, "brand"),
     byType: countBy(list, "type"),
-    byPayment: countBy(list, "payment"),
   });
 }
 
@@ -62,28 +63,34 @@ function getOrder(req, res) {
   res.json(order);
 }
 
-// POST /api/orders -> 201 (pedido hecho por telefono, sin lista de platos)
+// POST /api/orders -> 201 + Location
 function createOrder(req, res) {
-  const { value, errors } = validateOrder(req.body);
-  if (errors) return res.status(400).json({ errors });
-  const created = store.orders.create({ ...value, items: [], date: new Date().toISOString(), userId: null });
+  const { valid, value, errors } = validateOrder(req.body);
+  if (!valid) return res.status(400).json({ errors });
+  const related = relationErrors(value);
+  if (related.length) return res.status(400).json({ errors: related });
+  const created = store.orders.create(value);
   res.status(201).location(`${req.baseUrl}/${created.id}`).json(created);
 }
 
-// PUT /api/orders/:id -> sustituye los campos editables; los del servidor se conservan
+// PUT /api/orders/:id
 function replaceOrder(req, res) {
-  const current = store.orders.findById(req.id);
-  if (!current) return notFound(res);
-  const { value, errors } = validateOrder(req.body);
-  if (errors) return res.status(400).json({ errors });
-  res.json(store.orders.replace(req.id, { ...value, ...serverFields(current) }));
+  if (!store.orders.findById(req.id)) return notFound(res);
+  const { valid, value, errors } = validateOrder(req.body);
+  if (!valid) return res.status(400).json({ errors });
+  const related = relationErrors(value);
+  if (related.length) return res.status(400).json({ errors: related });
+  res.json(store.orders.replace(req.id, value));
 }
 
-// PATCH /api/orders/:id -> cambia solo los campos enviados (p. ej. { "status": "delivered" })
+// PATCH /api/orders/:id (p. ej. solo { "status": "delivered" })
 function updateOrder(req, res) {
-  if (!store.orders.findById(req.id)) return notFound(res);
-  const { value, errors } = validateOrder(req.body, { partial: true });
-  if (errors) return res.status(400).json({ errors });
+  const current = store.orders.findById(req.id);
+  if (!current) return notFound(res);
+  const { valid, value, errors } = validateOrder(req.body, { partial: true });
+  if (!valid) return res.status(400).json({ errors });
+  const related = relationErrors({ ...current, ...value });
+  if (related.length) return res.status(400).json({ errors: related });
   res.json(store.orders.update(req.id, value));
 }
 

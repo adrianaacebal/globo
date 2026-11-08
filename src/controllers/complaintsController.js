@@ -1,19 +1,17 @@
-// Logica de /api/complaints: reclamaciones de los clientes.
-// complaint.html crea las nuevas (POST) y complaints.html las gestiona (todas las operaciones).
-const store = require("../store");
-const { validateComplaint, validateComplaintQuery } = require("../validators/complaints");
+// Logica de /api/complaints (reclamaciones). complaint.html crea las nuevas y complaints.html las gestiona.
+const store = require("../data/store");
+const { validateComplaint, validateComplaintQuery } = require("../validators/complaintsValidator");
 const { normalize, countBy } = require("../utils");
 
-// Aplica los filtros de la query: ?q=&brand=&type=&status=
-// q busca en el nombre, el email y el texto de la reclamacion
-function filterComplaints(list, f) {
-  const q = normalize(f.q);
+// ?search=&brand=&type=&status=  (search busca en el nombre, el email y el texto)
+function filterComplaints(list, filters) {
+  const search = normalize(filters.search);
   return list.filter(
     (c) =>
-      (!f.brand || c.brand === f.brand) &&
-      (!f.type || c.type === f.type) &&
-      (!f.status || c.status === f.status) &&
-      (!q || normalize(c.name + c.email + c.message).includes(q))
+      (!filters.brand || c.brand === filters.brand) &&
+      (!filters.type || c.type === filters.type) &&
+      (!filters.status || c.status === filters.status) &&
+      (!search || normalize(c.name + c.email + c.message).includes(search))
   );
 }
 
@@ -21,16 +19,15 @@ const notFound = (res) => res.status(404).json({ error: "Complaint not found" })
 
 // GET /api/complaints -> 200 [ ... ] (la mas nueva primero)
 function listComplaints(req, res) {
-  const { value: filters, errors } = validateComplaintQuery(req.query);
-  if (errors) return res.status(400).json({ errors });
+  const { valid, value: filters, errors } = validateComplaintQuery(req.query);
+  if (!valid) return res.status(400).json({ errors });
   res.json(filterComplaints(store.complaints.all(), filters).reverse());
 }
 
-// GET /api/complaints/stats (acepta los mismos filtros)
+// GET /api/complaints/stats
 function complaintStats(req, res) {
-  const { value: filters, errors } = validateComplaintQuery(req.query);
-  if (errors) return res.status(400).json({ errors });
-
+  const { valid, value: filters, errors } = validateComplaintQuery(req.query);
+  if (!valid) return res.status(400).json({ errors });
   const list = filterComplaints(store.complaints.all(), filters);
   res.json({
     total: list.length,
@@ -47,10 +44,10 @@ function getComplaint(req, res) {
   res.json(complaint);
 }
 
-// POST /api/complaints -> 201 (status empieza en "open" si no se manda)
+// POST /api/complaints -> 201 + Location (status empieza en "open")
 function createComplaint(req, res) {
-  const { value, errors } = validateComplaint(req.body);
-  if (errors) return res.status(400).json({ errors });
+  const { valid, value, errors } = validateComplaint(req.body);
+  if (!valid) return res.status(400).json({ errors });
   const created = store.complaints.create({ ...value, createdAt: new Date().toISOString() });
   res.status(201).location(`${req.baseUrl}/${created.id}`).json(created);
 }
@@ -59,16 +56,16 @@ function createComplaint(req, res) {
 function replaceComplaint(req, res) {
   const current = store.complaints.findById(req.id);
   if (!current) return notFound(res);
-  const { value, errors } = validateComplaint(req.body);
-  if (errors) return res.status(400).json({ errors });
+  const { valid, value, errors } = validateComplaint(req.body);
+  if (!valid) return res.status(400).json({ errors });
   res.json(store.complaints.replace(req.id, { ...value, createdAt: current.createdAt }));
 }
 
-// PATCH /api/complaints/:id -> cambia solo los campos enviados (p. ej. { "status": "resolved" })
+// PATCH /api/complaints/:id (p. ej. solo { "status": "resolved" })
 function updateComplaint(req, res) {
   if (!store.complaints.findById(req.id)) return notFound(res);
-  const { value, errors } = validateComplaint(req.body, { partial: true });
-  if (errors) return res.status(400).json({ errors });
+  const { valid, value, errors } = validateComplaint(req.body, { partial: true });
+  if (!valid) return res.status(400).json({ errors });
   res.json(store.complaints.update(req.id, value));
 }
 

@@ -1,0 +1,116 @@
+
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title> GLOBO - Report a problem </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/exercises.js" defer></script>
+</head>
+
+<body>
+
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="images/image.png" alt="Globo logo" width="59" height="60">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+ <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
+                <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
+                <li><a href="riders.html"><span class="nav-icon">🛵</span>Manage riders</a></li>
+                <li><a href="coupons.html"><span class="nav-icon">🏷️</span>Manage coupons</a></li>
+                <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
+                <li><a href="reviews.html"><span class="nav-icon">⭐</span>Manage reviews</a></li>
+                <li><a href="complaints.html"><span class="nav-icon">📋</span>Manage complaints</a></li>
+                <li><a href="messages.html"><span class="nav-icon">💬</span>Manage messages</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+     <section>
+        <h1>Report a Problem</h1>
+
+        <!-- Se guarda con POST /api/complaints. Los errores del servidor salen debajo de cada campo -->
+        <form id="complaint-form" class="complaint-box" novalidate>
+            <label for="complaint-name">Name</label>
+            <input type="text" id="complaint-name" name="name" maxlength="60" autocomplete="name" required>
+            <p class="field-error" data-error-for="name"></p>
+
+            <label for="complaint-email">Email</label>
+            <input type="email" id="complaint-email" name="email" maxlength="100" autocomplete="email" required>
+            <p class="field-error" data-error-for="email"></p>
+
+            <label for="complaint-message">Message</label>
+            <textarea id="complaint-message" name="message" rows="5" maxlength="1000" placeholder="What happened? (at least 10 characters)" required></textarea>
+            <p class="field-error" data-error-for="message"></p>
+
+            <label for="complaint-type">Type of complaint</label>
+            <select id="complaint-type" name="type" required>
+                <option value="">Select a type</option>
+                <option value="delivery">Delivery issue</option>
+                <option value="food">Food quality</option>
+                <option value="payment">Payment issue</option>
+                <option value="other">Other</option>
+            </select>
+            <p class="field-error" data-error-for="type"></p>
+
+            <label for="complaint-brand">Restaurant</label>
+            <select id="complaint-brand" name="brand" required>
+                <option value="">Select a restaurant</option>
+                <option value="burgerking">Burger King</option>
+                <option value="mcdonalds">McDonald's</option>
+                <option value="sushita">Sushita</option>
+                <option value="telepizza">Telepizza</option>
+                <option value="honestgreens">Honest Greens</option>
+            </select>
+            <p class="field-error" data-error-for="brand"></p>
+
+            <label for="incident-date">Date of the incident</label>
+            <input type="date" id="incident-date" name="date" required>
+            <p class="field-error" data-error-for="date"></p>
+
+            <p id="complaint-error" class="login-error" role="alert" hidden></p>
+            <button type="submit">Submit Complaint</button>
+        </form>
+
+        <!-- Mensaje de exito. Se ve cuando el servidor ha guardado la queja -->
+        <div id="report-success" class="complaint-box" hidden>
+            <p>Your complaint has been submitted successfully! 🎉 Reference: <strong id="complaint-ref"></strong></p>
+            <button type="button" id="new-complaint-btn">Send another complaint</button>
+        </div>
+     </section>
+    </main>
+
+    </div>
+
+    <footer>
+        <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+        <p>&copy; 2026 GLOBO. All rights reserved.</p>
+        <p><a href="index.html">Back to homepage</a> · <a href="contact.html">Contact us</a> ·
+           <a href="https://www.instagram.com/" title="Opens Instagram, an external website">Follow us on Instagram</a></p>
+    </footer>
+
+<script src="js/api.js"></script>
+<script src="js/sendForm.js"></script>
+<script src="js/complaint.js"></script>
+</body>
+</html>

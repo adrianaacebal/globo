@@ -1,0 +1,173 @@
+
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title> GLOBO - Order online </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/exercises.js" defer></script>
+</head>
+
+<body>
+
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="images/image.png" alt="Globo logo" width="59" height="60">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+ <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
+                <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
+                <li><a href="riders.html"><span class="nav-icon">🛵</span>Manage riders</a></li>
+                <li><a href="coupons.html"><span class="nav-icon">🏷️</span>Manage coupons</a></li>
+                <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
+                <li><a href="reviews.html"><span class="nav-icon">⭐</span>Manage reviews</a></li>
+                <li><a href="complaints.html"><span class="nav-icon">📋</span>Manage complaints</a></li>
+                <li><a href="messages.html"><span class="nav-icon">💬</span>Manage messages</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+     <section>
+        <h1>Order Online</h1>
+
+        <!-- Sin cuenta no se puede pedir: se ensena esto en vez del formulario -->
+        <div id="need-login" class="complaint-box" hidden>
+            <p>🔒 <strong>You need an account to order.</strong></p>
+            <p id="need-login-reason">Log in or create your account in a few seconds
+                (and get a discount code for your next order 🎁).</p>
+            <p><a href="login.html">Go to login</a></p>
+        </div>
+
+        <form id="order-form" class="complaint-box" hidden>
+            <!-- Nombre y email salen de la cuenta con la que se ha entrado -->
+            <label for="user-name">Name</label>
+            <input type="text" id="user-name" name="name" readonly>
+
+            <label for="user-email">Email</label>
+            <input type="email" id="user-email" name="email" readonly>
+
+            <label for="order-type">Type of order</label>
+            <select id="order-type" name="type" required>
+                <option value="">Select a type</option>
+                <option value="delivery">Delivery</option>
+                <option value="pickup">Pick up</option>
+            </select>
+
+            <label for="restaurant-name">Name of the restaurant</label>
+            <select id="restaurant-name" name="restaurant" required>
+                <option value="">Select a restaurant</option>
+                <option value="Burger King">Burger King</option>
+                <option value="McDonald's">McDonald's</option>
+                <option value="Telepizza">Telepizza</option>
+                <option value="Sushita">Sushita</option>
+                <option value="Honest Greens">Honest Greens</option>
+            </select>
+
+            <label for="restaurant-location">Location of the restaurant</label>
+            <input type="text" id="restaurant-location" name="location" required>
+
+            <label for="current-location">Current location</label>
+            <!-- Se pregunta si quiere compartir la ubicacion. Si dice que no, la escribe -->
+            <div id="location-choice" class="location-choice">
+                <p>Do you want to share your location?</p>
+                <button type="button" id="use-location-btn">📍 Yes, use my location</button>
+                <button type="button" id="type-location-btn">No, I'll write it</button>
+            </div>
+            <p id="location-status" class="location-status" hidden></p>
+            <input type="text" id="current-location" name="currentLocation"
+                   placeholder="e.g. Salamanca, Chamberí, Retiro..." hidden>
+
+            <p id="order-error" class="login-error" role="alert" hidden></p>
+
+            <button type="submit">Next Page</button>
+        </form>
+
+       
+        <div id="order-success" class="complaint-box" hidden>
+ 
+            <!-- Tiempo estimado segun la distancia. Se rellena desde showEta() -->
+            <p id="order-eta" class="order-eta"></p>
+            <p><strong>Food Order</strong> — choose how many of each dish</p>
+            <!-- Una fila por plato, con su cantidad. Se rellena desde showMenu() -->
+            <div id="dish-list"></div>
+
+            <!-- Codigo de descuento (el que se da al crear la cuenta) -->
+            <label for="discount-code">Discount code (optional)</label>
+            <input type="text" id="discount-code" name="discountCode" placeholder="GLOBO-XXXXXX"
+                   autocomplete="off">
+            <p id="discount-status" class="location-status" hidden></p>
+
+            <!-- Desglose del precio. Lo calcula el servidor (POST /order/total) -->
+            <p>Subtotal: <output id="order-subtotal">0.00 €</output></p>
+            <p id="delivery-fee-row" hidden>Delivery fee (<span id="delivery-fee-label">5%</span>):
+                <output id="order-delivery-fee">0.00 €</output></p>
+            <p id="discount-row" hidden>Discount: <output id="order-discount">-0.00 €</output></p>
+            <p><strong>Total: <output id="order-total">0.00 €</output></strong></p>
+
+            <p id="dish-error" class="login-error" role="alert" hidden></p>
+
+            <button type="button" id="place-order-btn">Order</button>
+
+            <!-- Al pulsar "Order" se pregunta como se paga -->
+            <div id="payment-choice" class="location-choice" hidden>
+                <!-- Para confirmar el pedido hay que escribir la contrasena -->
+                <label for="order-password">Confirm with your password</label>
+                <input type="password" id="order-password" autocomplete="current-password">
+                <p id="payment-question">How will you pay the delivery driver?</p>
+                <button type="button" id="pay-cash-btn">💶 Cash</button>
+                <button type="button" id="pay-card-btn">💳 Card</button>
+                <p id="payment-error" class="login-error" role="alert" hidden></p>
+            </div>
+
+            <!-- Confirmacion final del pedido -->
+            <p id="order-confirmation" class="order-eta" hidden></p>
+
+            <!-- Seguimiento del pedido: la barra se llena hasta que pasa el tiempo de espera -->
+            <div id="order-tracker" class="order-tracker" hidden>
+                <p id="tracker-status" class="tracker-status">👨‍🍳 Preparing your order...</p>
+                <div class="tracker-bar" role="progressbar" aria-label="Order progress"
+                     aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div id="tracker-fill" class="tracker-fill"></div>
+                </div>
+                <p id="tracker-time" class="tracker-time"></p>
+                <p id="tracker-arrived" class="tracker-arrived" role="alert" hidden></p>
+            </div>
+
+            <button type="button" id="new-order-btn" hidden>Make another order</button>
+        </div>
+     </section>
+    </main>
+
+    </div>
+
+    <footer>
+        <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+        <p>&copy; 2026 GLOBO. All rights reserved.</p>
+        <p><a href="index.html">Back to homepage</a> · <a href="contact.html">Contact us</a> ·
+           <a href="https://www.instagram.com/" title="Opens Instagram, an external website">Follow us on Instagram</a></p>
+    </footer>
+
+<script src="js/api.js"></script>
+<script src="js/order.js"></script>
+</body>
+</html>
+

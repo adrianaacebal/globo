@@ -1,0 +1,172 @@
+<!-- Made by: Maria Cuadrado and Adriana Acebal -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> GLOBO - Manage orders </title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
+
+    <header>
+        <img class="logo-img" src="images/image.png" alt="Globo logo">
+
+          <p class="logo">
+            <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
+        </p>
+        <label class="menu-btn" for="menu-toggle">☰</label>
+
+    </header>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <p class="sidebar-title">Menu</p>
+            <ul>
+                <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="login.html"><span class="nav-icon">👤</span>Login</a></li>
+                <li><a href="order.html"><span class="nav-icon">✉️</span>Order online</a></li>
+                <li><a href="search.html"><span class="nav-icon">📍</span>Search for restaurants</a></li>
+                <li><a href="restaurants.html"><span class="nav-icon">🏪</span>Manage restaurants</a></li>
+                <li><a href="dishes.html"><span class="nav-icon">🍽️</span>Manage dishes</a></li>
+                <li><a href="riders.html"><span class="nav-icon">🛵</span>Manage riders</a></li>
+                <li><a href="coupons.html"><span class="nav-icon">🏷️</span>Manage coupons</a></li>
+                <li><a href="orders.html"><span class="nav-icon">🧾</span>Manage orders</a></li>
+                <li><a href="reviews.html"><span class="nav-icon">⭐</span>Manage reviews</a></li>
+                <li><a href="complaints.html"><span class="nav-icon">📋</span>Manage complaints</a></li>
+                <li><a href="messages.html"><span class="nav-icon">💬</span>Manage messages</a></li>
+                <li><a href="complaint.html"><span class="nav-icon">⚠️</span>Report a problem</a></li>
+            </ul>
+        </nav>
+
+    <main>
+     <section>
+        <h1>Manage orders</h1>
+        <p>See every order, change its status or assign a rider. Orders confirmed on the Order page appear here too.</p>
+
+        <!-- Filtros: se mandan al servidor como ?search=&type=&status=&paid= (se filtra en el servidor) -->
+        <form id="filters" class="search-box" role="search">
+            <div class="filter-grid">
+                <div>
+                    <label for="f-search">Customer</label>
+                    <input type="search" id="f-search" name="search" placeholder="e.g. Alice" autocomplete="off">
+                    <p class="field-error" data-error-for="search"></p>
+                </div>
+                <div>
+                    <label for="f-type">Type</label>
+                    <select id="f-type" name="type">
+                        <option value="">All types</option>
+                        <option value="delivery">🛵 Delivery</option>
+                        <option value="pickup">🏪 Pickup</option>
+                    </select>
+                    <p class="field-error" data-error-for="type"></p>
+                </div>
+                <div>
+                    <label for="f-status">Status</label>
+                    <select id="f-status" name="status">
+                        <option value="">All statuses</option>
+                        <option value="pending">🕒 Pending</option>
+                        <option value="preparing">🍳 Preparing</option>
+                        <option value="on-the-way">🛵 On the way</option>
+                        <option value="delivered">✅ Delivered</option>
+                        <option value="cancelled">❌ Cancelled</option>
+                    </select>
+                    <p class="field-error" data-error-for="status"></p>
+                </div>
+                <div>
+                    <label for="f-paid">Payment</label>
+                    <select id="f-paid" name="paid">
+                        <option value="">All</option>
+                        <option value="true">💳 Paid</option>
+                        <option value="false">💶 Not paid yet</option>
+                    </select>
+                    <p class="field-error" data-error-for="paid"></p>
+                </div>
+            </div>
+            <button type="button" id="filters-reset" class="link-button">Clear filters</button>
+        </form>
+
+        <!-- Estadisticas de GET /api/orders/stats (con los mismos filtros) -->
+        <ul id="stats" class="stats-chips" aria-label="Statistics"></ul>
+
+        <div class="admin-layout">
+            <!-- Lista: cargando / error / vacia / resultados -->
+            <div>
+                <p id="list-state" class="list-state" role="status">Loading...</p>
+                <ul id="items" class="admin-list"></ul>
+            </div>
+
+            <!-- Formulario para crear (POST) o editar (PUT). Los errores salen debajo de cada campo -->
+            <form id="item-form" class="login-box admin-form" novalidate>
+                <h2 id="form-title">Add an order</h2>
+
+                <label for="o-customer">Customer</label>
+                <input type="text" id="o-customer" name="customer" required minlength="2" maxlength="60" placeholder="e.g. Alice">
+                <p class="field-error" data-error-for="customer"></p>
+
+                <label for="o-restaurantId">Restaurant id</label>
+                <input type="number" id="o-restaurantId" name="restaurantId" step="1" required min="1" placeholder="e.g. 4">
+                <p class="field-error" data-error-for="restaurantId"></p>
+
+                <label for="o-riderId">Rider id (empty for pickup)</label>
+                <input type="number" id="o-riderId" name="riderId" step="1" min="1" placeholder="e.g. 2">
+                <p class="field-error" data-error-for="riderId"></p>
+
+                <label for="o-type">Type</label>
+                <select id="o-type" name="type" required>
+                    <option value="">Select a type</option>
+                    <option value="delivery">🛵 Delivery</option>
+                    <option value="pickup">🏪 Pickup</option>
+                </select>
+                <p class="field-error" data-error-for="type"></p>
+
+                <label for="o-status">Status</label>
+                <select id="o-status" name="status" required>
+                    <option value="">Select a status</option>
+                    <option value="pending">🕒 Pending</option>
+                    <option value="preparing">🍳 Preparing</option>
+                    <option value="on-the-way">🛵 On the way</option>
+                    <option value="delivered">✅ Delivered</option>
+                    <option value="cancelled">❌ Cancelled</option>
+                </select>
+                <p class="field-error" data-error-for="status"></p>
+
+                <label for="o-total">Total (€)</label>
+                <input type="number" id="o-total" name="total" step="0.01" required min="0" max="1000" placeholder="18.60">
+                <p class="field-error" data-error-for="total"></p>
+
+                <label class="check-label" for="o-paid">
+                    <input type="checkbox" id="o-paid" name="paid" checked> Paid
+                </label>
+                <p class="field-error" data-error-for="paid"></p>
+
+                <p id="form-message" class="login-error" role="alert" hidden></p>
+                <button type="submit">Add order</button>
+                <button type="button" id="cancel-edit" class="link-button" hidden>Cancel editing</button>
+            </form>
+        </div>
+
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="riders.html">Manage riders</a>
+            <a class="btn btn-secondary" href="restaurants.html">Manage restaurants</a>
+        </div>
+     </section>
+    </main>
+
+    </div>
+
+    <footer>
+    <p>Made by: Maria Cuadrado and Adriana Acebal</p>
+    <p>&copy; 2026 GLOBO. All rights reserved.</p>
+    <a href="contact.html">Contact us</a>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/crud.js"></script>
+<script src="js/orders.js"></script>
+</body>
+</html>

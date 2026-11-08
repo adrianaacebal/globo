@@ -18,10 +18,14 @@ const TYPES = ["burger", "pizza", "sushi", "vegan"];
 const CATEGORIES = ["main", "side", "drink", "dessert"];
 // Tipos de pedido
 const ORDER_TYPES = ["delivery", "pickup"];
-// Formas de pago
-const PAYMENTS = ["card", "cash"];
+
+// Vehiculos de los repartidores
+const VEHICLES = ["bike", "motorbike", "car"];
 // Estados de un pedido
-const ORDER_STATUSES = ["pending", "preparing", "on the way", "delivered", "cancelled"];
+const ORDER_STATUSES = ["pending", "preparing", "on-the-way", "delivered", "cancelled"];
+// A que pedidos se aplica un cupon
+const COUPON_ORDER_TYPES = ["all", ...ORDER_TYPES];
+
 // Tipos de reclamacion (los mismos que el <select> de complaint.html)
 const COMPLAINT_TYPES = ["delivery", "food", "payment", "other"];
 // Estados de una reclamacion
@@ -31,7 +35,6 @@ const MESSAGE_SUBJECTS = ["order", "restaurant", "account", "other"];
 // Estados de un mensaje de contacto
 const MESSAGE_STATUSES = ["new", "read", "answered"];
 
-
 // en Node cada archivo es un módulo (module) y exports es para que las constantes se 'saquen a fuera' y otros modulos puedan usarlas.
 module.exports = {
   BRAND_KEYS,
@@ -39,8 +42,9 @@ module.exports = {
   TYPES,
   CATEGORIES,
   ORDER_TYPES,
-  PAYMENTS,
+  VEHICLES,
   ORDER_STATUSES,
+  COUPON_ORDER_TYPES,
   COMPLAINT_TYPES,
   COMPLAINT_STATUSES,
   MESSAGE_SUBJECTS,

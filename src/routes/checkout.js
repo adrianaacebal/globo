@@ -1,4 +1,4 @@
-// Rutas que usa la web para entrar y pedir (login.html, order.html, burgers.html...)
+// Rutas del flujo de la web (login.html, order.html, burgers.html...): entrar, ver la carta y pedir
 const express = require("express");
 const requireUser = require("../middleware/requireUser");
 const { login } = require("../controllers/authController");

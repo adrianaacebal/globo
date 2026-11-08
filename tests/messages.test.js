@@ -2,6 +2,8 @@
 const request = require("supertest");
 const app = require("../src/app");
 
+const fields = (res) => res.body.errors.map((e) => e.field);
+
 const valid = {
   name: "Leo Test",
   email: "leo@example.com",
@@ -17,8 +19,8 @@ describe("GET /api/messages", () => {
     expect(res.body.every((m) => m.subject === "account")).toBe(true);
   });
 
-  test("q searches the text", async () => {
-    const res = await request(app).get("/api/messages?q=retiro");
+  test("search looks in the text", async () => {
+    const res = await request(app).get("/api/messages?search=retiro");
     expect(res.status).toBe(200);
     expect(res.body.length).toBe(1);
   });
@@ -26,7 +28,7 @@ describe("GET /api/messages", () => {
   test("400 on an invalid filter", async () => {
     const res = await request(app).get("/api/messages?subject=spam");
     expect(res.status).toBe(400);
-    expect(res.body.errors).toHaveProperty("subject");
+    expect(fields(res)).toContain("subject");
   });
 
   test("stats", async () => {
@@ -47,7 +49,7 @@ describe("POST /api/messages", () => {
   test("400 with every error at once", async () => {
     const res = await request(app).post("/api/messages").send({ message: "short" });
     expect(res.status).toBe(400);
-    expect(Object.keys(res.body.errors)).toEqual(expect.arrayContaining(["name", "email", "subject", "message"]));
+    expect(fields(res)).toEqual(expect.arrayContaining(["name", "email", "subject", "message"]));
   });
 });
 

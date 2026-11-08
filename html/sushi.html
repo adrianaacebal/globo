@@ -7,18 +7,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title> GLOBO - Burger King Menu </title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <!-- Tematica propia de la pagina de burgers -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
-    <link rel="stylesheet" href="theme-burger.css">
+    <link rel="stylesheet" href="../css/theme-burger.css">
 </head>
 
 <body class="theme-burger">
     <input type="checkbox" id="menu-toggle" class="menu-toggle" checked>
 
     <header>
-        <img class="logo-img" src="images/image.png" alt="Globo logo" width="59" height="60">
+        <img class="logo-img" src="../images/image.png" alt="Globo logo" width="59" height="60">
 
           <p class="logo">
             <span class="l1">G</span><span class="l2">L</span><span class="l3">O</span><span class="l4">B</span><span class="l5">O</span>
@@ -55,22 +55,22 @@
         <!-- Menu propio de GLOBO: se pide al servidor (GET /menu) -->
         <p id="menu-status" class="list-state" role="status" hidden></p>
         <ul id="menu-main" class="bk-menu">
-            <li><img src="images/maki_salmon.jpg" alt="Maki with Salmon" width="180" height="180"><span class="dish-name">Maki with Salmon</span><span class="dish-price">6.50 €</span></li>
-            <li><img src="images/maki_tuna.jpg" alt="Maki with Tuna" width="180" height="180"><span class="dish-name">Maki with Tuna</span><span class="dish-price">5.50 €</span></li>
-            <li><img src="images/maki_vegan.jpg" alt="Maki with Vegetables" width="180" height="180"><span class="dish-name">Maki with Vegetables</span><span class="dish-price">4.50 €</span></li>
-            <li><img src="images/niguiri_salmon.jpg" alt="Nigiri with Salmon" width="180" height="180"><span class="dish-name">Nigiri with Salmon</span><span class="dish-price">7.00 €</span></li>
-            <li><img src="images/nigiri_tuna.jpg" alt="Nigiri with Tuna" width="180" height="180"><span class="dish-name">Nigiri with Tuna</span><span class="dish-price">6.50 €</span></li>
-            <li><img src="images/nigiri_vegan.jpg" alt="Nigiri with Vegetables" width="180" height="180"><span class="dish-name">Nigiri with Vegetables</span><span class="dish-price">5.50 €</span></li>
-            <li><img src="images/California_Roll.jpg" alt="California Roll" width="180" height="180"><span class="dish-name">California Roll</span><span class="dish-price">7.00 €</span></li>
+            <li><img src="../images/maki_salmon.jpg" alt="Maki with Salmon" width="180" height="180"><span class="dish-name">Maki with Salmon</span><span class="dish-price">6.50 €</span></li>
+            <li><img src="../images/maki_tuna.jpg" alt="Maki with Tuna" width="180" height="180"><span class="dish-name">Maki with Tuna</span><span class="dish-price">5.50 €</span></li>
+            <li><img src="../images/maki_vegan.jpg" alt="Maki with Vegetables" width="180" height="180"><span class="dish-name">Maki with Vegetables</span><span class="dish-price">4.50 €</span></li>
+            <li><img src="../images/niguiri_salmon.jpg" alt="Nigiri with Salmon" width="180" height="180"><span class="dish-name">Nigiri with Salmon</span><span class="dish-price">7.00 €</span></li>
+            <li><img src="../images/nigiri_tuna.jpg" alt="Nigiri with Tuna" width="180" height="180"><span class="dish-name">Nigiri with Tuna</span><span class="dish-price">6.50 €</span></li>
+            <li><img src="../images/nigiri_vegan.jpg" alt="Nigiri with Vegetables" width="180" height="180"><span class="dish-name">Nigiri with Vegetables</span><span class="dish-price">5.50 €</span></li>
+            <li><img src="../images/california_roll.jpg" alt="California Roll" width="180" height="180"><span class="dish-name">California Roll</span><span class="dish-price">7.00 €</span></li>
         </ul>
 
      </section>
     <section>
         <h2 class="section-title"> COMPLEMENTS </h2>
         <ul id="menu-extras" class="bk-menu">
-            <li><img src="images/water.jpg" alt="Water" width="180" height="180"><span class="dish-name">Water</span><span class="dish-price">1.50 €</span></li>
-            <li><img src="images/soy_sauce.jpg" alt="Soy Sauce" width="180" height="180"><span class="dish-name">Soy Sauce</span><span class="dish-price">0.50 €</span></li>
-            <li><img src="images/herbal_tea.jpg" alt="Herbal Tea" width="180" height="180"><span class="dish-name">Herbal Tea</span><span class="dish-price">2.50 €</span></li>
+            <li><img src="../images/water.jpg" alt="Water" width="180" height="180"><span class="dish-name">Water</span><span class="dish-price">1.50 €</span></li>
+            <li><img src="../images/soy_sauce.jpg" alt="Soy Sauce" width="180" height="180"><span class="dish-name">Soy Sauce</span><span class="dish-price">0.50 €</span></li>
+            <li><img src="../images/herbal_tea.jpg" alt="Herbal Tea" width="180" height="180"><span class="dish-name">Herbal Tea</span><span class="dish-price">2.50 €</span></li>
         </ul>
        
             </li>
@@ -88,7 +88,7 @@
     </footer>
 
     <!-- Carta: se pide al servidor (GET /menu) -->
-    <script src="menu.js" data-brand="sushita"></script>
+    <script src="../menu.js" data-brand="sushita"></script>
 
 </body>
 </html>

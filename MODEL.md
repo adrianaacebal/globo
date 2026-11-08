@@ -15,12 +15,13 @@ from its brand's menu and place a delivery or pickup order.
 | Order (`order.html`) | Restaurant, area, menu, price breakdown | Build an order, see the total, confirm it | `GET /api/restaurants`, `GET /menu`, `POST /order`, `POST /order/total`, `POST /orders` |
 | Admin — restaurants (`restaurants.html`) | Table of restaurants | Create, edit, delete | `/api/restaurants` CRUD |
 | Admin — dishes (`dishes.html`) | Table of dishes | Create, edit, delete | `/api/dishes` CRUD |
-| Contact / Complaint | Static form | Send a message | — |
+| Contact (`contact.html`) / Complaint (`complaint.html`) | Form | Send a message / report a problem | `POST /api/messages`, `POST /api/complaints` |
+| Admin — riders, coupons, orders, reviews, complaints, messages | Table + form | Create, edit, delete | `/api/<resource>` CRUD |
 
 ## 0.2 Entities
 
 ```
-restaurants: { id: int, name: string, brand: enum, area: enum, type: enum, lat: number, lon: number }
+restaurants: { id: int, name: string, brand: enum, area: enum, type: enum, delivery: boolean, lat: number, lon: number }
 dishes:      { id: int, name: string, brand: enum, category: enum, price: number }
 users:       { id: int, name: string, email: string (unique), password: string, discountUsed: boolean }
 orders:      { id: int, userId: int, restaurant: string, location: string, type: "delivery"|"pickup",
@@ -45,8 +46,9 @@ restaurants   1 ───── N  orders          orders.restaurant + orders.lo
 orders        N ───── M  dishes          through orderItems (orderId, dish, quantity)
 ```
 
-`orders` are their own collection (`/api/orders`, saved in `data/orders.json`) and point to the
-user with `userId`; the dishes of each order are kept inside it (`items`). Practice 1 also added
+Each user's order history (with its dishes in `items`) is saved inside the user in `data/users.json`.
+A confirmed order is also created in the `/api/orders` resource (in memory, with `restaurantId` and
+`riderId`) so it can be managed from the admin page. Practice 1 also added
 `reviews` (→ `restaurants` via `restaurantId`), `complaints` and `messages`. In Session 22 orders
 become `orders` and `order_items` tables with foreign keys, and `brand` can become a `brands` table.
 
@@ -70,7 +72,7 @@ become `orders` and `order_items` tables with foreign keys, and `brand` can beco
 | Read / list / update | 200 |
 | Create | 201 + `Location: /<collection>/:id` |
 | Delete | 204, empty body |
-| Invalid body, query or id | 400 with `{ errors: { field: message } }` |
+| Invalid body, query or id | 400 with `{ errors: [ { field, message } ] }` |
 | Unknown id or route | 404 |
 | Duplicate (a brand already has a dish with that name) | 409 |
 | Not logged in / wrong password | 401 |

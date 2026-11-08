@@ -91,7 +91,7 @@
             <button type="button" id="filters-reset" class="link-button">Clear filters</button>
         </form>
 
-        <!-- Estadisticas de GET /restaurants/stats (con los mismos filtros) -->
+        <!-- Estadisticas de GET /api/restaurants/stats (con los mismos filtros) -->
         <ul id="stats" class="stats-chips" aria-label="Statistics"></ul>
 
         <div class="admin-layout">
@@ -179,7 +179,7 @@
     var TYPE_ICONS = { burger: "🍔", pizza: "🍕", sushi: "🍣", vegan: "🥗" };
 
     setupCrud({
-        endpoint: "/restaurants",
+        endpoint: "/api/restaurants",
         label: "restaurant",
         describe: function (r) {
             return {

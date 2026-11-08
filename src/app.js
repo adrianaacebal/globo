@@ -33,8 +33,8 @@ app.get("/boom", (req, res, next) => {
   next(new Error("Boom! Forced failure"));
 });
 
-app.use("/restaurants", restaurantsRouter);
-app.use("/dishes", dishesRouter);
+app.use("/api/restaurants", restaurantsRouter);
+app.use("/api/dishes", dishesRouter);
 app.use("/", ordersRouter); // /login, /menu, /order, /order/total, /orders
 
 // El codigo del servidor y los datos (usuarios y contrasenas) no se sirven al navegador

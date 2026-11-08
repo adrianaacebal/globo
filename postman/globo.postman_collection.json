@@ -73,11 +73,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/restaurants",
+              "raw": "{{baseUrl}}/api/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants"
               ]
             }
@@ -102,11 +103,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/restaurants?area=Centro&type=pizza",
+              "raw": "{{baseUrl}}/api/restaurants?area=Centro&type=pizza",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants"
               ],
               "query": [
@@ -140,11 +142,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/restaurants?q=gran via",
+              "raw": "{{baseUrl}}/api/restaurants?q=gran via",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants"
               ],
               "query": [
@@ -174,11 +177,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/restaurants?area=Paris&type=tacos",
+              "raw": "{{baseUrl}}/api/restaurants?area=Paris&type=tacos",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants"
               ],
               "query": [
@@ -214,11 +218,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/restaurants/stats",
+              "raw": "{{baseUrl}}/api/restaurants/stats",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants",
                 "stats"
               ]
@@ -249,11 +254,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/restaurants",
+              "raw": "{{baseUrl}}/api/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants"
               ]
             },
@@ -294,11 +300,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/restaurants",
+              "raw": "{{baseUrl}}/api/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants"
               ]
             },
@@ -337,11 +344,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -371,11 +379,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -414,11 +423,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -453,11 +463,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/restaurants/abc",
+              "raw": "{{baseUrl}}/api/restaurants/abc",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants",
                 "abc"
               ]
@@ -481,11 +492,12 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -509,11 +521,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/restaurants/{{restaurantId}}",
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants",
                 "{{restaurantId}}"
               ]
@@ -543,11 +556,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/dishes",
+              "raw": "{{baseUrl}}/api/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes"
               ]
             }
@@ -571,11 +585,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/dishes?brand=telepizza&category=main&minPrice=8&maxPrice=10",
+              "raw": "{{baseUrl}}/api/dishes?brand=telepizza&category=main&minPrice=8&maxPrice=10",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes"
               ],
               "query": [
@@ -617,11 +632,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/dishes?minPrice=9&maxPrice=2",
+              "raw": "{{baseUrl}}/api/dishes?minPrice=9&maxPrice=2",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes"
               ],
               "query": [
@@ -656,11 +672,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/dishes/stats",
+              "raw": "{{baseUrl}}/api/dishes/stats",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes",
                 "stats"
               ]
@@ -691,11 +708,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/dishes",
+              "raw": "{{baseUrl}}/api/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes"
               ]
             },
@@ -733,11 +751,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/dishes",
+              "raw": "{{baseUrl}}/api/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes"
               ]
             },
@@ -776,11 +795,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/dishes",
+              "raw": "{{baseUrl}}/api/dishes",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes"
               ]
             },
@@ -816,11 +836,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -849,11 +870,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -892,11 +914,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -964,11 +987,12 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -992,11 +1016,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/dishes/{{dishId}}",
+              "raw": "{{baseUrl}}/api/dishes/{{dishId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "dishes",
                 "{{dishId}}"
               ]
@@ -1464,11 +1489,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/restaurants",
+              "raw": "{{baseUrl}}/api/restaurants",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "restaurants"
               ]
             },

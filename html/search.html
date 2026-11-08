@@ -208,7 +208,7 @@
         }
     }
 
-    // Pide al servidor los restaurantes que coinciden: GET /restaurants?q=&area=&type=
+    // Pide al servidor los restaurantes que coinciden: GET /api/restaurants?q=&area=&type=
     async function search() {
         var id = ++lastSearch;
         var params = new URLSearchParams();
@@ -218,7 +218,7 @@
 
         info.textContent = 'Searching...';
         try {
-            var response = await fetch('/restaurants?' + params.toString());
+            var response = await fetch('/api/restaurants?' + params.toString());
             var data = await response.json();
             if (id !== lastSearch) return;   // ya hay una busqueda mas nueva
             if (!response.ok) {

@@ -28,9 +28,40 @@ function setupSendForm(cfg) {
         });
     }
 
+    // Comprobacion en el navegador ANTES de mandar nada (el servidor vuelve a validarlo todo).
+    // Usa los atributos del HTML: required, minlength, type="email" y max en las fechas.
+    // Devuelve la misma forma que el servidor: [ { field, message } ]
+    function clientErrors() {
+        var errors = [];
+        Array.prototype.forEach.call(form.elements, function (el) {
+            if (!el.name) return;
+            var value = el.value.trim();
+            if (value === "") {
+                if (el.required) errors.push({ field: el.name, message: el.name + " is required" });
+                return;
+            }
+            if (el.minLength > 0 && value.length < el.minLength) {
+                errors.push({ field: el.name, message: el.name + " must have at least " + el.minLength + " characters" });
+            } else if (el.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                errors.push({ field: el.name, message: el.name + " must be a valid email" });
+            } else if (el.type === "date" && el.max && value > el.max) {
+                errors.push({ field: el.name, message: el.name + " cannot be in the future" });
+            }
+        });
+        return errors;
+    }
+
     form.addEventListener("submit", async function (event) {
         event.preventDefault();
         clearErrors();
+
+        var local = clientErrors();
+        if (local.length > 0) {
+            showFieldErrors(local);
+            showError("Please fix the fields marked in red.");
+            return;   // no se manda nada al servidor
+        }
+
         submitBtn.disabled = true;
         submitBtn.textContent = "Sending...";
         try {

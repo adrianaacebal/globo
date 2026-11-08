@@ -69,7 +69,7 @@
         <h2 class="section-title">Send us a message</h2>
         <form id="message-form" class="complaint-box" novalidate>
             <label for="message-name">Name</label>
-            <input type="text" id="message-name" name="name" maxlength="60" autocomplete="name" required>
+            <input type="text" id="message-name" name="name" minlength="2" maxlength="60" autocomplete="name" required>
             <p class="field-error" data-error-for="name"></p>
 
             <label for="message-email">Email</label>
@@ -87,7 +87,7 @@
             <p class="field-error" data-error-for="subject"></p>
 
             <label for="message-text">Message</label>
-            <textarea id="message-text" name="message" rows="5" maxlength="1000" placeholder="At least 10 characters" required></textarea>
+            <textarea id="message-text" name="message" rows="5" minlength="10" maxlength="1000" placeholder="At least 10 characters" required></textarea>
             <p class="field-error" data-error-for="message"></p>
 
             <p id="message-error" class="login-error" role="alert" hidden></p>

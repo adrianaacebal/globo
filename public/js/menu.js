@@ -3,12 +3,8 @@
 // Pide GET /menu?restaurant=<marca> y pinta los platos:
 //   - principales y postres en #menu-main
 //   - bebidas y complementos en #menu-extras (si la pagina tiene esa lista; si no, todo en #menu-main)
-<<<<<<< HEAD
-// Si el servidor no esta arrancado, se queda la carta escrita en el HTML.
-=======
 // La carta viene SIEMPRE del API: el HTML no tiene platos escritos a mano.
 // Estados: "Loading..." mientras llega, mensaje si no hay platos, y error si el servidor falla.
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 (function () {
     var brand = document.currentScript.dataset.brand;
     var mainList = document.getElementById("menu-main");
@@ -33,10 +29,7 @@
         "Nigiri with Vegetables": "images/nigiri_vegan.jpg",
         "Soy sauce": "images/soy_sauce.jpg",
         "Herbal Tea": "images/herbal_tea.jpg",
-<<<<<<< HEAD
-=======
         "Japanese Green Tea": "images/herbal_tea.jpg",
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
         "water": "images/water.jpg",
         "Hawaiian Pizza": "images/hawaiana.jpg",
         "Pepperoni Pizza": "images/peperoni.jpg",
@@ -83,11 +76,6 @@
 
     async function load() {
         setStatus("Loading the menu...");
-<<<<<<< HEAD
-        try {
-            var result = await apiRequest("GET", "/menu?restaurant=" + encodeURIComponent(brand));
-            if (!result.ok) throw new Error("HTTP " + result.status);
-=======
         mainList.replaceChildren();
         if (extrasList) extrasList.replaceChildren();
         try {
@@ -97,29 +85,10 @@
                 setStatus("Could not load the menu (error " + result.status + "). Please try again later.");
                 return;
             }
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
             var menu = result.data;
 
             if (menu.length === 0) {
                 setStatus("This restaurant has no dishes yet.");
-<<<<<<< HEAD
-                mainList.innerHTML = "";
-                if (extrasList) extrasList.innerHTML = "";
-                return;
-            }
-
-            mainList.innerHTML = "";
-            if (extrasList) extrasList.innerHTML = "";
-            menu.forEach(function (dish) {
-                var isExtra = dish.category === "drink" || dish.category === "side";
-                var target = isExtra && extrasList ? extrasList : mainList;
-                target.appendChild(dishItem(dish));
-            });
-            setStatus("");
-        } catch (err) {
-            // Sin servidor: se queda la carta del HTML
-            setStatus("Could not load the latest menu. Showing the saved menu.");
-=======
                 return;
             }
 
@@ -136,7 +105,6 @@
         } catch (err) {
             // fetch SI lanza error si el servidor no esta arrancado
             setStatus("Could not connect to the server. Start it with npm start and try again.");
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
         }
     }
 

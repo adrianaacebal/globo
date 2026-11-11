@@ -48,8 +48,6 @@
     {
       "key": "reviewId",
       "value": ""
-<<<<<<< HEAD
-=======
     },
     {
       "key": "complaintId",
@@ -58,7 +56,6 @@
     {
       "key": "messageId",
       "value": ""
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
     }
   ],
   "item": [
@@ -2312,9 +2309,6 @@
       ]
     },
     {
-<<<<<<< HEAD
-      "name": "7. Login and orders",
-=======
       "name": "7. Complaints (CRUD)",
       "item": [
         {
@@ -3166,7 +3160,6 @@
     },
     {
       "name": "9. Login and orders",
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
       "item": [
         {
           "name": "Register invalid -> 400",
@@ -3572,11 +3565,7 @@
       ]
     },
     {
-<<<<<<< HEAD
-      "name": "8. Errors",
-=======
       "name": "10. Errors",
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
       "item": [
         {
           "name": "Unknown route -> 404 JSON",

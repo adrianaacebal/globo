@@ -5,11 +5,6 @@
 // - errors: [ { field, message }, ... ]  (vacio si todo esta bien)
 //
 // Tipos de regla: text (min, max, uppercase) · number (min, max, integer, decimals)
-<<<<<<< HEAD
-//                 boolean · option (options). Cualquier regla puede llevar optional: true
-const { pickOption, round2 } = require("../utils");
-
-=======
 //                 boolean · option (options) · email · date (notFuture)
 // Cualquier regla puede llevar optional: true, o default: valor (se usa si el campo no llega en POST/PUT)
 const { pickOption, round2 } = require("../utils");
@@ -17,7 +12,6 @@ const { pickOption, round2 } = require("../utils");
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 // ---------- Reglas por tipo de campo ----------
 // Devuelve { value } si el dato es correcto o { error: "mensaje" } si no
 function checkField(field, rule, raw, { fromQuery = false } = {}) {
@@ -54,8 +48,6 @@ function checkField(field, rule, raw, { fromQuery = false } = {}) {
     return { value: option };
   }
 
-<<<<<<< HEAD
-=======
   // Email: se guarda en minusculas para que Ana@Mail.com y ana@mail.com sean el mismo
   if (rule.type === "email") {
     const email = typeof raw === "string" ? raw.trim().toLowerCase() : "";
@@ -76,7 +68,6 @@ function checkField(field, rule, raw, { fromQuery = false } = {}) {
     return { value: text };
   }
 
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
   throw new Error(`Unknown rule type ${rule.type}`);
 }
 
@@ -95,12 +86,8 @@ function validateBody(schema, body, { partial = false } = {}) {
     if (raw === undefined && partial) continue;
     if (isEmpty(raw)) {
       // Un campo opcional vacio se guarda como null (p. ej. un pedido para recoger no tiene repartidor)
-<<<<<<< HEAD
-      if (rule.optional) value[field] = null;
-=======
       if (rule.default !== undefined) value[field] = rule.default;   // p. ej. status "open"
       else if (rule.optional) value[field] = null;
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
       else errors.push({ field, message: `${field} is required` });
       continue;
     }

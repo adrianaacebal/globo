@@ -1,17 +1,9 @@
 // Router fino: solo une rutas con funciones del controlador.
 const express = require("express");
-<<<<<<< HEAD
-const validateId = require("../middleware/validateId");
-const c = require("../controllers/restaurantsController");
-
-const router = express.Router();
-
-=======
 const c = require("../controllers/restaurantsController");
 const validateId = require("../middleware/validateId");
 
 const router = express.Router();
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 router.param("id", validateId);
 
 router.get("/", c.listRestaurants);

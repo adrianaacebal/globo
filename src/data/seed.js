@@ -117,9 +117,6 @@ const reviews = [
   { restaurantId: 29, author: "Lucía", rating: 5, comment: "Best vegan burger in Madrid!", verified: false },
 ];
 
-<<<<<<< HEAD
-module.exports = { restaurants, dishes, users, riders, coupons, orders, reviews };
-=======
 // Reclamaciones de ejemplo (las nuevas llegan desde complaint.html)
 const complaints = [
   { name: "Alice", email: "alice@example.com", brand: "telepizza", type: "delivery", date: "2026-11-01", message: "The pizza arrived 40 minutes late and cold.", status: "resolved", createdAt: "2026-11-01T15:00:00.000Z" },
@@ -135,4 +132,3 @@ const messages = [
 ];
 
 module.exports = { restaurants, dishes, users, riders, coupons, orders, reviews, complaints, messages };
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c

@@ -17,12 +17,7 @@
     "email": "nmbdebjdnbdj@kjdjdd",
     "password": "jbhhhjjjjjjjjjjjjjj",
     "discountCode": "GLOBO-0A1530",
-<<<<<<< HEAD
-    "discountUsed": false,
-    "orders": []
-=======
     "discountUsed": false
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
   },
   {
     "id": 4,
@@ -30,84 +25,6 @@
     "email": "maria@gmail.com",
     "password": "maria@gmail.com",
     "discountCode": "GLOBO-884A42",
-<<<<<<< HEAD
-    "discountUsed": true,
-    "orders": [
-      {
-        "id": 1793825467581,
-        "date": "2026-11-04T20:51:07.581Z",
-        "restaurant": "Telepizza",
-        "location": "Centro ",
-        "type": "delivery",
-        "payment": "cash",
-        "items": [
-          {
-            "dish": "Hawaiian Pizza",
-            "quantity": 12
-          },
-          {
-            "dish": "Pepperoni Pizza",
-            "quantity": 5
-          },
-          {
-            "dish": "Veggie Pizza",
-            "quantity": 3
-          },
-          {
-            "dish": "Cheese Pizza",
-            "quantity": 2
-          },
-          {
-            "dish": "Margarita Pizza",
-            "quantity": 2
-          },
-          {
-            "dish": "Chicken Pizza",
-            "quantity": 6
-          },
-          {
-            "dish": "Meat Lovers Pizza",
-            "quantity": 3
-          },
-          {
-            "dish": "Tuna Pizza",
-            "quantity": 5
-          }
-        ],
-        "subtotal": 330.5,
-        "discount": 0,
-        "deliveryFee": 33.05,
-        "total": 363.55
-      },
-      {
-        "id": 1793825609182,
-        "date": "2026-11-04T20:53:29.182Z",
-        "restaurant": "Honest Greens",
-        "location": "Centro ",
-        "type": "delivery",
-        "payment": "cash",
-        "items": [
-          {
-            "dish": "Quinoa Salad",
-            "quantity": 5
-          },
-          {
-            "dish": "Vegan Burger",
-            "quantity": 8
-          },
-          {
-            "dish": "Green Smoothie",
-            "quantity": 4
-          }
-        ],
-        "subtotal": 132,
-        "discount": 13.2,
-        "deliveryFee": 0,
-        "total": 118.8
-      }
-    ]
-=======
     "discountUsed": true
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
   }
 ]

@@ -15,11 +15,7 @@ function filterCoupons(list, filters) {
 }
 
 // Dos cupones no pueden tener el mismo codigo (exceptId: el que se esta editando)
-<<<<<<< HEAD
-const isDuplicate = (code, exceptId) => Boolean(store.coupons.find((c) => c.id !== exceptId && c.code === code));
-=======
 const isDuplicate = (code, exceptId) => Boolean(store.coupons.all().find((c) => c.id !== exceptId && c.code === code));
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 
 const notFound = (res) => res.status(404).json({ error: "Coupon not found" });
 const duplicate = (res) =>

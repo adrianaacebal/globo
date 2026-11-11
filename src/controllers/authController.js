@@ -54,10 +54,6 @@ function login(req, res) {
     password,
     discountCode: newDiscountCode(),
     discountUsed: false,
-<<<<<<< HEAD
-    orders: [],
-=======
->>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
   });
   res.status(201).json({
     name: newUser.name,

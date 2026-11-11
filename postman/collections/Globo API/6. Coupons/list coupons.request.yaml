@@ -1,0 +1,21 @@
+$kind: http-request
+name: list coupons
+method: GET
+url: '{{baseUrl}}/coupons'
+order: 1000
+queryParams:
+  - key: search
+    value: ''
+    disabled: true
+  - key: active
+    value: 'true'
+    disabled: true
+  - key: orderType
+    value: all
+    disabled: true
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Response is an array", () => pm.expect(pm.response.json()).to.be.an("array"));

@@ -1,0 +1,23 @@
+$kind: http-request
+name: 'replace dish (PUT)'
+method: PUT
+url: '{{baseUrl}}/dishes/{{dishId}}'
+order: 6000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Whopper XL",
+      "brand": "burgerking",
+      "category": "main",
+      "price": 7.99
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Name updated", () => pm.expect(pm.response.json().name).to.eql("Whopper XL"));

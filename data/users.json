@@ -17,8 +17,12 @@
     "email": "nmbdebjdnbdj@kjdjdd",
     "password": "jbhhhjjjjjjjjjjjjjj",
     "discountCode": "GLOBO-0A1530",
+<<<<<<< HEAD
     "discountUsed": false,
     "orders": []
+=======
+    "discountUsed": false
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
   },
   {
     "id": 4,
@@ -26,6 +30,7 @@
     "email": "maria@gmail.com",
     "password": "maria@gmail.com",
     "discountCode": "GLOBO-884A42",
+<<<<<<< HEAD
     "discountUsed": true,
     "orders": [
       {
@@ -101,5 +106,8 @@
         "total": 118.8
       }
     ]
+=======
+    "discountUsed": true
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
   }
 ]

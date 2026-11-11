@@ -1,0 +1,31 @@
+$kind: http-request
+name: restaurant stats
+method: GET
+url: '{{baseUrl}}/restaurants/stats'
+order: 3000
+queryParams:
+  - key: search
+    value: ''
+    disabled: true
+  - key: brand
+    value: burgerking
+    disabled: true
+  - key: area
+    value: Centro
+    disabled: true
+  - key: type
+    value: burger
+    disabled: true
+  - key: delivery
+    value: 'true'
+    disabled: true
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      const s = pm.response.json();
+      pm.test("Has totals", () => {
+        pm.expect(s.total).to.be.a("number");
+        pm.expect(s).to.include.keys("total", "withDelivery", "byBrand", "byArea", "byType");
+      });

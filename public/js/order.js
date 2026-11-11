@@ -7,6 +7,7 @@ var dishList = document.getElementById("dish-list");
 var totalBox = document.getElementById("order-total");
 var chosenRestaurant = "";   // se guarda porque el formulario se resetea
 
+<<<<<<< HEAD
 // Mismos datos que en el servidor, para que la pagina funcione
 // aunque el servidor no este arrancado.
 var restaurants = [
@@ -91,6 +92,18 @@ var menus = {
     ]
 };
 var currentMenu = [];   // menu que se esta ensenando ahora (del servidor o local)
+=======
+// Los locales se piden siempre al servidor (GET /api/restaurants): no hay copia en la pagina.
+var restaurants = [];
+var restaurantsError = "";
+apiRequest("GET", "/api/restaurants")
+    .then(function (result) {
+        if (result.ok) restaurants = result.data;
+        else restaurantsError = "Could not load the restaurants (error " + result.status + ").";
+    })
+    .catch(function () { restaurantsError = "Could not connect to the server. Please try again later."; });
+var currentMenu = [];   // menu que se esta ensenando ahora (viene del servidor)
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 
 // ---------- Ubicacion y tiempo estimado ----------
 // Coordenadas aproximadas (centro de cada distrito de Madrid).
@@ -204,10 +217,15 @@ function normalize(text) {
 // Devuelve la marca ("burgerking" / "mcdonalds") o null si no existe
 function findBrand(restaurant) {
     var key = normalize(restaurant);
+<<<<<<< HEAD
     for (var brand in menus) {
         if (key.indexOf(brand) === 0) return brand;
     }
     return null;
+=======
+    var found = restaurants.find(function (r) { return key.indexOf(r.brand) === 0; });
+    return found ? found.brand : null;
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 }
 
 // Deja el formulario como al principio para volver a rellenarlo
@@ -231,18 +249,37 @@ async function showMenu(restaurant) {
     var brand = findBrand(restaurant);
     if (!brand) return;
 
+<<<<<<< HEAD
     // Se pide el menu completo al servidor (GET /menu).
     // Si no esta arrancado, se usa la copia local.
     currentMenu = menus[brand];
+=======
+    // El menu completo se pide al servidor (GET /menu)
+    currentMenu = [];
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
     try {
         var menuResult = await apiRequest("GET", "/menu?restaurant=" + encodeURIComponent(restaurant));
         if (menuResult.ok) currentMenu = menuResult.data;
     } catch (err) {
+<<<<<<< HEAD
         // Sin servidor: se queda el menu local
     }
 
     // Una fila por plato: nombre, precio y casilla de cantidad (empieza en 0)
     dishList.innerHTML = "";
+=======
+        // Sin servidor: el menu se queda vacio y se avisa abajo
+    }
+
+    // Una fila por plato: nombre, precio y casilla de cantidad (empieza en 0)
+    dishList.replaceChildren();
+    if (currentMenu.length === 0) {
+        var empty = document.createElement("p");
+        empty.textContent = "Could not load the menu. Please try again later.";
+        dishList.appendChild(empty);
+        return;
+    }
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
     currentMenu.forEach(function (dish, i) {
         var label = document.createElement("label");
         label.htmlFor = "qty-" + i;
@@ -263,10 +300,18 @@ async function showMenu(restaurant) {
 // Comprueba que el restaurante tiene local en esa ubicacion.
 // Devuelve el mensaje de error, o null si todo esta bien.
 function checkLocation(data) {
+<<<<<<< HEAD
     var brand = findBrand(data.restaurant);
     if (!brand) return "The restaurant " + data.restaurant + " does not exist.";
 
     var locals = restaurants.filter(function (r) { return findBrand(r.name) === brand; });
+=======
+    if (restaurantsError) return restaurantsError;
+    var brand = findBrand(data.restaurant);
+    if (!brand) return "The restaurant " + data.restaurant + " does not exist.";
+
+    var locals = restaurants.filter(function (r) { return r.brand === brand; });
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
     var ok = locals.some(function (r) { return normalize(r.area) === normalize(data.location); });
     if (!ok) {
         var areas = locals.map(function (r) { return r.area; });

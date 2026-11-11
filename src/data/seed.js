@@ -117,4 +117,22 @@ const reviews = [
   { restaurantId: 29, author: "Lucía", rating: 5, comment: "Best vegan burger in Madrid!", verified: false },
 ];
 
+<<<<<<< HEAD
 module.exports = { restaurants, dishes, users, riders, coupons, orders, reviews };
+=======
+// Reclamaciones de ejemplo (las nuevas llegan desde complaint.html)
+const complaints = [
+  { name: "Alice", email: "alice@example.com", brand: "telepizza", type: "delivery", date: "2026-11-01", message: "The pizza arrived 40 minutes late and cold.", status: "resolved", createdAt: "2026-11-01T15:00:00.000Z" },
+  { name: "Bob", email: "bob@example.com", brand: "mcdonalds", type: "food", date: "2026-11-03", message: "My burger was missing the cheese I paid for.", status: "in progress", createdAt: "2026-11-03T19:20:00.000Z" },
+  { name: "Ana", email: "ana@example.com", brand: "sushita", type: "payment", date: "2026-11-06", message: "I was charged twice for the same order.", status: "open", createdAt: "2026-11-06T12:45:00.000Z" },
+];
+
+// Mensajes de contacto de ejemplo (los nuevos llegan desde contact.html)
+const messages = [
+  { name: "Carlos", email: "carlos@example.com", subject: "account", message: "How can I change the email of my account?", status: "answered", createdAt: "2026-11-02T10:00:00.000Z" },
+  { name: "Lucia", email: "lucia@example.com", subject: "restaurant", message: "Will you add more restaurants in Retiro soon?", status: "read", createdAt: "2026-11-04T17:30:00.000Z" },
+  { name: "Pedro", email: "pedro@example.com", subject: "order", message: "Can I schedule an order for tomorrow at lunch time?", status: "new", createdAt: "2026-11-07T09:15:00.000Z" },
+];
+
+module.exports = { restaurants, dishes, users, riders, coupons, orders, reviews, complaints, messages };
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c

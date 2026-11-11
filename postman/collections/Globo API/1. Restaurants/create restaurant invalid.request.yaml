@@ -1,0 +1,27 @@
+$kind: http-request
+name: 'create restaurant invalid -> 400'
+method: POST
+url: '{{baseUrl}}/restaurants'
+order: 5000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "",
+      "brand": "kfc",
+      "area": "Paris",
+      "lat": "abc"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 400", () => pm.response.to.have.status(400));
+      const body = pm.response.json();
+      pm.test("Has errors array", () => pm.expect(body.errors).to.be.an("array").that.is.not.empty);
+      pm.test("Error for name", () => pm.expect(body.errors.map(e => e.field)).to.include("name"));
+      pm.test("Error for brand", () => pm.expect(body.errors.map(e => e.field)).to.include("brand"));
+      pm.test("Error for area", () => pm.expect(body.errors.map(e => e.field)).to.include("area"));

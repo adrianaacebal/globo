@@ -1,0 +1,26 @@
+$kind: http-request
+name: 'replace order (PUT)'
+method: PUT
+url: '{{baseUrl}}/orders/{{orderId}}'
+order: 6000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "customer": "Ana García",
+      "restaurantId": 1,
+      "riderId": 1,
+      "type": "delivery",
+      "status": "preparing",
+      "total": 15.50,
+      "paid": false
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Status updated", () => pm.expect(pm.response.json().status).to.eql("preparing"));

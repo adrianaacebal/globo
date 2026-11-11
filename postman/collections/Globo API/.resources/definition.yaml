@@ -1,0 +1,22 @@
+$kind: collection
+name: Globo API
+description: 'GLOBO food ordering API. Run folders in order: each Create saves the new id in a collection variable used by subsequent requests. baseUrl = http://localhost:3000/api'
+variables:
+  - key: baseUrl
+    value: 'http://localhost:3000/api'
+  - key: restaurantId
+    value: ''
+  - key: dishId
+    value: ''
+  - key: riderId
+    value: ''
+  - key: orderId
+    value: ''
+  - key: reviewId
+    value: ''
+  - key: couponId
+    value: ''
+  - key: complaintId
+    value: ''
+  - key: messageId
+    value: ''

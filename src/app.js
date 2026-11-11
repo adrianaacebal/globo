@@ -9,6 +9,11 @@ const ridersRouter = require("./routes/riders");
 const couponsRouter = require("./routes/coupons");
 const ordersRouter = require("./routes/orders");
 const reviewsRouter = require("./routes/reviews");
+<<<<<<< HEAD
+=======
+const complaintsRouter = require("./routes/complaints");
+const messagesRouter = require("./routes/messages");
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 const checkoutRouter = require("./routes/checkout");
 
 const app = express();
@@ -24,12 +29,21 @@ app.use(logger);
 
 // API: cada recurso bajo /api/<recurso>, con su router, controlador y validator
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+<<<<<<< HEAD
 app.use("/api/restaurants", restaurantsRouter); // recurso principal (filtros + /stats)
+=======
+app.use("/api/restaurants", restaurantsRouter);
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 app.use("/api/dishes", dishesRouter);
 app.use("/api/riders", ridersRouter);
 app.use("/api/coupons", couponsRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/reviews", reviewsRouter);
+<<<<<<< HEAD
+=======
+app.use("/api/complaints", complaintsRouter);
+app.use("/api/messages", messagesRouter);
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 
 // Flujo de la web: /login, /menu, /order, /order/total y /orders (historial del usuario)
 app.use("/", checkoutRouter);

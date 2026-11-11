@@ -91,5 +91,10 @@ module.exports = {
   coupons: createCollection(seed.coupons),
   orders: createCollection(seed.orders),
   reviews: createCollection(seed.reviews),
+<<<<<<< HEAD
+=======
+  complaints: createCollection(seed.complaints),
+  messages: createCollection(seed.messages),
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
   users: createCollection(loadUsers(), saveUsers),
 };

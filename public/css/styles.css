@@ -91,6 +91,7 @@ main iframe {
   display: none;
 }
 
+<<<<<<< HEAD
 .sidebar-logo {
   display: block;
   width: 100px;
@@ -98,6 +99,8 @@ main iframe {
   margin: 0 auto 12px;
 }
 
+=======
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 
 .sidebar-title {
   margin: 0 0 16px;
@@ -167,6 +170,7 @@ main iframe {
   }
 }
 
+<<<<<<< HEAD
 .category-grid {
   list-style: none;
   max-width: 500px;
@@ -198,6 +202,8 @@ main iframe {
   text-decoration: underline;
 }
 
+=======
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 /* Caja del mapa */
 .map-frame {
   max-width: 700px;
@@ -275,6 +281,7 @@ main iframe {
 .logo .l4 { color: #13916f; }
 .logo .l5 { color: #13916f; }
 
+<<<<<<< HEAD
 
 
 /* Pasos para hacer un pedido: tarjetas blancas numeradas */
@@ -358,6 +365,8 @@ main iframe {
   justify-content: center;
 }
 
+=======
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 /* Menu propio de Burger King (lista de platos con precio) */
 .bk-menu {
   list-style: none;
@@ -1019,6 +1028,7 @@ footer a {
 
 /* ===================== ORDER ===================== */
 
+<<<<<<< HEAD
 /* Portada del pedido en dos columnas: texto y foto */
 .order-hero {
   display: flex;
@@ -1214,6 +1224,8 @@ footer a {
   }
 }
 
+=======
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
 /* Tracker del pedido: barra que se llena hasta que llega */
 .order-tracker {
   margin-top: 12px;
@@ -1277,20 +1289,40 @@ footer a {
 
 .filter-grid input,
 .filter-grid select,
+<<<<<<< HEAD
 .login-box select {
+=======
+.login-box select,
+.login-box textarea {
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
   display: block;
   width: 100%;
   padding: 10px;
   border: 3px solid #13916f;
   border-radius: 8px;
   font-size: 1rem;
+<<<<<<< HEAD
+=======
+  font-family: inherit;
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
   background-color: #ffffff;
   color: #333333;
 }
 
+<<<<<<< HEAD
 .filter-grid input:focus,
 .filter-grid select:focus,
 .login-box select:focus {
+=======
+.login-box textarea {
+  resize: vertical;
+}
+
+.filter-grid input:focus,
+.filter-grid select:focus,
+.login-box select:focus,
+.login-box textarea:focus {
+>>>>>>> 810ef171b8cd1b1a7e4a8c2a37b0f44b40b5de1c
   outline: 3px solid #ffffff;
   outline-offset: 2px;
   border-color: #0d5f49;

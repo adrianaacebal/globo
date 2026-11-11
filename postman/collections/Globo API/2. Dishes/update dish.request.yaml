@@ -1,0 +1,20 @@
+$kind: http-request
+name: 'update dish (PATCH)'
+method: PATCH
+url: '{{baseUrl}}/dishes/{{dishId}}'
+order: 7000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "price": 7.49
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Price updated", () => pm.expect(pm.response.json().price).to.eql(7.49));

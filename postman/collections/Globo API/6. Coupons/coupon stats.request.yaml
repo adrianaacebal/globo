@@ -1,0 +1,21 @@
+$kind: http-request
+name: coupon stats
+method: GET
+url: '{{baseUrl}}/coupons/stats'
+order: 2000
+queryParams:
+  - key: search
+    value: ''
+    disabled: true
+  - key: active
+    value: 'true'
+    disabled: true
+  - key: orderType
+    value: all
+    disabled: true
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Has total", () => pm.expect(pm.response.json().total).to.be.a("number"));

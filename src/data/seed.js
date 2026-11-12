@@ -1,4 +1,43 @@
+// =====================================================================
+// SEED: DATOS INICIALES  (archivo: src/data/seed.js)
+// =====================================================================
+// Que es un "seed" (semilla)?
+//   Son los datos de ejemplo con los que arranca la aplicacion, para que al abrir
+//   la web ya haya restaurantes, platos, pedidos... y no salga todo vacio.
+//
+// Como se usan?
+//   src/data/store.js importa este archivo y crea una coleccion en memoria con cada
+//   array:  createCollection(seed.restaurants), createCollection(seed.dishes)...
+//   Cada vez que se reinicia el servidor, las colecciones vuelven a empezar con
+//   ESTOS datos (los cambios hechos con POST/PUT/PATCH/DELETE se pierden).
+//   Excepcion: los usuarios se leen de data/users.json si existe; seed.users solo
+//   se usa si ese archivo no existe todavia.
+//
+// Los ids:
+//   Casi ningun dato lleva "id": se lo pone el store al arrancar, por orden
+//   (el primero 1, el segundo 2...). Por eso el orden de los arrays importa:
+//   p. ej. el restaurante con id 4 es el 4.o de la lista (McDonald's Gran Via).
+//   Los usuarios si traen su id escrito a mano.
+//
+// Valores de listas cerradas (brand, area, type, category, vehicle, status...):
+//   tienen que ser uno de los permitidos en src/constants.js, igual que lo que
+//   comprueban los validators cuando llega un POST/PUT/PATCH.
+//
+// Formato: cada elemento es un objeto JavaScript { campo: valor, ... }, que es
+// practicamente lo mismo que un objeto JSON (lo que devuelve la API).
+// =====================================================================
 
+// ---------- RESTAURANTES (coleccion store.restaurants -> /api/restaurants) ----------
+// Cada objeto es un LOCAL concreto de una marca. Campos:
+//   name     -> nombre del local que se ve en la web
+//   brand    -> clave de la marca: burgerking, mcdonalds, sushita, telepizza, honestgreens
+//               (sirve para unir el local con los platos de su carta)
+//   area     -> barrio de Madrid (Centro, Chamartin, Tetuan...). Al pedir se comprueba
+//               que la marca tenga local en la zona elegida
+//   type     -> tipo de comida: burger, sushi, pizza o vegan
+//   delivery -> true si hace envio a domicilio, false si solo se puede recoger
+//   lat, lon -> coordenadas (latitud y longitud) para colocar el local en el mapa
+// Sin id: el store les pone 1, 2, 3... en este mismo orden.
 const restaurants = [
   { name: "Burger King Chamartín", brand: "burgerking", area: "Chamartín", type: "burger", delivery: true, lat: 40.4721547, lon: -3.6827027 },
   { name: "Burger King Tetuán", brand: "burgerking", area: "Tetuán", type: "burger", delivery: true, lat: 40.4606115, lon: -3.69986 },
@@ -33,6 +72,15 @@ const restaurants = [
 ];
 
 
+// ---------- PLATOS (coleccion store.dishes -> /api/dishes y /menu) ----------
+// La carta de cada MARCA (no de cada local: todos los McDonald's tienen la misma).
+// Campos:
+//   name     -> nombre del plato
+//   brand    -> marca a la que pertenece (misma clave que en restaurants)
+//   category -> main (principal), side (acompanamiento), drink (bebida) o dessert (postre)
+//   price    -> precio en euros (numero, con decimales: 6.5 = 6,50 EUR)
+// Una misma marca no puede repetir nombre de plato, pero marcas distintas si
+// (por eso hay "Patatas" o "water" en varias). Estan agrupados por marca.
 const dishes = [
   { name: "Whopper", brand: "burgerking", category: "main", price: 6.5 },
   { name: "Patatas", brand: "burgerking", category: "side", price: 2.5 },
@@ -78,6 +126,18 @@ const dishes = [
   { name: "Herbal Tea", brand: "honestgreens", category: "drink", price: 2.5 },
 ];
 
+// ---------- USUARIOS (coleccion store.users -> POST /login) ----------
+// Usuarios de ejemplo para poder hacer login nada mas instalar el proyecto.
+// Solo se usan si todavia no existe data/users.json (ver loadUsers en store.js);
+// a partir de ahi los usuarios se leen y se guardan en ese archivo.
+// Campos:
+//   id       -> estos SI llevan id escrito a mano
+//   name     -> nombre (en el login se comprueba junto con el email)
+//   email    -> identifica al usuario (no puede haber dos iguales)
+//   password -> contrasena. OJO: en texto plano porque es una practica; en una app
+//               real se guardaria cifrada (hash), nunca tal cual.
+// Los usuarios que se registran despues tienen ademas discountCode, discountUsed
+// y orders (su historial de pedidos).
 const users = [
   { id: 1, name: "Alice", email: "alice@example.com", password: "password123" },
   { id: 2, name: "Bob", email: "bob@example.com", password: "password456" },
@@ -85,7 +145,13 @@ const users = [
   { id:4, name: "Carlos", email: "carlos@example.com", password: "password012" }
 ];
 
-// Repartidores. vehicle y area son listas cerradas (src/constants.js)
+// ---------- REPARTIDORES (coleccion store.riders -> /api/riders) ----------
+// vehicle y area son listas cerradas (src/constants.js). Campos:
+//   name      -> nombre del repartidor (rider)
+//   vehicle   -> bike (bici), motorbike (moto) o car (coche)
+//   area      -> barrio en el que reparte
+//   available -> true si esta libre ahora mismo para llevar pedidos
+//   rating    -> valoracion media de 0 a 5
 const riders = [
   { name: "Lucía Gómez", vehicle: "motorbike", area: "Centro", available: true, rating: 4.8 },
   { name: "Javier Ruiz", vehicle: "bike", area: "Chamberí", available: true, rating: 4.5 },
@@ -94,21 +160,41 @@ const riders = [
   { name: "Sara Martín", vehicle: "bike", area: "Retiro", available: false, rating: 4.9 },
 ];
 
-// Cupones de descuento que se pueden escribir al pedir (order.html)
+// ---------- CUPONES (coleccion store.coupons -> /api/coupons) ----------
+// Cupones de descuento que se pueden escribir al pedir (order.html). Campos:
+//   code      -> el codigo que escribe el cliente (en mayusculas, no se repite)
+//   percent   -> porcentaje de descuento (20 = 20%)
+//   active    -> si esta en false, el cupon existe pero ya no se puede usar
+//   orderType -> a que pedidos se aplica: all (todos), delivery (a domicilio) o pickup (recoger)
 const coupons = [
   { code: "GLOBO20", percent: 20, active: true, orderType: "all" },
   { code: "PICKUP15", percent: 15, active: true, orderType: "pickup" },
   { code: "SUMMER30", percent: 30, active: false, orderType: "delivery" },
 ];
 
-// Pedidos. restaurantId -> restaurants.id · riderId -> riders.id (null si es para recoger)
+// ---------- PEDIDOS (coleccion store.orders -> /api/orders) ----------
+// Pedidos de ejemplo para la gestion de pedidos. Los que se confirman en la web
+// (POST /orders) tambien se anaden aqui. Campos:
+//   customer     -> nombre del cliente
+//   restaurantId -> id del restaurante ("relacion": apunta a restaurants.id; 4 = McDonald's Gran Via)
+//   riderId      -> id del repartidor (apunta a riders.id), o null si es para recoger
+//   type         -> delivery (a domicilio) o pickup (recoger en el local)
+//   status       -> pending, preparing, on-the-way, delivered o cancelled
+//   total        -> importe total en euros
+//   paid         -> true si ya esta pagado
 const orders = [
   { customer: "Alice", restaurantId: 4, riderId: 1, type: "delivery", status: "delivered", total: 18.6, paid: true },
   { customer: "Bob", restaurantId: 20, riderId: null, type: "pickup", status: "preparing", total: 16.5, paid: true },
   { customer: "Ana", restaurantId: 14, riderId: 2, type: "delivery", status: "on-the-way", total: 21, paid: false },
 ];
 
-// Opiniones de los clientes sobre un restaurante. restaurantId -> restaurants.id
+// ---------- OPINIONES (coleccion store.reviews -> /api/reviews) ----------
+// Opiniones de los clientes sobre un restaurante. Campos:
+//   restaurantId -> id del restaurante opinado (apunta a restaurants.id; tiene que existir)
+//   author       -> quien escribe la opinion
+//   rating       -> nota de 1 a 5
+//   comment      -> texto de la opinion
+//   verified     -> true si se ha comprobado que el autor de verdad pidio alli
 const reviews = [
   { restaurantId: 4, author: "Alice", rating: 5, comment: "Fast and hot, the Big Mac was perfect.", verified: true },
   { restaurantId: 4, author: "Carlos", rating: 3, comment: "Good food but the delivery took a while.", verified: true },
@@ -117,18 +203,34 @@ const reviews = [
   { restaurantId: 29, author: "Lucía", rating: 5, comment: "Best vegan burger in Madrid!", verified: false },
 ];
 
-// Reclamaciones de ejemplo (las nuevas llegan desde complaint.html)
+// ---------- RECLAMACIONES (coleccion store.complaints -> /api/complaints) ----------
+// Reclamaciones de ejemplo (las nuevas llegan desde complaint.html). Campos:
+//   name, email -> datos de contacto de quien reclama
+//   brand       -> marca a la que se reclama
+//   type        -> motivo: delivery (envio), food (comida), payment (pago) u other (otro)
+//   date        -> dia del problema (texto AAAA-MM-DD)
+//   message     -> explicacion del cliente
+//   status      -> open (abierta), in progress (en curso) o resolved (resuelta)
+//   createdAt   -> fecha y hora en que se creo (formato ISO, lo pone el servidor)
 const complaints = [
   { name: "Alice", email: "alice@example.com", brand: "telepizza", type: "delivery", date: "2026-11-01", message: "The pizza arrived 40 minutes late and cold.", status: "resolved", createdAt: "2026-11-01T15:00:00.000Z" },
   { name: "Bob", email: "bob@example.com", brand: "mcdonalds", type: "food", date: "2026-11-03", message: "My burger was missing the cheese I paid for.", status: "in progress", createdAt: "2026-11-03T19:20:00.000Z" },
   { name: "Ana", email: "ana@example.com", brand: "sushita", type: "payment", date: "2026-11-06", message: "I was charged twice for the same order.", status: "open", createdAt: "2026-11-06T12:45:00.000Z" },
 ];
 
-// Mensajes de contacto de ejemplo (los nuevos llegan desde contact.html)
+// ---------- MENSAJES DE CONTACTO (coleccion store.messages -> /api/messages) ----------
+// Mensajes de contacto de ejemplo (los nuevos llegan desde contact.html). Campos:
+//   name, email -> datos de quien escribe
+//   subject     -> tema: order (pedido), restaurant, account (cuenta) u other
+//   message     -> texto del mensaje
+//   status      -> new (nuevo), read (leido) o answered (respondido)
+//   createdAt   -> fecha y hora en que se creo (formato ISO)
 const messages = [
   { name: "Carlos", email: "carlos@example.com", subject: "account", message: "How can I change the email of my account?", status: "answered", createdAt: "2026-11-02T10:00:00.000Z" },
   { name: "Lucia", email: "lucia@example.com", subject: "restaurant", message: "Will you add more restaurants in Retiro soon?", status: "read", createdAt: "2026-11-04T17:30:00.000Z" },
   { name: "Pedro", email: "pedro@example.com", subject: "order", message: "Can I schedule an order for tomorrow at lunch time?", status: "new", createdAt: "2026-11-07T09:15:00.000Z" },
 ];
 
+// Exportamos todos los arrays en un objeto para que store.js los use con
+// require("./seed") -> seed.restaurants, seed.dishes, seed.users...
 module.exports = { restaurants, dishes, users, riders, coupons, orders, reviews, complaints, messages };
